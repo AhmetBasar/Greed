@@ -19,34 +19,58 @@
  **********************************************/
 package chess.database;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
+import java.util.Properties;
+
+import chess.util.Utility;
 
 public class DatabaseManager {
+
+	private final Properties properties = new Properties();
+
 	public DatabaseManager() {
-	}
-
-	public void insert(String hKey, String value) {
-	}
-
-	public void delete(String hKey) {
-	}
-
-	public void save(String hKey, String value) {
-		if (getPreference(hKey) != null) {
-			update(hKey, value);
-		} else {
-			insert(hKey, value);
+		InputStream is = null;
+		try {
+			is = getClass().getClassLoader().getResourceAsStream("Storage.properties");
+			properties.load(is);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			Utility.closeQuietly(is);
 		}
 	}
 
-	public void update(String hKey, String value) {
+	private void store() {
+		FileOutputStream fis = null;
+		try {
+			fis = new FileOutputStream("src/resources/Storage.properties");
+			properties.store(fis, null);
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		} finally {
+			Utility.closeQuietly(fis);
+		}
 	}
 
-	private String getPreference(String hKey) {
-		return "";
+	public void delete(String key) {
+		properties.remove(key);
+		store();
+	}
+
+	public void save(String key, String value) {
+		properties.setProperty(key, value);
+		store();
 	}
 
 	public HashMap<String, String> retrievePreferences() {
-		return new HashMap<String, String>();
+		HashMap<String, String> ret = new HashMap<String, String>();
+		for (String key : properties.stringPropertyNames()) {
+			String value = properties.getProperty(key);
+			ret.put(key, value);
+		}
+		return ret;
 	}
 }
