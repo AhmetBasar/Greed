@@ -200,4 +200,5 @@ Chess Bot Programming.
   - Increase TT size.
   - Adjust timecontroller thread frequency.
   - Change evaluation function as setwise calculations.
+  - Implement buffered stream in Storage class for speed up.
  

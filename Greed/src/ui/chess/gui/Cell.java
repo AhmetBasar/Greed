@@ -24,12 +24,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.Toolkit;
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 
-import javax.imageio.ImageIO;
 import javax.swing.JLabel;
 
 import chess.engine.EngineConstants;
@@ -44,8 +39,6 @@ public class Cell extends javax.swing.JPanel {
 	 * Creates new form Cell
 	 */
 	private Image image;
-	private URL imageURL;
-	private String imagePath;
 	private byte item;
 	private int state = 0;
 	private int numericName;
@@ -72,54 +65,6 @@ public class Cell extends javax.swing.JPanel {
 //		lbl.setText("" + numericName);
 	}
 
-	public void setItemDeprecated(byte item) {
-		///DEBUG
-		if(item != EngineConstants.BLANK){
-			debugItemChangeCount++;
-		}
-		lbl.setText("" + debugItemChangeCount);
-//		if(debugItemChangeCount == 0){
-//			lbl.setVisible(false);
-//		}else{
-//			lbl.setVisible(true);
-//		}
-		///
-		blank = false;
-		if (item == EngineConstants.WHITE_PAWN) {
-			imageURL = getClass().getResource("/images/White_Pawn.png");
-		} else if (item == EngineConstants.WHITE_KNIGHT) {
-			imageURL = getClass().getResource("/images/White_Knight.png");
-		} else if (item == EngineConstants.WHITE_BISHOP) {
-			imageURL = getClass().getResource("/images/White_Bishop.png");
-		} else if (item == EngineConstants.WHITE_ROOK) {
-			imageURL = getClass().getResource("/images/White_Rook.png");
-		} else if (item == EngineConstants.WHITE_QUEEN) {
-			imageURL = getClass().getResource("/images/White_Queen.png");
-		} else if (item == EngineConstants.WHITE_KING) {
-			imageURL = getClass().getResource("/images/White_King.png");
-		} else if (item == EngineConstants.BLACK_PAWN) {
-			imageURL = getClass().getResource("/images/Black_Pawn.png");
-		} else if (item == EngineConstants.BLACK_KNIGHT) {
-			imageURL = getClass().getResource("/images/Black_Knight.png");
-		} else if (item == EngineConstants.BLACK_BISHOP) {
-			imageURL = getClass().getResource("/images/Black_Bishop.png");
-		} else if (item == EngineConstants.BLACK_ROOK) {
-			imageURL = getClass().getResource("/images/Black_Rook.png");
-		} else if (item == EngineConstants.BLACK_QUEEN) {
-			imageURL = getClass().getResource("/images/Black_Queen.png");
-		} else if (item == EngineConstants.BLACK_KING) {
-			imageURL = getClass().getResource("/images/Black_King.png");
-		} else if (item == EngineConstants.BLANK) {
-			blank = true;
-		}
-
-		this.item = item;
-		if (imageURL != null) {
-			image = Toolkit.getDefaultToolkit().getImage(imageURL);
-		}
-		repaint();
-	}
-	
 	public void setItem(byte item) {
 		///DEBUG
 		if(item != EngineConstants.BLANK){
@@ -133,41 +78,13 @@ public class Cell extends javax.swing.JPanel {
 //		}
 		///
 		blank = false;
-		if (item == EngineConstants.WHITE_PAWN) {
-			imagePath = "src/ui/images/White_Pawn.png";
-		} else if (item == EngineConstants.WHITE_KNIGHT) {
-			imagePath = "src/ui/images/White_Knight.png";
-		} else if (item == EngineConstants.WHITE_BISHOP) {
-			imagePath = "src/ui/images/White_Bishop.png";
-		} else if (item == EngineConstants.WHITE_ROOK) {
-			imagePath = "src/ui/images/White_Rook.png";
-		} else if (item == EngineConstants.WHITE_QUEEN) {
-			imagePath = "src/ui/images/White_Queen.png";
-		} else if (item == EngineConstants.WHITE_KING) {
-			imagePath = "src/ui/images/White_King.png";
-		} else if (item == EngineConstants.BLACK_PAWN) {
-			imagePath = "src/ui/images/Black_Pawn.png";
-		} else if (item == EngineConstants.BLACK_KNIGHT) {
-			imagePath = "src/ui/images/Black_Knight.png";
-		} else if (item == EngineConstants.BLACK_BISHOP) {
-			imagePath = "src/ui/images/Black_Bishop.png";
-		} else if (item == EngineConstants.BLACK_ROOK) {
-			imagePath = "src/ui/images/Black_Rook.png";
-		} else if (item == EngineConstants.BLACK_QUEEN) {
-			imagePath = "src/ui/images/Black_Queen.png";
-		} else if (item == EngineConstants.BLACK_KING) {
-			imagePath = "src/ui/images/Black_King.png";
-		} else if (item == EngineConstants.BLANK) {
-			blank = true;
-		}
 
 		this.item = item;
-		try {
-			if (imagePath != null) {
-				image = ImageIO.read(new File(imagePath));
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
+		
+		if (item == EngineConstants.BLANK) {
+			blank = true;
+		} else {
+			image = ChessImageCache.getInstance().get(item);
 		}
 		
 		repaint();
