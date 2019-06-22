@@ -31,8 +31,6 @@ public class EvaluationAdvancedV4 {
 //	private static final int BONUS_ROOK_ON_OPEN_FILE = 10;
 	private static final int BONUS_ROOK_BATTERY = 10;
 	
-	public static int ourSide = 0;
-	
 	public static int evaluate(long[] bitboard, byte[][] castlingRights, int side){
 		int eval = 0;
 		
@@ -193,14 +191,6 @@ public class EvaluationAdvancedV4 {
 			}
 			
 		}
-		
-		// For Engine vs Human. more piece on the board. more chance to win :)
-		if (ourSide == GuiConstants.WHITES_TURN) {
-			eval += wkCount + wbCount + wrCount * 2 + wqCount * 3;
-		} else {
-			eval -= bkCount + bbCount + brCount * 2 + bqCount * 3;
-		}
-		
 		
 		if (isEndgame) {
 			fromBitboard=bitboard[EngineConstants.BLACK_KING];

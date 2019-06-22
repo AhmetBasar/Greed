@@ -125,8 +125,6 @@ public class SearchEngineFifty8 implements ISearchableV2, EngineConstants {
 		this.depth = searchParameters.getDepth();
 		this.engineMode = searchParameters.getEngineMode();
 		
-		EvaluationAdvancedV4.ourSide = searchParameters.getSide();
-		
 		reset();
 		
 		boolean isFixedDepth = engineMode == EngineMode.FIXED_DEPTH;
@@ -303,7 +301,7 @@ public class SearchEngineFifty8 implements ISearchableV2, EngineConstants {
 		long zobristKey = board.getZobristKey(depth);
 		
 		if (isLeadsToDraw(zobristKey, board, depth)) {
-			return EvaluationAdvancedV4.ourSide == GuiConstants.WHITES_TURN ? color * -50 : color * 50;
+			return 0;
 		}
 		
 		//>>

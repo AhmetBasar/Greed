@@ -89,6 +89,7 @@ public class TestSuitesTest {
 						params.setTimeLimit(TestingFramework.QUICK_TEST ? 500 : 5000);
 						params.setFiftyMoveCounter(0);
 						params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+						params.setBookName(null);
 
 						SearchResult searchResult = engine.search(params);
 
@@ -123,6 +124,7 @@ public class TestSuitesTest {
 			System.err.println(testSuiteResult);
 			throw new RuntimeException("Failed.");
 		}
+		System.out.println(testSuiteResult);
 	}
 
 	@SuppressWarnings("unused")

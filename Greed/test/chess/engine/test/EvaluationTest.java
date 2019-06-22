@@ -50,10 +50,8 @@ public class EvaluationTest {
 			byte[][] castlingRights = fenOperations.getCastlingRights();
 			byte[][] reversedCastlinRights = DebugUtility.reverseCastlingRights(castlingRights);
 
-			EvaluationAdvancedV4.ourSide = EngineConstants.WHITE;
 			int whiteScore = EvaluationAdvancedV4.evaluate(bitboard, castlingRights, EngineConstants.WHITE);
 
-			EvaluationAdvancedV4.ourSide = EngineConstants.BLACK;
 			int bitReversedBlackScore = EvaluationAdvancedV4.evaluate(bitReversedBitboard, reversedCastlinRights, EngineConstants.BLACK);
 			int byteReversedBlackScore = EvaluationAdvancedV4.evaluate(byteReversedBitboard, reversedCastlinRights, EngineConstants.BLACK);
 

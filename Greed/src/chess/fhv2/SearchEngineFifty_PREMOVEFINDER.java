@@ -84,8 +84,6 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 	
 	public SearchResult search(int depth, int epT, int epS, long[] bitboard, byte[] pieces, byte[][] castlingRights, int side, long uiZobristKey, int firstMove, long timeLimit, int fiftyMoveCounter) {
 		
-		EvaluationAdvancedV4.ourSide = side;
-		
 		reset();
 		
 		long zobristKey = TranspositionTable.getZobristKey(bitboard, epT, castlingRights, side);
@@ -245,7 +243,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		long zobristKey = board.getZobristKey(depth);
 		
 		if (isLeadsToDraw(zobristKey, board, depth)) {
-			return EvaluationAdvancedV4.ourSide == GuiConstants.WHITES_TURN ? color * -50 : color * 50;
+			return 0;
 		}
 		
 		//>>
