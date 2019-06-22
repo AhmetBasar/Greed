@@ -1,0 +1,203 @@
+/**********************************************
+ * Greed, a chess engine written in java.
+ * Copyright (C) 2019 Ahmet Baþar
+ * 
+ * This file is part of Greed.
+ * 
+ * Greed is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Greed is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Greed.  If not, see <https://www.gnu.org/licenses/>.
+ **********************************************/
+Chess Bot Programming.
+ - in BoardScanner Class, 
+  When detecting changes, don't parse all, board on each iteration. Try to compare whole board image without parsing, to cells instead.
+ - previously matched image ordering must be done with piece type, it must not be related with highlighted or selected vs.vs.	 
+  - Known problem = We always expect 3 change in board when premove succeded. but in reality there is posibility for 5 changes or even 7 changes. 7 changes = 4 castling + 3 premove operation.
+  but for now we ignore this. Maybe if we decrease scanning board time, then we almost never face with this cruel issue.
+  Certainly there is a solution to this problem. but it may be implemented in future releases.
+ * It is both problem to see the premove too early and too late.
+ if it is too early, there is posibility to see uncompleted premove.
+ if it is too late, there is posibility to see completed premove + normal move. say it is 3 moves...
+  * In Premove detection,
+// OMH, What if same type of piece recaptures?? Than prevToItem equals to currToItem???
+ - Implement promotions on online chess bot.
+ [OKEY] - Implement draw and mate detection correctly.
+  - Add King Checks to quiescent search. because they are not quiet, maybe there is a forced mate line. you may also add thread moves? so what is threating moves?
+  - in chess bot, should we clear TT in every suggest? or only reset bot? 
+  	/**
+	 * PERFORMANCE IMPROVEMENTS 1 - When detecting changes, don't parse all
+	 * board on each iteration. Try to compare whole board image without parsing
+	 * to cells instead.
+	 */
+ Reminder
+  - Change Random Number Generator from HardCodedSecureRandom to SecureRandom Again.  
+  Engine improvements.
+ - Add checks to quiescent search.
+ - implement parallel search.
+ [OKEY] - implement Board infrastructure instead of copy make solution.
+ [OKEY] - in the MoveGenerationCaptured class, castling moves are also generating. I think it is unnecessary. Remove it.
+ [OKEY] - In quiescence search, we do not need to calculate zobrist key. So implement a method in Board class, named doMoveWithoutZobrist .
+ [OKEY] - Transposition table structure must be reviewed. especially ttBestMove = ttElement.bestMove; code block is outside depth if block.
+ [FAILED] - do real move ordering, remove ttbestmove if block, try ttbestmove first instead FAILED because we should do incremental move generation. first validate ttmove than generate validate killer moves than generate capture moves etc. 
+ [OKEY] - Remove castling moves from move generationCaptures class.
+  - Use tagging.
+  - There should be More smart way to DECIDE premove. (cause it slows down the core engine :()
+  - Move Reordering. But you should not simple exchange indexes of the ttbestmove and zerothindex. You should be shifting whole array. Because MVV LVA algorithm is so important.
+  	   		// Move Ordering
+			if (ttBestMove != 0) {
+				int bestMoveIndex  = Arrays.binarySearch(moveList, ttBestMove);
+				System.arraycopy(moveList, bestMoveIndex + 1 , moveList, bestMoveIndex, EngineConstants.MOVE_LIST_SIZE_MINUS_ONE - bestMoveIndex);
+				moveList[EngineConstants.MOVE_LIST_SIZE_MINUS_ONE] = ttBestMove;
+			}
+  - there should be more elegant Quiescence search algorithm that prune bad captures.
+  - isKingInCheck method is too slow for serious engine. It must be faster. For example incremental attackBitboard implementation should be used.
+  - In Move Generation you must generate pseudolegalmoves. You should not invoke isKingInCheck method in castling move generation!!!
+  - Evaluation function must be improved.. Maybe mobility implementations.
+  - In Board.java combine byte history arrays into one or more long array for reduce fetch time.
+ [OKEY] - In Board.java use an array for keep calculated zobrist values.
+  - Check Legality before move generation...
+  - bestMove is not correctly implemented. because of uncompleted nodes do not prove best move..
+  - Implement more elegant way to handle board object. This is very inefficient.
+  - when fail high best move?? current move or zero.
+ [OKEY] - In the Fail Soft transposition table implementation, if bestMove!=0 than record tt. Why not always??? (aka, regardless of bestMove!=0)
+  - IN PVS search with fail hard framework. is it a<score<b or a<score ???[OKEY]
+  - In null move pruning, one should also check the current node is PV or not.. and game phase should no be pawn ending because of zugzwang issues. 
+  - In null move pruning R (Reduction factor) must be variable.
+  - In null move pruning there is a big cost about of isKingInCheck method invocation.
+  - Check extensions..
+  - Implement Verified Null Move Pruning.
+  - Implement Static Null Move Pruning.
+  - Omit Null Move on PV Nodes.  
+  - In null move pruning it is unnecessary to undoNullMove because zobrist key is always used from depthPlusOne.
+  - Pondering implementation!!
+  - Null Move pruning condition must be beta - alpha <=1 !!!
+  - Implement killer move verification. Instead of generate all moves. this saves a huge amount of time :D
+  - Implement game phase. Opening, Middle, End.
+  - Store only quiet moves in the killer move array. quiet move means no captures, no promotions. and maybe no checks.
+  - Search captures with see first. Then killer and history moves.
+  - Implement pawn hash table!
+  - There is a bug in pre move :) Vezirle almasý mecburi deðildi. piyonla alsa bizim pre move boþa çýkacak.
+  - Implement mate and draw score in quiescence search
+  - Implement generateCheckEvasions Method!
+  - Write a comprehensive Unit Test for evaluation Function!!
+ [OKEY] - Implement Mate scoring which is related with depth parameter. in order to find fastest mate.
+  - Evaluation: Add bonus for tempo. Whose turn?
+  - Evaluation: Check for pawn shield! 
+  - If previous move was check move, then extend it!
+ [OKEY] - Good trick to test evaluation function that, reverse table and compare results!..
+  - Implement single reply extension. if there is a single valid move than increment 1 ply.
+  - Implement late move reductions.
+ [OKEY] - Implement 50 move rule.
+ [OKEY] - Implement threefoldrepetition in search tree. with correct way. not with gui history!
+  - Implement mate detetion with more elegant way. not simply return 0 as move.
+  - Review existing code. for example there should be more condition in nullmove pruning. like in pvs do not do null move pruning.
+  - Implement SSE.
+  - Implement magic bitboard.
+  - Implement automated-Testing Framework that is capable of running thousands of games concurrently.
+  - Implement aspirationWindows
+ [OKEY] - Implement basic opening book or maybe advanced.
+  - Implement Mobility Evaluation!
+  - King safety.
+  - PVS on root node, LMR on root node.
+  - Implement History Heuristic.
+  - Implement PV Extraction.
+ [OKEY] - Implement threefold repetition for Search tree. Independent of game history!!! we already implemented for game history. but it does not work flawlessly
+  - Do not try ttBest move again!
+  - NULL MOVE PRUNING on pv nodes?
+  - Implement insufficient material draw score... Very Important for draw blunders. Engine must be undrawable.
+  - Give a penalty if fiftymovecounter > 90 or 80 in order not to go draw surprisingly.
+  - after timeout last iteration search(uncompleted) is waste of time or not?
+  - Implement ÞAT! We already implement AT but ÞAT is little more expensive calculation.
+  - Compare check extension ELO gain.
+  - Correct the fifty move rule. There must not be checkers and >= 100. 1 of Millions probablity that 50. move gives a check mate lol.
+  [OKEY] - Implement nullMoveCounter implementation in threefoldRepetition detection.
+  - Some of programs gives draw score after 3 rep. no 1 rep... see: Again, rep-draws (and score aging) and see: draw by repetition
+  [OKEY] - Implement nullMoveCounter in the draw detection.
+  [OKEY] - Implement draw detection for PREMOVEFINDER.
+  - In draw detection, reordering 50moverule detection and 3fold rep detection. because 3rep has much more probability to return early without branching for 50moverule check.
+  - In draw detection, Merge game history and search history. or at least, merge functions, if counter < 4 than do not try game history at all.
+  - Try more agressive Null Move Pruning i.e. adaptive R. if depth > 6 than R = 3 else 2.
+  - Search what lazyEval is.
+  - Increase TT size. (very important.)
+  - Increasing R with Depth
+  - R=3; if sideto move has 2 or more pieces, and depth > 7 then R = 4
+  - Implement verified Null Move Pruning.
+  - Implement History Heuristic.
+  - When the king is in check. than generate only check evasions. (this might be blowing.)
+  - Watchout, there is a topic in the wiki as Square attacked By...
+  - Do not recalculate occupancy bitboard every cycle, use incrementaly updated bitboard instead.
+  - Implement IID!
+  - Implement lazy evaluation.
+  - Implement pawn hash table.
+  - Embedded database might be useful for opening book.
+  - Implement Passed Pawn Evaluation.
+  - We calculate isolated paws as if we use quare centric board representation. But we can calculate all pawns with one run, thanks to bitboards.
+  - Implement candidate pawn evaluation.
+  - Implement weak pawn evaluation.
+  - Rewrite the evaluation function based on set-wise. Not Square centric.
+  - Remove King value evalution from the evaluation function.
+  - Implement Passed Pawn Evaluation.
+  - In queen move generation there is one redundant & operator!!
+  - Implement Magic Bitboards.
+  - Implement double hashing to resolve collision.
+  - Implement Eval Hash.
+  - Use bucket in TT to use effectively.
+ [OKEY] - Implement detailed perft fo Kindergarten Move Generator. (like checkmate count, enpassant count vs.vs.)
+  - Detect zugzwang for Null Move Pruning.
+  - Implement verified Null Move Pruning. 
+  - Do Not Terminate search at odd plies.
+  - Do two ply increment in Transposition table!!!
+    - Do two ply increment in Transposition table!!!
+      - Do two ply increment in Transposition table!!!
+        - Do two ply increment in Transposition table!!!
+  - Asymmetric Evaluation
+  - Odd-Even Effect
+  - Implement fractional plies!
+  - Compare performances of &= x - 1 and &= ~(1 << x)
+  - If we use C++ then there is a method called__builtin_ctzll . It does (1L << i) for you for free.
+ [OKEY] - optimize Transformer methods.
+ [OKEY] - Write unit test for Transformer class.
+ [OKEY] - write pawn attack lookup. Especially for Legality class.
+  - Use Java's fantastic Assertion.
+  	=> in doMove function, the captured piece cannot be KING.
+  	=> in doMove function, the captured piece cannot be friendly Piece.
+  	=> in doMove function, calculate cached datas and compare them with cache. They have to be equal.
+  	=> For testing purpose, write move validator for TT Best move.
+  - Implement game phasing.
+  - Implement pure switch case methods. Instead of calculations.
+  - Implement Incrementaly updated friendly, occupied and enemy pieces. do not calculate on each iteration.
+  - Implement pinned and discovered pieces.
+  - Write move validator! for killer moves, do not generate them, simply validate them.
+  - Write class that holds detailed data about search result called Statistics. pawnHashHitCount vs.vs. NullMoveHits, NullMoveMiss etc. tthit, ttmiss,
+  - while probing scores from TT, correct scores if MATE_BOUND exceeds. Regarding distance + MATE_SCORE.
+  - TRY to generate white and black pawn moves in a seperate manner.
+  - implement immutable classes for possible MultiThreading issues.
+  - Review all code. (bot and ui included.) (Need some caching. especially in UI side.)
+  - Cache UI icons. (Cell.java) (new File)
+  - Cache Timer objects. (PieceEffects.java) (new Timer)
+  - maintain a material key for draw by material detection! this is very very important issue!!!
+  - implement uci protocol to play tournaments with popular engines.
+  - implement castling rights as byte or int instead of byte array. (For speed up.)
+  - Remove King material evaluation cause there is always 1 king per side.
+  - There is difference between FEN standart and POLYGLOT standart about enpassant capturing. What is correct way? What are other engines do?
+  - There may be easy way to calculate enpassant target. Like PreCalculated table.
+ [OKEY] - Correct zobrist hashing when double push occurs if ((EngineConstants.PAWN_ATTACK_LOOKUP[side][epTarget] & bitboard[opSide | EngineConstants.PAWN]) != 0)
+  - Avoid class variables. use method variables amap. (e.g. in Legality.java class there are redundant class variables called rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup)
+  - remove unnecessary method parameters in negamax framework. like previousmove, firstmove.
+  - Rewrite opening book utility with Binary Search algorithm. It will be much faster IMHO.
+  - Rewrite openingbook with Random insteadof SecureRandom.
+  - Prepare large opening book. (ENORMOUS)
+  - increase max heap size. and compare performances. (-Xms512m -Xmx4g)
+  - Increase TT size.
+  - Adjust timecontroller thread frequency.
+  - Change evaluation function as setwise calculations.
+ 

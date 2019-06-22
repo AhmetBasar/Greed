@@ -1,0 +1,47 @@
+ /**********************************************
+ * Greed, a chess engine written in java.
+ * Copyright (C) 2019 Ahmet Baþar
+ * 
+ * This file is part of Greed.
+ * 
+ * Greed is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Greed is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Greed.  If not, see <https://www.gnu.org/licenses/>.
+ **********************************************/
+ 
+ // https://www.chessprogramming.org/Engine_Testing
+ 
+ [OKEY] - Implement test position testing. like Bratko-Kopec Test, Kaufman Test WAC(Win At Chess)
+ - Implement Elo Rating Tournament engine.
+ [OKEY] - Implement test suites for Move generation more smartly.
+ - When debugging, use TT to see position evaluation/refutation etc.
+ - Implement MTD(f)
+ [OKEY] - Make symmetry test to evaluation function.
+ [OKEY] - Run tactical test in every change. Like WAC test. 5 sec/move
+ - Check how often beta cutoff occurs(ON THE FÝRST MOVE!). to check quality of move ordering.
+ - Implement game storage framework. Database or Filesystem. Store detailed info about games. very detailed..
+ - Calculate branching factor.
+ [OKEY] - Implement NullMovePruning testsuites.
+ - It is important to know when fail high, early or late?
+ - How often re-research does improve alpha or not.
+ - TT statisticts, how often hits, fill level etc.
+ - if depth > 7 then R=3 test it.
+ - Implement built in simple opening book! and play same style tournaments. same openings.
+ [OKEY] - There are several classical and new developed test-position suites available.
+ [OKEY] - Zugzwang test suite.
+ [OKEY] - Passed pawn test suite.
+ - End Game test suite :)
+ - Opening suites - Bank from gerd isenberg.
+ - Increasing R with Depth
+ - Use transposition table in perft function to validate TT works correctly.
+ - Implement assertion mechanism such as after undoMove compare zobrist key to be reset.
+ - analyse with JVM profiler. (Heap and Thread dumps)
