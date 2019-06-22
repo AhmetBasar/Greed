@@ -19,7 +19,7 @@
  **********************************************/
 package chess.database;
 
-public interface DbConstants {
+public interface StorageConstants {
 	
 	public interface Keys{
 		String CONTRAST = "CONTRAST";

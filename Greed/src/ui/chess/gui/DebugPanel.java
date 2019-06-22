@@ -31,7 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
-import chess.database.DbConstants;
+import chess.database.StorageConstants;
 import chess.debug.DebugUtility;
 import chess.debug.PerformanceTesting;
 import chess.debug.PerformanceTestingSimple;
@@ -492,8 +492,8 @@ public class DebugPanel extends JPanel{
 		jtSearchDepth.setSize(35, 25);
 		jtSearchDepth.setLocation(100, 40);
     	int preferredDepth = 5;
-    	if(base.getGamePlay().getPreferences().containsKey(DbConstants.Keys.DEPTH)){
-    		preferredDepth = Integer.parseInt(base.getGamePlay().getPreferences().get(DbConstants.Keys.DEPTH));
+    	if(base.getGamePlay().getPreferences().containsKey(StorageConstants.Keys.DEPTH)){
+    		preferredDepth = Integer.parseInt(base.getGamePlay().getPreferences().get(StorageConstants.Keys.DEPTH));
     	}
 		jtSearchDepth.setText(String.valueOf(preferredDepth));
 		add(jtSearchDepth);

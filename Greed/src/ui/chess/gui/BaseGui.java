@@ -33,7 +33,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import chess.database.DbConstants;
+import chess.database.StorageConstants;
 import chess.game.GamePlay;
 
 public class BaseGui {
@@ -75,17 +75,17 @@ public class BaseGui {
 		mainOuterFrame.setSize(730, 490);
 		int xLoc = 700;
 		int yLoc = 300;
-		if(gamePlay.getPreferences().containsKey(DbConstants.Keys.XLOCATION)){
-			xLoc = Integer.parseInt(gamePlay.getPreferences().get(DbConstants.Keys.XLOCATION));
-			yLoc = Integer.parseInt(gamePlay.getPreferences().get(DbConstants.Keys.YLOCATION));
+		if(gamePlay.getPreferences().containsKey(StorageConstants.Keys.XLOCATION)){
+			xLoc = Integer.parseInt(gamePlay.getPreferences().get(StorageConstants.Keys.XLOCATION));
+			yLoc = Integer.parseInt(gamePlay.getPreferences().get(StorageConstants.Keys.YLOCATION));
 		}
 		mainOuterFrame.setLocation(xLoc, yLoc);
 		mainOuterFrame.addWindowListener(new java.awt.event.WindowAdapter() {
 		    @Override
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
 				try{
-					gamePlay.getDbManager().save(DbConstants.Keys.XLOCATION, String.valueOf(mainOuterFrame.getX()));
-					gamePlay.getDbManager().save(DbConstants.Keys.YLOCATION, String.valueOf(mainOuterFrame.getY()));
+					gamePlay.getDbManager().save(StorageConstants.Keys.XLOCATION, String.valueOf(mainOuterFrame.getX()));
+					gamePlay.getDbManager().save(StorageConstants.Keys.YLOCATION, String.valueOf(mainOuterFrame.getY()));
 				} catch(Exception e) {
 					e.printStackTrace();					
 				}
@@ -146,8 +146,8 @@ public class BaseGui {
 		    @Override
 		    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
 				try{
-					getGamePlay().getDbManager().save(DbConstants.Keys.DEPTH, String.valueOf(debugPanel.getSearchDepth()));
-					getGamePlay().getPreferences().put(DbConstants.Keys.DEPTH, String.valueOf(debugPanel.getSearchDepth()));
+					getGamePlay().getDbManager().save(StorageConstants.Keys.DEPTH, String.valueOf(debugPanel.getSearchDepth()));
+					getGamePlay().getPreferences().put(StorageConstants.Keys.DEPTH, String.valueOf(debugPanel.getSearchDepth()));
 				} catch(Exception ex) {
 					ex.printStackTrace();
 				}
@@ -175,16 +175,16 @@ public class BaseGui {
 				try {
 					
 					
-					getGamePlay().getDbManager().save(DbConstants.Keys.TESTING_ENGINE_DEPTH, String.valueOf(testingPanel.getJtEngineDepth()));
-					getGamePlay().getPreferences().put(DbConstants.Keys.TESTING_ENGINE_DEPTH, String.valueOf(testingPanel.getJtEngineDepth()));
+					getGamePlay().getDbManager().save(StorageConstants.Keys.TESTING_ENGINE_DEPTH, String.valueOf(testingPanel.getJtEngineDepth()));
+					getGamePlay().getPreferences().put(StorageConstants.Keys.TESTING_ENGINE_DEPTH, String.valueOf(testingPanel.getJtEngineDepth()));
 					
-					getGamePlay().getDbManager().save(DbConstants.Keys.TESTING_ENGINE_PACKAGE, String.valueOf(testingPanel.getJtEnginePackage()));
-					getGamePlay().getPreferences().put(DbConstants.Keys.TESTING_ENGINE_PACKAGE, String.valueOf(testingPanel.getJtEnginePackage()));
+					getGamePlay().getDbManager().save(StorageConstants.Keys.TESTING_ENGINE_PACKAGE, String.valueOf(testingPanel.getJtEnginePackage()));
+					getGamePlay().getPreferences().put(StorageConstants.Keys.TESTING_ENGINE_PACKAGE, String.valueOf(testingPanel.getJtEnginePackage()));
 					
-					getGamePlay().getDbManager().save(DbConstants.Keys.TESTING_ENGINE_CLASS_1, String.valueOf(testingPanel.getEngineClass1()));
-					getGamePlay().getPreferences().put(DbConstants.Keys.TESTING_ENGINE_CLASS_1, String.valueOf(testingPanel.getEngineClass1()));
-					getGamePlay().getDbManager().save(DbConstants.Keys.TESTING_ENGINE_CLASS_2, String.valueOf(testingPanel.getEngineClass2()));
-					getGamePlay().getPreferences().put(DbConstants.Keys.TESTING_ENGINE_CLASS_2, String.valueOf(testingPanel.getEngineClass2()));
+					getGamePlay().getDbManager().save(StorageConstants.Keys.TESTING_ENGINE_CLASS_1, String.valueOf(testingPanel.getEngineClass1()));
+					getGamePlay().getPreferences().put(StorageConstants.Keys.TESTING_ENGINE_CLASS_1, String.valueOf(testingPanel.getEngineClass1()));
+					getGamePlay().getDbManager().save(StorageConstants.Keys.TESTING_ENGINE_CLASS_2, String.valueOf(testingPanel.getEngineClass2()));
+					getGamePlay().getPreferences().put(StorageConstants.Keys.TESTING_ENGINE_CLASS_2, String.valueOf(testingPanel.getEngineClass2()));
 				} catch(Exception ex) {
 					ex.printStackTrace();
 				}

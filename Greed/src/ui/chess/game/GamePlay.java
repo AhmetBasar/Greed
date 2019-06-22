@@ -28,7 +28,6 @@ import javax.swing.SwingUtilities;
 import chess.bot.KeyListenerGeneric;
 import chess.bot.Utility;
 import chess.database.Storage;
-import chess.database.DbConstants;
 import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
 import chess.engine.LegalityV4;

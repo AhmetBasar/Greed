@@ -32,7 +32,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import chess.database.DbConstants;
+import chess.database.StorageConstants;
 import chess.engine.EngineConstants;
 import chess.engine.ISearchableV2;
 import chess.engine.SearchParameters;
@@ -174,10 +174,10 @@ public class ControlPanel extends JPanel {
 		add(jbSuggestMove1);
 		jtEngineClass1 = new JTextField();
 		jtEngineClass1.setSize(250, 25);
-		jtEngineClass1.setText(getClassNameFromDb(DbConstants.Keys.ENGINE_CLASS_1));
+		jtEngineClass1.setText(getClassNameFromDb(StorageConstants.Keys.ENGINE_CLASS_1));
 		jtEngineClass1.setLocation(10, 150);
 		add(jtEngineClass1);
-		jtEngineClass1.addFocusListener(new ClassNameFocusListener(base, jtEngineClass1, jbSuggestMove1, DbConstants.Keys.ENGINE_CLASS_1));
+		jtEngineClass1.addFocusListener(new ClassNameFocusListener(base, jtEngineClass1, jbSuggestMove1, StorageConstants.Keys.ENGINE_CLASS_1));
 		jbSuggestMove1.setText(getFormattedClassName(jtEngineClass1.getText()));
 		decideButtonActivity(jbSuggestMove1, jtEngineClass1.getText());
 		jbSuggestMove1.addActionListener(new SuggestMoveActionListener(base, gamePlay, debugPanel, jtEngineClass1));
@@ -194,10 +194,10 @@ public class ControlPanel extends JPanel {
 		add(jbSuggestMove2);
 		jtEngineClass2 = new JTextField();
 		jtEngineClass2.setSize(250, 25);
-		jtEngineClass2.setText(getClassNameFromDb(DbConstants.Keys.ENGINE_CLASS_2));
+		jtEngineClass2.setText(getClassNameFromDb(StorageConstants.Keys.ENGINE_CLASS_2));
 		jtEngineClass2.setLocation(10, 230);
 		add(jtEngineClass2);
-		jtEngineClass2.addFocusListener(new ClassNameFocusListener(base, jtEngineClass2, jbSuggestMove2, DbConstants.Keys.ENGINE_CLASS_2));
+		jtEngineClass2.addFocusListener(new ClassNameFocusListener(base, jtEngineClass2, jbSuggestMove2, StorageConstants.Keys.ENGINE_CLASS_2));
 		jbSuggestMove2.setText(getFormattedClassName(jtEngineClass2.getText()));
 		decideButtonActivity(jbSuggestMove2, jtEngineClass2.getText());
 		jbSuggestMove2.addActionListener(new SuggestMoveActionListener(base, gamePlay, debugPanel, jtEngineClass2));
@@ -212,10 +212,10 @@ public class ControlPanel extends JPanel {
 		add(jbSuggestMove3);
 		jtEngineClass3 = new JTextField();
 		jtEngineClass3.setSize(250, 25);
-		jtEngineClass3.setText(getClassNameFromDb(DbConstants.Keys.ENGINE_CLASS_3));
+		jtEngineClass3.setText(getClassNameFromDb(StorageConstants.Keys.ENGINE_CLASS_3));
 		jtEngineClass3.setLocation(10, 310);
 		add(jtEngineClass3);
-		jtEngineClass3.addFocusListener(new ClassNameFocusListener(base, jtEngineClass3, jbSuggestMove3, DbConstants.Keys.ENGINE_CLASS_3));
+		jtEngineClass3.addFocusListener(new ClassNameFocusListener(base, jtEngineClass3, jbSuggestMove3, StorageConstants.Keys.ENGINE_CLASS_3));
 		jbSuggestMove3.setText(getFormattedClassName(jtEngineClass3.getText()));
 		decideButtonActivity(jbSuggestMove3, jtEngineClass3.getText());
 		jbSuggestMove3.addActionListener(new SuggestMoveActionListener(base, gamePlay, debugPanel, jtEngineClass3));

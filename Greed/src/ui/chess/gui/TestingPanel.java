@@ -31,7 +31,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import chess.database.DbConstants;
+import chess.database.StorageConstants;
 import chess.engine.EngineConstants;
 import chess.engine.ISearchableV2;
 import chess.engine.SearchParameters;
@@ -149,13 +149,13 @@ public class TestingPanel extends JPanel{
 		
 		jtEnginePackage = new JTextField();
 		jtEnginePackage.setSize(250, 25);
-		jtEnginePackage.setText(base.getClassNameFromDb(DbConstants.Keys.TESTING_ENGINE_PACKAGE));
+		jtEnginePackage.setText(base.getClassNameFromDb(StorageConstants.Keys.TESTING_ENGINE_PACKAGE));
 		jtEnginePackage.setLocation(75, 222);
 		add(jtEnginePackage);
 		
 		jtEngineClass1 = new JTextField();
 		jtEngineClass1.setSize(250, 25);
-		jtEngineClass1.setText(base.getClassNameFromDb(DbConstants.Keys.TESTING_ENGINE_CLASS_1));
+		jtEngineClass1.setText(base.getClassNameFromDb(StorageConstants.Keys.TESTING_ENGINE_CLASS_1));
 		jtEngineClass1.setLocation(75, 10);
 		add(jtEngineClass1);
 		
@@ -166,7 +166,7 @@ public class TestingPanel extends JPanel{
 		
 		jtEngineClass2 = new JTextField();
 		jtEngineClass2.setSize(250, 25);
-		jtEngineClass2.setText(base.getClassNameFromDb(DbConstants.Keys.TESTING_ENGINE_CLASS_2));
+		jtEngineClass2.setText(base.getClassNameFromDb(StorageConstants.Keys.TESTING_ENGINE_CLASS_2));
 		jtEngineClass2.setLocation(75, 50);
 		add(jtEngineClass2);
 		
@@ -254,7 +254,7 @@ public class TestingPanel extends JPanel{
 		
 		jtEngineDepth = new JTextField();
 		jtEngineDepth.setSize(90, 25);
-		jtEngineDepth.setText(base.getClassNameFromDb(DbConstants.Keys.TESTING_ENGINE_DEPTH));
+		jtEngineDepth.setText(base.getClassNameFromDb(StorageConstants.Keys.TESTING_ENGINE_DEPTH));
 		jtEngineDepth.setLocation(75, 150);
 		add(jtEngineDepth);
 		

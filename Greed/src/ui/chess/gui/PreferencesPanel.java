@@ -26,7 +26,7 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import chess.database.DbConstants;
+import chess.database.StorageConstants;
 
 public class PreferencesPanel extends javax.swing.JPanel {
 	
@@ -43,8 +43,8 @@ public class PreferencesPanel extends javax.swing.JPanel {
 
     private void initComponents() {
     	int preferredValue = 100;
-    	if(base.getGamePlay().getPreferences().containsKey(DbConstants.Keys.CONTRAST)){
-    		preferredValue = Integer.parseInt(base.getGamePlay().getPreferences().get(DbConstants.Keys.CONTRAST));
+    	if(base.getGamePlay().getPreferences().containsKey(StorageConstants.Keys.CONTRAST)){
+    		preferredValue = Integer.parseInt(base.getGamePlay().getPreferences().get(StorageConstants.Keys.CONTRAST));
     	}
     	base.getMainOuterFrame().setOpacity(((float)preferredValue) / (100f));
     	setLayout(null);
@@ -94,8 +94,8 @@ public class PreferencesPanel extends javax.swing.JPanel {
     
     public void saveChanges(){
 		try{
-			base.getGamePlay().getDbManager().save(DbConstants.Keys.CONTRAST, String.valueOf(getContrastSlider().getValue()));
-			base.getGamePlay().getPreferences().put(DbConstants.Keys.CONTRAST, String.valueOf(getContrastSlider().getValue()));
+			base.getGamePlay().getDbManager().save(StorageConstants.Keys.CONTRAST, String.valueOf(getContrastSlider().getValue()));
+			base.getGamePlay().getPreferences().put(StorageConstants.Keys.CONTRAST, String.valueOf(getContrastSlider().getValue()));
 			base.getPreferencesFrame().setVisible(false);
 		} catch(Exception ex) {
 			ex.printStackTrace();
@@ -104,8 +104,8 @@ public class PreferencesPanel extends javax.swing.JPanel {
     
     public void cancelChanges(){
     	int preferredValue = 100;
-    	if(base.getGamePlay().getPreferences().containsKey(DbConstants.Keys.CONTRAST)){
-    		preferredValue = Integer.parseInt(base.getGamePlay().getPreferences().get(DbConstants.Keys.CONTRAST));
+    	if(base.getGamePlay().getPreferences().containsKey(StorageConstants.Keys.CONTRAST)){
+    		preferredValue = Integer.parseInt(base.getGamePlay().getPreferences().get(StorageConstants.Keys.CONTRAST));
     	}
     	base.getMainOuterFrame().setOpacity(((float)preferredValue) / (100f));
     	contrastSlider.setValue(preferredValue);
