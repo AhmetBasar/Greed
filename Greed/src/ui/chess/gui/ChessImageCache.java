@@ -6,6 +6,8 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import chess.engine.EngineConstants;
+
 public class ChessImageCache {
 
 	private static volatile ChessImageCache instance;
@@ -26,7 +28,7 @@ public class ChessImageCache {
 	}
 
 	private ChessImageCache() {
-		for (int i = 2; i < cache.length; i++) {
+		for (int i = EngineConstants.WHITE_PAWN; i < cache.length; i++) {
 			try {
 				cache[i] = ImageIO.read(new File("src/ui/images/" + imageNames[i] + ".png"));
 			} catch (IOException e) {
@@ -36,6 +38,9 @@ public class ChessImageCache {
 	}
 
 	public BufferedImage get(int index) {
+		if (index < EngineConstants.WHITE_PAWN) {
+			throw new IllegalArgumentException();
+		}
 		return cache[index];
 	}
 
