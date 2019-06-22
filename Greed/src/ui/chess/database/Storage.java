@@ -27,11 +27,11 @@ import java.util.Properties;
 
 import chess.util.Utility;
 
-public class DatabaseManager {
+public class Storage {
 
 	private final Properties properties = new Properties();
 
-	public DatabaseManager() {
+	public Storage() {
 		InputStream is = null;
 		try {
 			is = getClass().getClassLoader().getResourceAsStream("Storage.properties");

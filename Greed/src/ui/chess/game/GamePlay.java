@@ -27,7 +27,7 @@ import javax.swing.SwingUtilities;
 
 import chess.bot.KeyListenerGeneric;
 import chess.bot.Utility;
-import chess.database.DatabaseManager;
+import chess.database.Storage;
 import chess.database.DbConstants;
 import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
@@ -52,7 +52,7 @@ public class GamePlay {
 	private byte[][] rookPositions = { { 0, 7 }, { 56, 63 } };
 	public static long zobristKey;
 	private int fiftyMoveCounter = 0;
-	private DatabaseManager dbManager;
+	private Storage dbManager;
 	private HashMap<String, String> preferences = new HashMap<String, String>();
 	private LegalityV4 legality = new LegalityV4();
 	
@@ -565,7 +565,7 @@ public class GamePlay {
 	}
 	
 	private void initDatabase() throws Exception {
-		dbManager = new DatabaseManager();
+		dbManager = new Storage();
 		preferences = dbManager.retrievePreferences();
 	}
 	
@@ -573,7 +573,7 @@ public class GamePlay {
 		return preferences;
 	}
 	
-	public DatabaseManager getDbManager() {
+	public Storage getDbManager() {
 		return dbManager;
 	}
 	
