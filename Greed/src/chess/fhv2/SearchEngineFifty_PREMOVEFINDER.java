@@ -27,7 +27,6 @@ import java.util.Set;
 
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
-import chess.engine.EvaluationAdvancedV4;
 import chess.engine.IBoard;
 import chess.engine.ISearchablePreMove;
 import chess.engine.LegalityV4;
@@ -36,6 +35,7 @@ import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.engine.SearchResult;
 import chess.engine.TranspositionElement;
 import chess.engine.TranspositionTable;
+import chess.evaluation.EvaluationAdvancedV4;
 import chess.gui.GuiConstants;
 
 // http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm

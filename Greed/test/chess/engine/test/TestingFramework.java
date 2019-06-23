@@ -39,7 +39,7 @@ public class TestingFramework {
 				Class<?> klass = Class.forName(packageName + "." + className);
 				Method method = klass.getDeclaredMethod("testAll");
 				method.invoke(null);
-				System.out.println(Utility.leftSpacePad(className, 20) + " successfull.");
+				System.out.println(Utility.leftSpacePad(className, 30) + " successfull.");
 				
 			}
 		}

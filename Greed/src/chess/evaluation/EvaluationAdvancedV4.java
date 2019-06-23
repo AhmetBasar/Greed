@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Greed.  If not, see <https://www.gnu.org/licenses/>.
  **********************************************/
-package chess.engine;
+package chess.evaluation;
 
+import chess.engine.EngineConstants;
 import chess.gui.GuiConstants;
 
 public class EvaluationAdvancedV4 {

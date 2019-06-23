@@ -24,7 +24,6 @@ import java.util.Map;
 
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
-import chess.engine.EvaluationAdvancedV4;
 import chess.engine.IBoard;
 import chess.engine.ISearchableV2;
 import chess.engine.LegalityV4;
@@ -35,6 +34,7 @@ import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.engine.TranspositionElement;
 import chess.engine.TranspositionTable;
+import chess.evaluation.EvaluationAdvancedV4;
 import chess.gui.GuiConstants;
 
 //http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm

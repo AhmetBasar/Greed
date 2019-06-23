@@ -21,8 +21,8 @@ package chess.engine.test;
 
 import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
-import chess.engine.EvaluationAdvancedV4;
 import chess.engine.Transformer;
+import chess.evaluation.EvaluationAdvancedV4;
 import chess.gui.FenOperations;
 
 public class EvaluationTest {
