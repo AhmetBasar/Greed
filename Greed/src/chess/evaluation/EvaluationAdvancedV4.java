@@ -28,6 +28,7 @@ public class EvaluationAdvancedV4 {
 	private static final int BONUS_CASTLING_RIGHT = 10;
 	private static final int PENALTY_DOUBLED_PAWN = 10;
 	private static final int PENALTY_ISOLATED_PAWN = 20;
+	private static final int BONUS_PASSED_PAWN = 20;
 	private static final int BONUS_ROOK_ON_SEMI_OPEN_FILE = 10;
 //	private static final int BONUS_ROOK_ON_OPEN_FILE = 10;
 	private static final int BONUS_ROOK_BATTERY = 10;
@@ -38,17 +39,25 @@ public class EvaluationAdvancedV4 {
 		int whiteTotalPieceValue = 0;
 		int blackTotalPieceValue = 0;
 		
-		int wpCount = Long.bitCount(bitboard[EngineConstants.WHITE_PAWN]);
+		long wp = bitboard[EngineConstants.WHITE_PAWN];
+		long bp = bitboard[EngineConstants.BLACK_PAWN];
+		
+		int wpCount = Long.bitCount(wp);
 		int wkCount = Long.bitCount(bitboard[EngineConstants.WHITE_KNIGHT]);
 		int wbCount = Long.bitCount(bitboard[EngineConstants.WHITE_BISHOP]);
 		int wrCount = Long.bitCount(bitboard[EngineConstants.WHITE_ROOK]);
 		int wqCount = Long.bitCount(bitboard[EngineConstants.WHITE_QUEEN]);
 		
-		int bpCount = Long.bitCount(bitboard[EngineConstants.BLACK_PAWN]);
+		int bpCount = Long.bitCount(bp);
 		int bkCount = Long.bitCount(bitboard[EngineConstants.BLACK_KNIGHT]);
 		int bbCount = Long.bitCount(bitboard[EngineConstants.BLACK_BISHOP]);
 		int brCount = Long.bitCount(bitboard[EngineConstants.BLACK_ROOK]);
 		int bqCount = Long.bitCount(bitboard[EngineConstants.BLACK_QUEEN]);
+
+		/**
+		 * Passed pawn bonus.
+		 **/
+		eval += (Long.bitCount(PassedPawn.whitePassedPawns(wp, bp)) - Long.bitCount(PassedPawn.blackPassedPawns(bp, wp))) * BONUS_PASSED_PAWN;
 		
 		whiteTotalPieceValue = wkCount * EngineConstants.WHITE_KNIGHT_V + wbCount * EngineConstants.WHITE_BISHOP_V + wrCount * EngineConstants.WHITE_ROOK_V + wqCount * EngineConstants.WHITE_QUEEN_V;
 		blackTotalPieceValue = bkCount * EngineConstants.BLACK_KNIGHT_V + bbCount * EngineConstants.BLACK_BISHOP_V + brCount * EngineConstants.BLACK_ROOK_V + bqCount * EngineConstants.BLACK_QUEEN_V;
