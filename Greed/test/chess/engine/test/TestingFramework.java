@@ -22,6 +22,8 @@ package chess.engine.test;
 import java.io.File;
 import java.lang.reflect.Method;
 
+import chess.util.Utility;
+
 public class TestingFramework {
 	private static final String TEST_CLASS_SUFFIX = "Test.java";
 	private static final String TEST_FOLDER_NAME = "test";
@@ -37,7 +39,8 @@ public class TestingFramework {
 				Class<?> klass = Class.forName(packageName + "." + className);
 				Method method = klass.getDeclaredMethod("testAll");
 				method.invoke(null);
-				System.out.println(className + " successfull.");
+				System.out.println(Utility.leftSpacePad(className, 20) + " successfull.");
+				
 			}
 		}
 		long endTime = System.currentTimeMillis();

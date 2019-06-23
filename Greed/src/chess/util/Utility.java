@@ -92,4 +92,7 @@ public class Utility {
 		}
 	}
 	
+	public static String leftSpacePad(String str, int spaceCount) {
+		return String.format("%" + spaceCount + "s", str);
+	}
 }
