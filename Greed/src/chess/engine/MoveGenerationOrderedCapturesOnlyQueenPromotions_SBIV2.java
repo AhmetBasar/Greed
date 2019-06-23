@@ -19,8 +19,6 @@
  **********************************************/
 package chess.engine;
 
-import chess.debug.IBoard;
-
 public class MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 {
 	private int[] pushDiffs = { 8, 64 - 8 };
 	private long[] promotionMask = { EngineConstants.ROW_8, EngineConstants.ROW_1 };

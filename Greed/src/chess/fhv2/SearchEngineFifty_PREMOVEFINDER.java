@@ -25,10 +25,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import chess.debug.IBoard;
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.EvaluationAdvancedV4;
+import chess.engine.IBoard;
 import chess.engine.ISearchablePreMove;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;

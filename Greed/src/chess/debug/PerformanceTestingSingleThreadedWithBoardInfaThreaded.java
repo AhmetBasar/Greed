@@ -20,6 +20,7 @@
 package chess.debug;
 
 import chess.engine.BoardFactory;
+import chess.engine.IBoard;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGeneration;
 import chess.engine.Transformer;

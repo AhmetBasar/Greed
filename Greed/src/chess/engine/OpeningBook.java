@@ -27,7 +27,6 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-import chess.debug.IBoard;
 import chess.util.Utility;
 
 public class OpeningBook {

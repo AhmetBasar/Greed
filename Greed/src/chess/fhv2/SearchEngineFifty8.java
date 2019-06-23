@@ -22,10 +22,10 @@ package chess.fhv2;
 import java.util.Arrays;
 import java.util.Map;
 
-import chess.debug.IBoard;
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.EvaluationAdvancedV4;
+import chess.engine.IBoard;
 import chess.engine.ISearchableV2;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;

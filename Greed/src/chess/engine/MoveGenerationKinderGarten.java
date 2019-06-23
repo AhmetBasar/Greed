@@ -19,8 +19,6 @@
  **********************************************/
 package chess.engine;
 
-import chess.debug.IBoard;
-
 // https://www.chessprogramming.org/Kindergarten_Bitboards
 public class MoveGenerationKinderGarten {
 	private int[] pushDiffs = { 8, 64 - 8 };
