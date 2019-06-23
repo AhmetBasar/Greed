@@ -19,74 +19,53 @@
  **********************************************/
 package chess.evaluation;
 
-import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
-import chess.engine.Transformer;
 
 // https://www.chessprogramming.org/Isolated_Pawns_(Bitboards)
 public class IsolatedPawn {
-	
-	public static void main(String[] args) {
-		testAll();
-	}
-	
-	public static void testAll() {
-		for (int i = 0; i < 1000000; i++) {
-			byte[][] sourceBoard = DebugUtility.generateRandomBoard();
-			long[] bitboard = Transformer.getBitboardStyl(sourceBoard);	
-			int evalWithSquareCentric = evaluateIsolatedPawnsSquareCentric(bitboard);
-			int evalWithSetWise = evaluateIsolatedPawnsSetWise(bitboard);
-			if (evalWithSquareCentric != evalWithSetWise) {
-				throw new RuntimeException("Not Equal.");
-			}
-		}
-		System.out.println("SuccessFull");
-	}
-	
+
 	private static final int PENALTY_ISOLATED_PAWN = 10;
-	
+
 	public static int evaluateIsolatedPawnsSquareCentric(long[] bitboard) {
-		
+
 		int eval = 0;
-		
+
 		long whitePawns = bitboard[EngineConstants.WHITE_PAWN];
 		long blackPawns = bitboard[EngineConstants.BLACK_PAWN];
-		
+
 		int trailingZeros;
-		long fromBitboard=bitboard[EngineConstants.WHITE_PAWN];
-		while((trailingZeros = Long.numberOfTrailingZeros(fromBitboard))!=64){
-			
+		long fromBitboard = bitboard[EngineConstants.WHITE_PAWN];
+		while ((trailingZeros = Long.numberOfTrailingZeros(fromBitboard)) != 64) {
+
 			if ((EngineConstants.neighborFiles[trailingZeros] & whitePawns) == 0) {
 				eval -= PENALTY_ISOLATED_PAWN;
 			}
-			
-			fromBitboard=fromBitboard & ~(1L << trailingZeros);
+
+			fromBitboard = fromBitboard & ~(1L << trailingZeros);
 		}
-		
-		fromBitboard=bitboard[EngineConstants.BLACK_PAWN];
-		while((trailingZeros = Long.numberOfTrailingZeros(fromBitboard))!=64){
-			
+
+		fromBitboard = bitboard[EngineConstants.BLACK_PAWN];
+		while ((trailingZeros = Long.numberOfTrailingZeros(fromBitboard)) != 64) {
+
 			// Isolated Pawns
 			if ((EngineConstants.neighborFiles[trailingZeros] & blackPawns) == 0) {
 				eval += PENALTY_ISOLATED_PAWN;
 			}
-			
-			fromBitboard=fromBitboard & ~(1L << trailingZeros);
+
+			fromBitboard = fromBitboard & ~(1L << trailingZeros);
 		}
-		
-		
+
 		return eval;
-		
+
 	}
-	
-	public static int evaluateIsolatedPawnsSetWise(long[] bitboard) {
+
+	public static int evaluateIsolatedPawnsSetWise(long whitePawns, long blackPawns) {
 		int eval = 0;
-		long whitePawns = bitboard[EngineConstants.WHITE_PAWN];
-		long blackPawns = bitboard[EngineConstants.BLACK_PAWN];
-		eval += (Long.bitCount(getIsolatedPawnCount(blackPawns)) - Long.bitCount(getIsolatedPawnCount(whitePawns))) * PENALTY_ISOLATED_PAWN;
+		eval += (Long.bitCount(getIsolatedPawnCount(blackPawns)) - Long.bitCount(getIsolatedPawnCount(whitePawns)))
+				* PENALTY_ISOLATED_PAWN;
 		return eval;
 	}
-	
+
 	public static long getIsolatedPawnCount(long bb) {
 		return noNeighborOnEastFile(bb) & noNeighborOnWestFile(bb);
 	}
