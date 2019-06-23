@@ -27,63 +27,20 @@ import chess.engine.Transformer;
 public class IsolatedPawn {
 	
 	public static void main(String[] args) {
-		
-		testCorrectness();
-		
-		testPerformance();
-		
+		testAll();
 	}
 	
-	public static void testPerformance() {
-		
-		for (int i = 0; i < 1000000; i++) {
-			byte[][] sourceBoard = DebugUtility.generateRandomBoard();
-			long[] bitboard = Transformer.getBitboardStyl(sourceBoard);
-			evaluateIsolatedPawnsSetWiseFast(bitboard);
-		}
-
-		// PERFORMANCE
-		long start = System.currentTimeMillis();
-		for (int i = 0; i < 1000000; i++) {
-			byte[][] sourceBoard = DebugUtility.generateRandomBoard();
-			long[] bitboard = Transformer.getBitboardStyl(sourceBoard);
-			evaluateIsolatedPawnsSetWise(bitboard);
-		}
-		long end = System.currentTimeMillis();
-		System.out.println("fark setwise = " + (end - start));
-
-		start = System.currentTimeMillis();
-		for (int i = 0; i < 1000000; i++) {
-			byte[][] sourceBoard = DebugUtility.generateRandomBoard();
-			long[] bitboard = Transformer.getBitboardStyl(sourceBoard);
-			evaluateIsolatedPawnsSquareCentric(bitboard);
-		}
-		end = System.currentTimeMillis();
-		System.out.println("fark centric = " + (end - start));
-		
-		start = System.currentTimeMillis();
-		for (int i = 0; i < 1000000; i++) {
-			byte[][] sourceBoard = DebugUtility.generateRandomBoard();
-			long[] bitboard = Transformer.getBitboardStyl(sourceBoard);
-			evaluateIsolatedPawnsSetWiseFast(bitboard);
-		}
-		end = System.currentTimeMillis();
-		System.out.println("fark fast = " + (end - start));
-
-	}
-	
-	public static void testCorrectness() {
-		// CORRECTNESS
+	public static void testAll() {
 		for (int i = 0; i < 1000000; i++) {
 			byte[][] sourceBoard = DebugUtility.generateRandomBoard();
 			long[] bitboard = Transformer.getBitboardStyl(sourceBoard);	
 			int evalWithSquareCentric = evaluateIsolatedPawnsSquareCentric(bitboard);
 			int evalWithSetWise = evaluateIsolatedPawnsSetWise(bitboard);
-			int fast = evaluateIsolatedPawnsSetWiseFast(bitboard);
-			if (evalWithSquareCentric != evalWithSetWise || evalWithSetWise != fast) {
+			if (evalWithSquareCentric != evalWithSetWise) {
 				throw new RuntimeException("Not Equal.");
 			}
 		}
+		System.out.println("SuccessFull");
 	}
 	
 	private static final int PENALTY_ISOLATED_PAWN = 10;
@@ -143,75 +100,10 @@ public class IsolatedPawn {
 	}
 
 	public static long westAttackFileFill(long bb) {
-		return westOne(fileFill(bb));
+		return BitboardUtility.westOne(BitboardUtility.fileFill(bb));
 	}
 
 	public static long eastAttackFileFill(long bb) {
-		return eastOne(fileFill(bb));
+		return BitboardUtility.eastOne(BitboardUtility.fileFill(bb));
 	}
-
-	public static long northFill(long bb) {
-		bb |= (bb << 8);
-		bb |= (bb << 16);
-		bb |= (bb << 32);
-		return bb;
-	}
-
-	public static long southFill(long bb) {
-		bb |= (bb >>> 8);
-		bb |= (bb >>> 16);
-		bb |= (bb >>> 32);
-		return bb;
-	}
-
-	public static long fileFill(long bb) {
-		return northFill(bb) | southFill(bb);
-	}
-
-	public static long eastOne(long bb) {
-		return (bb << 1) & ~EngineConstants.FILE_A;
-	}
-
-	public static long westOne(long bb) {
-		return (bb >>> 1) & ~EngineConstants.FILE_H;
-	}
-	
-	public static int evaluateIsolatedPawnsSetWiseFast(long[] bitboard) {
-		int eval = 0;
-		long whitePawns = bitboard[EngineConstants.WHITE_PAWN];
-		long blackPawns = bitboard[EngineConstants.BLACK_PAWN];
-		eval += (Long.bitCount(getIsolatedPawnCountFast(blackPawns)) - Long.bitCount(getIsolatedPawnCountFast(whitePawns))) * PENALTY_ISOLATED_PAWN;
-		return eval;
-	}
-	
-	public static long getIsolatedPawnCountFast(long bb) {
-		long bbOrig = bb;
-
-		// file fill
-		bb |= (bb << 8);
-		bb |= (bb << 16);
-		bb |= (bb << 32);
-		bb |= (bb >>> 8);
-		bb |= (bb >>> 16);
-		bb |= (bb >>> 32);
-		
-		long fileFill = bb;
-		
-		// westOne
-		bb = (bb >>> 1) & ~EngineConstants.FILE_H;
-		
-		// noNeighborOnEastFile
-		bb = bbOrig & ~bb;
-		
-		// eastOne
-		fileFill = (fileFill << 1) & ~EngineConstants.FILE_A;
-		
-		// noNeighborOnWestFile
-		fileFill = bbOrig & ~fileFill;
-		
-		// isolated pawn count
-		return bb & fileFill;
-	}
-	
-	
 }
