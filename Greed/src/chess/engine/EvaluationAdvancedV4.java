@@ -37,15 +37,20 @@ public class EvaluationAdvancedV4 {
 		int whiteTotalPieceValue = 0;
 		int blackTotalPieceValue = 0;
 		
-		int wkCount = 0;
-		int wbCount = 0;
-		int wrCount = 0;
-		int wqCount = 0;
+		int wpCount = Long.bitCount(bitboard[EngineConstants.WHITE_PAWN]);
+		int wkCount = Long.bitCount(bitboard[EngineConstants.WHITE_KNIGHT]);
+		int wbCount = Long.bitCount(bitboard[EngineConstants.WHITE_BISHOP]);
+		int wrCount = Long.bitCount(bitboard[EngineConstants.WHITE_ROOK]);
+		int wqCount = Long.bitCount(bitboard[EngineConstants.WHITE_QUEEN]);
 		
-		int bkCount = 0;
-		int bbCount = 0;
-		int brCount = 0;
-		int bqCount = 0;
+		int bpCount = Long.bitCount(bitboard[EngineConstants.BLACK_PAWN]);
+		int bkCount = Long.bitCount(bitboard[EngineConstants.BLACK_KNIGHT]);
+		int bbCount = Long.bitCount(bitboard[EngineConstants.BLACK_BISHOP]);
+		int brCount = Long.bitCount(bitboard[EngineConstants.BLACK_ROOK]);
+		int bqCount = Long.bitCount(bitboard[EngineConstants.BLACK_QUEEN]);
+		
+		whiteTotalPieceValue = wkCount * EngineConstants.WHITE_KNIGHT_V + wbCount * EngineConstants.WHITE_BISHOP_V + wrCount * EngineConstants.WHITE_ROOK_V + wqCount * EngineConstants.WHITE_QUEEN_V;
+		blackTotalPieceValue = bkCount * EngineConstants.BLACK_KNIGHT_V + bbCount * EngineConstants.BLACK_BISHOP_V + brCount * EngineConstants.BLACK_ROOK_V + bqCount * EngineConstants.BLACK_QUEEN_V;
 		
 		long whitePawns = bitboard[EngineConstants.WHITE_PAWN];
 		long blackPawns = bitboard[EngineConstants.BLACK_PAWN];
@@ -67,9 +72,6 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.WHITE_KNIGHT];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			
-			wkCount++;
-			whiteTotalPieceValue += EngineConstants.WHITE_KNIGHT_V;
 			eval += positionalValue[EngineConstants.WHITE_KNIGHT][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
@@ -78,9 +80,6 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.WHITE_BISHOP];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			
-			wbCount++;
-			whiteTotalPieceValue += EngineConstants.WHITE_BISHOP_V;
 			eval += positionalValue[EngineConstants.WHITE_BISHOP][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
@@ -89,9 +88,6 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.WHITE_ROOK];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			
-			wrCount++;
-			
 			/**
 			 * Bonus For Rook On Semi Open File.
 			 * */
@@ -101,7 +97,6 @@ public class EvaluationAdvancedV4 {
 			eval = eval - BONUS_ROOK_ON_SEMI_OPEN_FILE * Long.bitCount(file & whitePawns);
 			//
 			
-			whiteTotalPieceValue += EngineConstants.WHITE_ROOK_V;
 			eval += positionalValue[EngineConstants.WHITE_ROOK][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
@@ -109,9 +104,6 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.WHITE_QUEEN];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			
-			wqCount++;
-			whiteTotalPieceValue += EngineConstants.WHITE_QUEEN_V;
 			eval += positionalValue[EngineConstants.WHITE_QUEEN][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
@@ -133,9 +125,6 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.BLACK_KNIGHT];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			
-			bkCount++;
-			blackTotalPieceValue += EngineConstants.BLACK_KNIGHT_V;
 			eval += positionalValue[EngineConstants.BLACK_KNIGHT][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
@@ -143,9 +132,6 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.BLACK_BISHOP];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			
-			bbCount++;
-			blackTotalPieceValue += EngineConstants.BLACK_BISHOP_V;
 			eval += positionalValue[EngineConstants.BLACK_BISHOP][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
@@ -153,9 +139,6 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.BLACK_ROOK];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			
-			brCount++;
-			
 			/**
 			 * Bonus For Rook On Semi Open File.
 			 * */
@@ -165,7 +148,6 @@ public class EvaluationAdvancedV4 {
 			eval = eval + BONUS_ROOK_ON_SEMI_OPEN_FILE * Long.bitCount(file & blackPawns);
 			//
 			
-			blackTotalPieceValue += EngineConstants.BLACK_ROOK_V;
 			eval += positionalValue[EngineConstants.BLACK_ROOK][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
@@ -173,9 +155,6 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.BLACK_QUEEN];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			
-			bqCount++;
-			blackTotalPieceValue += EngineConstants.BLACK_QUEEN_V;
 			eval += positionalValue[EngineConstants.BLACK_QUEEN][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
@@ -275,13 +254,11 @@ public class EvaluationAdvancedV4 {
 		eval += (pawnCount - 1) * PENALTY_DOUBLED_PAWN;
 		
 
-		return  eval + EngineConstants.WHITE_PAWN_V 	* (Long.bitCount(bitboard[EngineConstants.WHITE_PAWN]) 		- Long.bitCount(bitboard[EngineConstants.BLACK_PAWN])) 		+ 
-				   		EngineConstants.WHITE_KNIGHT_V 	* (Long.bitCount(bitboard[EngineConstants.WHITE_KNIGHT]) 	- Long.bitCount(bitboard[EngineConstants.BLACK_KNIGHT]))	+
-				   		EngineConstants.WHITE_BISHOP_V 	* (Long.bitCount(bitboard[EngineConstants.WHITE_BISHOP]) 	- Long.bitCount(bitboard[EngineConstants.BLACK_BISHOP]))  	+
-				   		EngineConstants.WHITE_ROOK_V 	* (Long.bitCount(bitboard[EngineConstants.WHITE_ROOK]) 		- Long.bitCount(bitboard[EngineConstants.BLACK_ROOK]))  	+
-				   		EngineConstants.WHITE_QUEEN_V 	* (Long.bitCount(bitboard[EngineConstants.WHITE_QUEEN]) 	- Long.bitCount(bitboard[EngineConstants.BLACK_QUEEN]))  	+
-				   		EngineConstants.WHITE_KING_V 	* (Long.bitCount(bitboard[EngineConstants.WHITE_KING]) 		- Long.bitCount(bitboard[EngineConstants.BLACK_KING]))  	;
-		
+		return  eval + EngineConstants.WHITE_PAWN_V 	* (wpCount - bpCount) + 
+				   		EngineConstants.WHITE_KNIGHT_V 	* (wkCount - bkCount) +
+				   		EngineConstants.WHITE_BISHOP_V 	* (wbCount - bbCount) +
+				   		EngineConstants.WHITE_ROOK_V 	* (wrCount - brCount) +
+				   		EngineConstants.WHITE_QUEEN_V 	* (wqCount - bqCount);
 	}
 
 	// https://www.chessprogramming.org/Simplified_Evaluation_Function

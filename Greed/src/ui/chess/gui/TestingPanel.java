@@ -292,6 +292,7 @@ public class TestingPanel extends JPanel{
 			params.setTimeLimit(1L);
 			params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
 			params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
+			params.setBookName(null);
 			
 			searchResult = (SearchResult) method.invoke(obj, params);
 		} else {
