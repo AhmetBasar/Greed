@@ -19,6 +19,21 @@
  **********************************************/
 package chess.evaluation;
 
+/**
+ * https://www.chessprogramming.org/Passed_Pawns_(Bitboards)
+ **/
 public class PassedPawn {
+
+	public static long whitePassedPawns(long wp, long bp) {
+		long allFrontSpans = BitboardUtility.bFrontSpans(bp);
+		allFrontSpans |= BitboardUtility.eastOne(allFrontSpans) | BitboardUtility.westOne(allFrontSpans);
+		return wp & ~allFrontSpans;
+	}
+
+	public static long blackPassedPawns(long bp, long wp) {
+		long allFrontSpans = BitboardUtility.wFrontSpans(wp);
+		allFrontSpans |= BitboardUtility.eastOne(allFrontSpans) | BitboardUtility.westOne(allFrontSpans);
+		return bp & ~allFrontSpans;
+	}
 
 }
