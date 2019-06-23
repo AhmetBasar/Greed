@@ -42,7 +42,6 @@ public class IsolatedPawnTest {
 				throw new RuntimeException("Not Equal.");
 			}
 		}
-		System.out.println("SuccessFull");
 	}
 
 }

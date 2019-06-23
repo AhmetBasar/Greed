@@ -34,7 +34,6 @@ public class TransformerTest {
 		testRandomBoard();
 		testRIndexMap();
 		testIndexMap();
-		System.out.println("Successful.");
 	}
 
 	public static void testRandomBoard() {

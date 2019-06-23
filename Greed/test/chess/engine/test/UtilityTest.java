@@ -41,7 +41,6 @@ public class UtilityTest {
 		
 		testSplitList();
 		
-		System.out.println("Successful.");
 	}
 	
 	public static void testGetCountOfOccurrence() {

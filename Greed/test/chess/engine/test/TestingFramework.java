@@ -37,6 +37,7 @@ public class TestingFramework {
 				Class<?> klass = Class.forName(packageName + "." + className);
 				Method method = klass.getDeclaredMethod("testAll");
 				method.invoke(null);
+				System.out.println(className + " successfull.");
 			}
 		}
 		long endTime = System.currentTimeMillis();

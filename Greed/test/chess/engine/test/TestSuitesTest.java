@@ -40,12 +40,8 @@ public class TestSuitesTest {
 	}
 
 	public static void testAll() {
-		
 		//TODO test other suites.
-		
 		testWAC();
-
-		System.out.println("Successful.");
 	}
 
 	private static void testWAC() {

@@ -40,7 +40,6 @@ public class DebugUtilityTest {
 		
 		testGetItem();
 
-		System.out.println("Successful.");
 	}
 
 	public static void testReverseCastlingRights() {

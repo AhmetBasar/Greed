@@ -32,8 +32,6 @@ public class ZobristHashingPolyGlotTest {
 
 	public static void testAll() {
 		testGetZobristKey();
-
-		System.out.println("Successful.");
 	}
 
 	public static void testGetZobristKey() {

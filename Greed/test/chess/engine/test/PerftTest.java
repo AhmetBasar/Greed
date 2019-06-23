@@ -77,8 +77,6 @@ public class PerftTest {
 			executables.add(executable);
 		}
 		ThreadPool.getInstance().execute(executables, true);
-		
-		System.out.println("Successful.");
 	}
 
 }

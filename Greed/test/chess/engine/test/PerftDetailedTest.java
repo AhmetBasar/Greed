@@ -37,8 +37,6 @@ public class PerftDetailedTest {
 
 	public static void testAll() {
 		testPerft();
-
-		System.out.println("Successful.");
 	}
 
 	public static void testPerft() {

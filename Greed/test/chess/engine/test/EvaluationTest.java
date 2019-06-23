@@ -33,7 +33,6 @@ public class EvaluationTest {
 	
 	public static void testAll() throws Exception{
 		test();
-		System.out.println("Successful.");
 	}
 
 	private static void test() throws Exception {
