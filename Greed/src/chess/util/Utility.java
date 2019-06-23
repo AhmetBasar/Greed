@@ -95,4 +95,8 @@ public class Utility {
 	public static String leftSpacePad(String str, int spaceCount) {
 		return String.format("%" + spaceCount + "s", str);
 	}
+	
+	public static boolean isSet(long bb, int index){
+		return ((bb >>> index) & 1L) == 1L;
+	}
 }
