@@ -27,6 +27,8 @@ public interface IBoard {
 	
 	int getEpTarget(int depth);
 	
+	int getEpSquare(int depth);
+	
 	byte[][] getCastlingRights(int depth);
 	
 	int[] getMoveList(int depth);
@@ -50,5 +52,7 @@ public interface IBoard {
 	void doNullMove(int depth, int side);
 	
 	void undoNullMove(int depth);
+	
+	byte getCapturedPiece(int depth);
 	
 }

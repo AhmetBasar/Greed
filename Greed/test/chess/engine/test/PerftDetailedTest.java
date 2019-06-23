@@ -22,8 +22,9 @@ package chess.engine.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import chess.debug.BoardV5;
+import chess.debug.IBoard;
 import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV2;
+import chess.engine.BoardFactory;
 import chess.engine.Transformer;
 import chess.gui.FenOperations;
 import chess.util.Utility;
@@ -91,7 +92,7 @@ public class PerftDetailedTest {
 								checkMateCount = Integer.parseInt(detailedInfos[9]);
 							}
 						}
-						BoardV5 board = new BoardV5(Transformer.getBitboardStyl(fenOperations.getBoard()),
+						IBoard board = BoardFactory.getInstance(Transformer.getBitboardStyl(fenOperations.getBoard()),
 								Transformer.getByteArrayStyl(Transformer.getBitboardStyl(fenOperations.getBoard())),
 								fenOperations.getEpTarget(), fenOperations.getEpSquare(), depth,
 								fenOperations.getCastlingRights(), 0L, 0);

@@ -22,8 +22,8 @@ package chess.fhv2;
 import java.util.Arrays;
 import java.util.Map;
 
-import chess.debug.BoardV5;
 import chess.debug.IBoard;
+import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.EvaluationAdvancedV4;
 import chess.engine.ISearchableV2;
@@ -140,7 +140,7 @@ public class SearchEngineFifty8 implements ISearchableV2, EngineConstants {
 		int move = 0;
 		for (int i = 1; isFixedDepth ? (i <= depth) : true; i++) {
 			currentDepth = i;
-			IBoard board = new BoardV5(searchParameters.getBitboard(), searchParameters.getPieces(), searchParameters.getEpT(), searchParameters.getEpS(), i, searchParameters.getCastlingRights(), searchParameters.getUiZobristKey(), searchParameters.getFiftyMoveCounter());
+			IBoard board = BoardFactory.getInstance(searchParameters.getBitboard(), searchParameters.getPieces(), searchParameters.getEpT(), searchParameters.getEpS(), i, searchParameters.getCastlingRights(), searchParameters.getUiZobristKey(), searchParameters.getFiftyMoveCounter());
 			
 			if (i == 1 && searchParameters.getBookName() != null) {
 //				long s = System.currentTimeMillis();

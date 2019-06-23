@@ -19,6 +19,7 @@
  **********************************************/
 package chess.debug;
 
+import chess.engine.BoardFactory;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGeneration;
 import chess.engine.Transformer;
@@ -36,7 +37,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 	
 	//
 	private int depth;
-	private BoardV5 board;
+	private IBoard board;
 	private int side;
 	private int[] moveList;
 	//
@@ -47,7 +48,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 6;
-		BoardV5 board = new BoardV5(bitboard, pieces, 64, -1, depth, castlingRights, 0L, 0);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, -1, depth, castlingRights, 0L, 0);
 		System.out.println("move count = " + new PerformanceTestingSingleThreadedWithBoardInfaThreaded().perft(depth, board, 1));
 		System.out.println("time = " + (System.currentTimeMillis() - ilk));
 	}
@@ -59,7 +60,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		resetCounters();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
-		BoardV5 board = new BoardV5(bitboard, pieces, epTarget, epSquare, depth, castlingRights, 0L, 0);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, epSquare, depth, castlingRights, 0L, 0);
 		PerformanceTestingSingleThreadedWithBoardInfaThreaded.dispatchThreads(depth, board, castlingRights, side, threadCount);
 	}
 	
@@ -92,14 +93,14 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 	public PerformanceTestingSingleThreadedWithBoardInfaThreaded() {
 	}
 	
-	public PerformanceTestingSingleThreadedWithBoardInfaThreaded(int depth, BoardV5 board, int side, int[] moveList) {
+	public PerformanceTestingSingleThreadedWithBoardInfaThreaded(int depth, IBoard board, int side, int[] moveList) {
 		this.depth = depth;
 		this.board = board;
 		this.side = side;
 		this.moveList = moveList;
 	}
 	
-	private synchronized static void dispatchThreads(int depth, BoardV5 board, byte[][] castlingRights, int side, int threadCount) {
+	private synchronized static void dispatchThreads(int depth, IBoard board, byte[][] castlingRights, int side, int threadCount) {
 		if (depth == 0)
 			return;
 		
@@ -135,7 +136,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 			partialMoveListIndex++;
 			if (partialMoveListIndex == partialMoveListSize) {
 				partialMoveListIndex = 0;
-				BoardV5 b = new BoardV5(board.getBitboard().clone(), Transformer.getByteArrayStyl(board.getBitboard().clone()), board.getEpTarget(depth + 1), board.getEpSquare(depth + 1), depth, castlingRights, 0L, 0);
+				IBoard b = BoardFactory.getInstance(board.getBitboard().clone(), Transformer.getByteArrayStyl(board.getBitboard().clone()), board.getEpTarget(depth + 1), board.getEpSquare(depth + 1), depth, castlingRights, 0L, 0);
 				new PerformanceTestingSingleThreadedWithBoardInfaThreaded(depth, b, side, partialMoveList).start();
 				aliveThreadCount++;
 			}
@@ -147,7 +148,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		th.start();
 	}
 	
-	public long traverseMoveList(int depth, BoardV5 board, int side, int[] moveList) {
+	public long traverseMoveList(int depth, IBoard board, int side, int[] moveList) {
 		
 		if (depth == 0)
 			return 1;
@@ -176,7 +177,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		return nodes;
 	}
 
-	public long perft(int depth, BoardV5 board, int side) {
+	public long perft(int depth, IBoard board, int side) {
 
 		if (depth == 0)
 			return 1;

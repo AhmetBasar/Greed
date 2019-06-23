@@ -19,7 +19,7 @@
  **********************************************/
 package chess.engine;
 
-import chess.debug.BoardV5;
+import chess.debug.IBoard;
 
 public class MoveGenerationOnlyQueenPromotions {
 	private int[] pushDiffs = { 8, 64 - 8 };
@@ -35,7 +35,7 @@ public class MoveGenerationOnlyQueenPromotions {
 	private LegalityV4 legality = new LegalityV4();
 
 	
-	public int[] generateMoves(BoardV5 board, int side, int depthPlusOne) {
+	public int[] generateMoves(IBoard board, int side, int depthPlusOne) {
 		return generateMoves(board.getBitboard(), side, board.getEpTarget(depthPlusOne), board.getCastlingRights(depthPlusOne));
 	}
 	

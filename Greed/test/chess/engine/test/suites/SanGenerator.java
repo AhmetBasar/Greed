@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import chess.debug.BoardV5;
 import chess.debug.IBoard;
+import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
@@ -61,7 +61,7 @@ public class SanGenerator {
 
 		String pieceSymbol = PIECES[fromPiece];
 
-		IBoard board = new BoardV5(bitboard, pieces, epTarget, epSquare, 1, castlingRights, 0L, 0);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, epSquare, 1, castlingRights, 0L, 0);
 		Map<String, Map<String, List<String>>> ambiguities = getAmbiguities(1, board, side ^ 1, move);
 
 		switch (moveType) {

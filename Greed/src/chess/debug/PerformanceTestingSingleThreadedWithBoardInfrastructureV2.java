@@ -19,6 +19,7 @@
  **********************************************/
 package chess.debug;
 
+import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGeneration;
@@ -37,14 +38,14 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 5;
-		BoardV5 board = new BoardV5(bitboard, pieces, 64, -1, depth, castlingRights, 0L, 0);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, -1, depth, castlingRights, 0L, 0);
 		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
 		obj.perft(depth, board, 1);
 		System.out.println(obj.perftResult);
 		System.out.println("time = " + (System.currentTimeMillis() - ilk));
 	}
 
-	public void perft(int depth, BoardV5 board, int side) {
+	public void perft(int depth, IBoard board, int side) {
 
 		if (depth == 0) {
 			perftResult.incrementNodeCount();

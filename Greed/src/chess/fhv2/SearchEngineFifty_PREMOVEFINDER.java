@@ -25,7 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import chess.debug.BoardV5;
+import chess.debug.IBoard;
+import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.EvaluationAdvancedV4;
 import chess.engine.ISearchablePreMove;
@@ -95,7 +96,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		for (int i = 1; i <= depth; i++) {
 			boolean isLastIteration = i == depth;
 			int preMoveDepth = depth - 1;
-			BoardV5 board = new BoardV5(bitboard, pieces, epT, epS, i, castlingRights, uiZobristKey, fiftyMoveCounter);
+			IBoard board = BoardFactory.getInstance(bitboard, pieces, epT, epS, i, castlingRights, uiZobristKey, fiftyMoveCounter);
 			move = getBestMovee(i, board, side, isLastIteration, preMoveDepth, 0, firstMove);	
 		}
 		
@@ -117,7 +118,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		hashTable = new TranspositionElement[TT_SIZE];
 	}
 	
-	public int getBestMovee(int depth, BoardV5 board, int side, boolean isLastIteration, int preMoveDepth, int distance, int firstMove){
+	public int getBestMovee(int depth, IBoard board, int side, boolean isLastIteration, int preMoveDepth, int distance, int firstMove){
 		
 		// Board infrastructure.
 		board.deepDive(depth);
@@ -214,7 +215,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		return bestMove;
 	}
 	
-	private boolean isLeadsToDraw(long zobristKey, BoardV5 board, int depth) {
+	private boolean isLeadsToDraw(long zobristKey, IBoard board, int depth) {
 		if (board.hasRepeated(zobristKey, depth)) {
 			return true;
 		}
@@ -232,7 +233,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		}
 	}
 	
-	public int negamax(int depth, BoardV5 board, int side, int color, int alpha, int beta, int previousMove, int firstMove, int preMoveDepth, int distance){
+	public int negamax(int depth, IBoard board, int side, int color, int alpha, int beta, int previousMove, int firstMove, int preMoveDepth, int distance){
 		
 		int hashType = HASH_ALPHA;
 		
@@ -434,7 +435,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		return alpha;
 	}
 	
-	private int quiescentSearch(BoardV5 board, int side, int color, int alpha, int beta, int depth){
+	private int quiescentSearch(IBoard board, int side, int color, int alpha, int beta, int depth){
 		
 		//
 //		boolean existsLegalMove = false;
