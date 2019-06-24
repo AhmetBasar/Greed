@@ -26,7 +26,7 @@ import chess.engine.EngineConstants;
  * https://www.chessprogramming.org/General_Setwise_Operations
  **/
 public class BitboardUtility {
-	
+
 	public static long wFrontSpans(long wp) {
 		return northOne(northFill(wp));
 	}
@@ -64,9 +64,25 @@ public class BitboardUtility {
 	public static long westOne(long bb) {
 		return (bb >>> 1) & ~EngineConstants.FILE_H;
 	}
-	
+
 	public static long fileFill(long bb) {
 		return northFill(bb) | southFill(bb);
+	}
+
+	public static long wEastAttackFrontSpans(long wp) {
+		return eastOne(wFrontSpans(wp));
+	}
+
+	public static long wWestAttackFrontSpans(long wp) {
+		return westOne(wFrontSpans(wp));
+	}
+
+	public static long bEastAttackFrontSpans(long bp) {
+		return eastOne(bFrontSpans(bp));
+	}
+
+	public static long bWestAttackFrontSpans(long bp) {
+		return westOne(bFrontSpans(bp));
 	}
 
 }
