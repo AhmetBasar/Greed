@@ -22,6 +22,7 @@ package chess.documentation;
 import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
 import chess.engine.Transformer;
+import chess.evaluation.BitboardUtility;
 import chess.util.Utility;
 
 public class Bitboard {
@@ -287,6 +288,37 @@ public class Bitboard {
 			System.out.println("}, ");
 		}
 		System.out.println("};");
+	}
+	
+	public static void generatePreCalculatedFrontSpans() {
+		System.out.println("{");
+		for (int side = 0; side < 2; side++) {
+			System.out.println("{");
+			for (int i = 0; i < 64; i++) {
+				long allFrontSpans = -1L;
+				if (side == EngineConstants.WHITE) {
+					allFrontSpans = BitboardUtility.wFrontSpans(Utility.SINGLE_BIT[i]);
+					allFrontSpans |= BitboardUtility.eastOne(allFrontSpans) | BitboardUtility.westOne(allFrontSpans);
+				} else {
+					allFrontSpans = BitboardUtility.bFrontSpans(Utility.SINGLE_BIT[i]);
+					allFrontSpans |= BitboardUtility.eastOne(allFrontSpans) | BitboardUtility.westOne(allFrontSpans);
+				}
+
+				if (i % 4 == 3) {
+					if (i == 63) {
+						System.out.print(Utility.toFormattedHexString(allFrontSpans) + "L");
+					} else {
+						System.out.print(Utility.toFormattedHexString(allFrontSpans) + "L,");
+					}
+					System.out.println("");
+				} else {
+					System.out.print(Utility.toFormattedHexString(allFrontSpans) + "L, ");
+				}
+			}
+			System.out.println("}, ");
+		}
+		System.out.println("};");
+
 	}
 	
 }

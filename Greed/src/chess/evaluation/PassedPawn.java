@@ -19,6 +19,8 @@
  **********************************************/
 package chess.evaluation;
 
+import chess.engine.EngineConstants;
+
 /**
  * https://www.chessprogramming.org/Passed_Pawns_(Bitboards)
  **/
@@ -34,6 +36,32 @@ public class PassedPawn {
 		long allFrontSpans = BitboardUtility.wFrontSpans(wp);
 		allFrontSpans |= BitboardUtility.eastOne(allFrontSpans) | BitboardUtility.westOne(allFrontSpans);
 		return bp & ~allFrontSpans;
+	}
+
+	public static long whitePassedPawnsSquareCentric(long wp, long bp) {
+		long whitePassedPawns = 0L;
+		int trailingZeros;
+		while (wp != 0) {
+			trailingZeros = Long.numberOfTrailingZeros(wp);
+			if ((EngineConstants.FRONT_SPAN_LOOKUP[EngineConstants.WHITE][trailingZeros] & bp) == 0) {
+				whitePassedPawns |= (1L << trailingZeros);
+			}
+			wp &= (wp - 1);
+		}
+		return whitePassedPawns;
+	}
+
+	public static long blackPassedPawnsSquareCentric(long bp, long wp) {
+		long blackPassedPawns = 0L;
+		int trailingZeros;
+		while (bp != 0) {
+			trailingZeros = Long.numberOfTrailingZeros(bp);
+			if ((EngineConstants.FRONT_SPAN_LOOKUP[EngineConstants.BLACK][trailingZeros] & wp) == 0) {
+				blackPassedPawns |= (1L << trailingZeros);
+			}
+			bp &= (bp - 1);
+		}
+		return blackPassedPawns;
 	}
 
 }

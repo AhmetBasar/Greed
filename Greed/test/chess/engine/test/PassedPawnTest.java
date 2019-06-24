@@ -19,6 +19,7 @@
  **********************************************/
 package chess.engine.test;
 
+import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
 import chess.engine.Transformer;
 import chess.evaluation.PassedPawn;
@@ -35,6 +36,7 @@ public class PassedPawnTest {
 
 	public static void testAll() {
 		testPassedPawnPositions();
+		loadTest();
 	}
 
 	// http://en.wikipedia.org/wiki/Passed_pawn
@@ -57,6 +59,25 @@ public class PassedPawnTest {
 			throw new RuntimeException("Failed.");
 		}
 
+	}
+
+	public static void loadTest() {
+		for (int i = 0; i < 1000000; i++) {
+			byte[][] sourceBoard = DebugUtility.generateRandomBoard();
+			long[] bitboard = Transformer.getBitboardStyl(sourceBoard);
+			long wp = bitboard[EngineConstants.WHITE_PAWN];
+			long bp = bitboard[EngineConstants.BLACK_PAWN];
+
+			long whitePassedPawnsSquareCentric = PassedPawn.whitePassedPawnsSquareCentric(wp, bp);
+			long blackPassedPawnsSquareCentric = PassedPawn.blackPassedPawnsSquareCentric(bp, wp);
+			long whitePassedPawns = PassedPawn.whitePassedPawns(wp, bp);
+			long blackPassedPawns = PassedPawn.blackPassedPawns(bp, wp);
+
+			if (whitePassedPawnsSquareCentric != whitePassedPawns
+					|| blackPassedPawnsSquareCentric != blackPassedPawns) {
+				throw new RuntimeException("Failed");
+			}
+		}
 	}
 
 }
