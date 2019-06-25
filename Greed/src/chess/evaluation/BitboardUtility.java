@@ -85,4 +85,20 @@ public class BitboardUtility {
 		return westOne(bFrontSpans(bp));
 	}
 
+	public static long northEastOne(long b) {
+		return (b << 9) & ~EngineConstants.FILE_A;
+	}
+
+	public static long southEastOne(long b) {
+		return (b >>> 7) & ~EngineConstants.FILE_A;
+	}
+
+	public static long southWestOne(long b) {
+		return (b >>> 9) & ~EngineConstants.FILE_H;
+	}
+
+	public static long northWestOne(long b) {
+		return (b << 7) & ~EngineConstants.FILE_H;
+	}
+
 }
