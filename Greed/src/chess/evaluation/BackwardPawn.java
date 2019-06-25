@@ -14,11 +14,11 @@ public class BackwardPawn {
 	}
 
 	public static long blackBackwardPawns(long bp, long wp) {
-		long stops = bp << 8;
+		long stops = bp >>> 8;
 		long bAttackSpans = BitboardUtility.bEastAttackFrontSpans(bp)
 				| BitboardUtility.bWestAttackFrontSpans(bp);
 		long wAttacks = BitboardUtility.wPawnEastAttacks(wp) | BitboardUtility.wPawnWestAttacks(wp);
-		return (stops & wAttacks & ~bAttackSpans) >> 8;
+		return (stops & wAttacks & ~bAttackSpans) << 8;
 	}
 
 }
