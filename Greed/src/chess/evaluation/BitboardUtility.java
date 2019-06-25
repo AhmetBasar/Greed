@@ -24,6 +24,7 @@ import chess.engine.EngineConstants;
 /**
  * https://www.chessprogramming.org/Pawn_Spans
  * https://www.chessprogramming.org/General_Setwise_Operations
+ * https://www.chessprogramming.org/Pawn_Attacks_(Bitboards)
  **/
 public class BitboardUtility {
 
@@ -99,6 +100,22 @@ public class BitboardUtility {
 
 	public static long northWestOne(long b) {
 		return (b << 7) & ~EngineConstants.FILE_H;
+	}
+
+	public static long wPawnEastAttacks(long wp) {
+		return northEastOne(wp);
+	}
+
+	public static long wPawnWestAttacks(long wp) {
+		return northWestOne(wp);
+	}
+
+	public static long bPawnEastAttacks(long bp) {
+		return southEastOne(bp);
+	}
+
+	public static long bPawnWestAttacks(long bp) {
+		return southWestOne(bp);
 	}
 
 }
