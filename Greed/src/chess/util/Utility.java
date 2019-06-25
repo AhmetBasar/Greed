@@ -58,7 +58,7 @@ public class Utility {
 	}
 	
 	public static int getRank(int square, boolean isZeroBased) {
-		return isZeroBased ? square >> 3 : (square >> 3) + 1;
+		return isZeroBased ? square >>> 3 : (square >>> 3) + 1;
 	}
 	
 	public static String readFile(String filePath) {

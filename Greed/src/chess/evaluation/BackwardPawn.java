@@ -10,7 +10,7 @@ public class BackwardPawn {
 		long wAttackSpans = BitboardUtility.wEastAttackFrontSpans(wp)
 				| BitboardUtility.wWestAttackFrontSpans(wp);
 		long bAttacks = BitboardUtility.bPawnEastAttacks(bp) | BitboardUtility.bPawnWestAttacks(bp);
-		return (stops & bAttacks & ~wAttackSpans) >> 8;
+		return (stops & bAttacks & ~wAttackSpans) >>> 8;
 	}
 
 	public static long blackBackwardPawns(long bp, long wp) {
