@@ -34,7 +34,7 @@ public class BitboardUtilityTest {
 		System.out.println("wp = " + emptyBb1[EngineConstants.WHITE_PAWN]);
 		
 		
-		long[] bbb = DebugUtility.convertToBitboard(BitboardUtility.bEastAttackFrontSpans(emptyBb1[EngineConstants.WHITE_PAWN]), EngineConstants.WHITE_PAWN);
+		long[] bbb = DebugUtility.convertToBitboard(BitboardUtility.southWestOne(emptyBb1[EngineConstants.WHITE_PAWN]), EngineConstants.WHITE_PAWN);
 		
 		System.out.println("bbb = " + bbb[EngineConstants.WHITE_PAWN]);
 		
@@ -66,6 +66,16 @@ public class BitboardUtilityTest {
 		testWEastAttackFrontSpans();
 		
 		testWWestAttackFrontSpans();
+		
+		testBEastAttackFrontSpans();
+		
+		testBWestAttackFrontSpans();
+		
+		testNorthEastOne();
+		
+		testSouthEastOne();
+		
+		testSouthWestOne();
 	}
 	
 	public static void testWFrontSpans() {
@@ -130,6 +140,36 @@ public class BitboardUtilityTest {
 	
 	public static void testWWestAttackFrontSpans() {
 		if (BitboardUtility.wWestAttackFrontSpans(-8606343699237961087L) != 6435997091012624384L) {
+			throw new RuntimeException("Failed.");			
+		}
+	}
+	
+	public static void testBEastAttackFrontSpans() {
+		if (BitboardUtility.bEastAttackFrontSpans(-8606343699237961087L) != 4556859141943926L) {
+			throw new RuntimeException("Failed.");			
+		}
+	}
+	
+	public static void testBWestAttackFrontSpans() {
+		if (BitboardUtility.bWestAttackFrontSpans(-8606343699237961087L) != 19224257986583645L) {
+			throw new RuntimeException("Failed.");			
+		}
+	}
+	
+	public static void testNorthEastOne() {
+		if (BitboardUtility.northEastOne(-8606343699237961087L) != 2323859606746694144L) {
+			throw new RuntimeException("Failed.");			
+		}
+	}
+	
+	public static void testSouthEastOne() {
+		if (BitboardUtility.southEastOne(-8606343699237961087L) != 4539058910920708L) {
+			throw new RuntimeException("Failed.");			
+		}
+	}
+	
+	public static void testSouthWestOne() {
+		if (BitboardUtility.southWestOne(-8606343699237961087L) != 19219531973001217L) {
 			throw new RuntimeException("Failed.");			
 		}
 	}
