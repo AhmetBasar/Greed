@@ -35,7 +35,7 @@
  - How often re-research does improve alpha or not.
  - TT statisticts, how often hits, fill level etc.
  - if depth > 7 then R=3 test it.
- - Implement built in simple opening book! and play same style tournaments. same openings.
+ [OKEY] - Implement built in simple opening book! and play same style tournaments. same openings.
  [OKEY] - There are several classical and new developed test-position suites available.
  [OKEY] - Zugzwang test suite.
  [OKEY] - Passed pawn test suite.
@@ -44,4 +44,9 @@
  - Increasing R with Depth
  - Use transposition table in perft function to validate TT works correctly.
  - Implement assertion mechanism such as after undoMove compare zobrist key to be reset.
- - analyse with JVM profiler. (Heap and Thread dumps)
+ - analyse with JVM profiler. (Heap and Thread dumps) (use JITWatch)
+ - do both horizontal and vertical mirrored board evaluation function tests.
+ - ALWAYS keep test classes up-to-date.
+ - do more comprehensive EvaluationTest. such as 1000000 random board.
+ - implement multithreaded tournament manager.
+ - implement configurable engine.

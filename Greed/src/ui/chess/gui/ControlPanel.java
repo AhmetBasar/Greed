@@ -339,8 +339,8 @@ class SuggestMoveActionListener implements ActionListener {
 			//
 			
 			//
-//				Method m3 = cls.getDeclaredMethod("resetTT", new Class[] {});
-//				m3.invoke(obj);
+				Method m3 = cls.getDeclaredMethod("resetTT", new Class[] {});
+				m3.invoke(obj);
 			//
 			
 			long ilk = System.currentTimeMillis();
@@ -362,6 +362,7 @@ class SuggestMoveActionListener implements ActionListener {
 				params.setTimeLimit(1L);
 				params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
 				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
+				params.setBookName(null);
 				
 				move = (SearchResult) method.invoke(obj, params);
 			} else {

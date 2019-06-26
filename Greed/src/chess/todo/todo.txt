@@ -182,7 +182,7 @@ Chess Bot Programming.
   - TRY to generate white and black pawn moves in a seperate manner.
   - implement immutable classes for possible MultiThreading issues.
   - Review all code. (bot and ui included.) (Need some caching. especially in UI side.)
-  - Cache UI icons. (Cell.java) (new File)
+ [OKEY] - Cache UI icons. (Cell.java) (new File)
   - Cache Timer objects. (PieceEffects.java) (new Timer)
   - maintain a material key for draw by material detection! this is very very important issue!!!
   - implement uci protocol to play tournaments with popular engines.
@@ -201,4 +201,14 @@ Chess Bot Programming.
   - Adjust timecontroller thread frequency.
   - Change evaluation function as setwise calculations.
   - Implement buffered stream in Storage class for speed up.
+  - implement contempt factor for DRAW scoring.
+  - Assert there always exists one King per side.
+  - Do not use interface because of performance overhead. but it may be negligible as compared to clean code.
+  - Code review for using >>> instead of >> (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)  regex1 = (?<!>)>>(?!>)  regex2 = [^>]>>[^>]
+  - Code review for using != 0 instead of > 0 (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)
+  - return too high values from evaluation function then run tournamet to find subtle bugs.
+  - Code review for not use 1. use 1L instead. This may lead subtle bugs. (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)
+  - Implement all pawn evaluations. such as weak and backward pawns.
+  - Use precalculated singlebit lookup for all 1 << n operations.
+  - Java performance optimizations. (such as static final methods.)
  

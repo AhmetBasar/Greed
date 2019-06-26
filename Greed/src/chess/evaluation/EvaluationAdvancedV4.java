@@ -28,6 +28,7 @@ public class EvaluationAdvancedV4 {
 	private static final int BONUS_CASTLING_RIGHT = 10;
 	private static final int PENALTY_DOUBLED_PAWN = 10;
 	private static final int PENALTY_ISOLATED_PAWN = 20;
+	private static final int PENALTY_BACKWARD_PAWN = 20;
 	private static final int BONUS_PASSED_PAWN = 20;
 	private static final int BONUS_ROOK_ON_SEMI_OPEN_FILE = 10;
 //	private static final int BONUS_ROOK_ON_OPEN_FILE = 10;
@@ -58,6 +59,11 @@ public class EvaluationAdvancedV4 {
 		 * Passed pawn bonus.
 		 **/
 		eval += (Long.bitCount(PassedPawn.whitePassedPawns(wp, bp)) - Long.bitCount(PassedPawn.blackPassedPawns(bp, wp))) * BONUS_PASSED_PAWN;
+		
+		/**
+		 * Penalty backward pawns 
+		 **/
+		eval -= (Long.bitCount(BackwardPawn.whiteBackwardPawns(wp, bp)) - Long.bitCount(BackwardPawn.blackBackwardPawns(bp, wp))) * PENALTY_BACKWARD_PAWN;
 		
 		whiteTotalPieceValue = wkCount * EngineConstants.WHITE_KNIGHT_V + wbCount * EngineConstants.WHITE_BISHOP_V + wrCount * EngineConstants.WHITE_ROOK_V + wqCount * EngineConstants.WHITE_QUEEN_V;
 		blackTotalPieceValue = bkCount * EngineConstants.BLACK_KNIGHT_V + bbCount * EngineConstants.BLACK_BISHOP_V + brCount * EngineConstants.BLACK_ROOK_V + bqCount * EngineConstants.BLACK_QUEEN_V;
