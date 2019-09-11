@@ -211,4 +211,5 @@ Chess Bot Programming.
   - Implement all pawn evaluations. such as weak and backward pawns.
   - Use precalculated singlebit lookup for all 1 << n operations.
   - Java performance optimizations. (such as static final methods.)
+  - do not use shared objects. Review code. do not use static variables. but static method is permitted.
  

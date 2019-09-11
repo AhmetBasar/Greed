@@ -72,7 +72,7 @@ public class SearchEngineFifty8 implements ISearchableV2, EngineConstants {
 	private static final int R = 2;
 	
 	private static SearchEngineFifty8 instance;
-	private static SearchEngineFifty8[] newInstances = new SearchEngineFifty8[6];
+	private static SearchEngineFifty8[] newInstances = new SearchEngineFifty8[16];
 	
 	private SearchEngineFifty8(){
 		TranspositionTable.fillZobristArrays();
