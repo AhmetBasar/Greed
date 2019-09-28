@@ -32,6 +32,7 @@ import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.engine.OpeningBook;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
+import chess.engine.TT;
 import chess.engine.TranspositionElement;
 import chess.engine.TranspositionTable;
 import chess.evaluation.EvaluationAdvancedV4;
@@ -53,14 +54,12 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	private final int MINUS_INFINITY = -99999;
 	private final int PLUS_INFINITY = 99999;
 	
-	private static final int TT_SIZE = 1048583;
+	
 	private static final int HASH_EXACT = 1;
 	private static final int HASH_ALPHA = 2;
 	private static final int HASH_BETA = 3;
 	
 	private Map<Long, Integer> boardStateHistory;
-	
-	private TranspositionElement[] hashTable = new TranspositionElement[TT_SIZE];
 	
 	//TODO change slot count and comparen performance.
 	private int[] primaryKillerss = new int[128]; // The index corresponds to the ply the killer move is located in
@@ -126,6 +125,8 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	
 	private EngineMode engineMode;
 	
+	private TT tt = new TT();
+	
 	public SearchResult search(SearchParameters searchParameters) {
 		
 		this.timeLimit = searchParameters.getTimeLimit();
@@ -189,7 +190,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	}
 	
 	public void resetTT() {
-		hashTable = new TranspositionElement[TT_SIZE];
+		tt.resetTT();
 	}
 	
 	public int getBestMovee(int depth, IBoard board, int side, int distance){
@@ -209,7 +210,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		int hashType = HASH_ALPHA;
 		
 		int ttBestMove = 0;
-		TranspositionElement ttElement = hashTable[(int)Math.abs(board.getZobristKey(depth) % TT_SIZE)];
+		TranspositionElement ttElement = tt.probe(board.getZobristKey(depth));
 		if(ttElement != null && ttElement.zobristKey == board.getZobristKey(depth)){
 			ttBestMove = ttElement.bestMove;
 		}
@@ -271,7 +272,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			
 		}
 		
-		recordTranspositionTable(board.getZobristKey(depth), alpha, bestMove, depth, hashType);
+		tt.recordTranspositionTable(board.getZobristKey(depth), alpha, bestMove, depth, hashType, isTimeout);
 		
 		return bestMove;
 	}
@@ -314,7 +315,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		
 		//>>
 		int ttBestMove = 0;
-		TranspositionElement ttElement = hashTable[(int)Math.abs(zobristKey % TT_SIZE)];
+		TranspositionElement ttElement = tt.probe(zobristKey);
 		if(ttElement != null && ttElement.zobristKey == zobristKey){
 			if(ttElement.depth >= depth){
 				switch (ttElement.hashType) {
@@ -396,7 +397,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 					board.undoMove(ttBestMove, side, opSide, depth);
 					// Board infrastructure.
 					
-					recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA);
+					tt.recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA, isTimeout);
 					
 					//TODO : hash move? maybe it will be overwritten.
 					//TODO: capture moves should be handled by see, not killer heuristic.
@@ -451,7 +452,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 					board.undoMove(move, side, opSide, depth);
 					// Board infrastructure.
 					
-					recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA);
+					tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, isTimeout);
 					
 					//TODO: capture moves should be handled by see, not killer heuristic.
 					addKiller(move, distance);
@@ -484,7 +485,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			}
 		}
 		
-		recordTranspositionTable(zobristKey, alpha, bestMove, depth, hashType);
+		tt.recordTranspositionTable(zobristKey, alpha, bestMove, depth, hashType, isTimeout);
 		
 		return alpha;
 	}
@@ -576,31 +577,6 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		return alpha;
 	}
 	
-	private void recordTranspositionTable(long zobristKey, int value, int bestMove, int depth, int hashType){
-		if (isTimeout) {
-			return;
-		}
-		int index = (int)Math.abs(zobristKey % hashTable.length);
-		TranspositionElement ttElement = hashTable[index];
-		if(ttElement != null){
-//			if(ttElement.depth <= depth){ // try only greater than...
-				ttElement.zobristKey = zobristKey;
-				ttElement.score = value;
-				ttElement.depth = depth;
-				ttElement.bestMove = bestMove;
-				ttElement.hashType = hashType;
-//			}
-		} else {
-			ttElement = new TranspositionElement(); // Maybe when engine initiates, instantiate all Transposition object. in order to reduce new object cost.
-			ttElement.zobristKey = zobristKey;
-			ttElement.score = value;
-			ttElement.depth = depth;
-			ttElement.bestMove = bestMove;
-			ttElement.hashType = hashType;
-			hashTable[index] = ttElement;
-		}
-	}
-
 	public void setBoardStateHistory(Map<Long, Integer> boardStateHistory) {
 		this.boardStateHistory = boardStateHistory;
 	}
