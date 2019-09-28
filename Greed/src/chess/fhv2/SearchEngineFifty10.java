@@ -113,7 +113,15 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	private long timeLimit;
 	private int depth;
 	
-	private TimeController timeController = new TimeController();
+	private ICallBackTimeout callBackTimeOut = new ICallBackTimeout(){
+		public void onTimeout() {
+			isTimeout = true;
+		}
+		public boolean evaluateTimeoutCondition() {
+			return ((System.currentTimeMillis() - startTime) >= timeLimit || forceTimeoutRequested) && currentDepth > depth;
+		}};
+		
+	private TimeController timeController = new TimeController(callBackTimeOut);
 	private Thread timeControllerThread = new Thread(timeController);
 	
 	private EngineMode engineMode;
@@ -617,47 +625,5 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			}
 		}
 	}
-	
-	public class TimeController implements Runnable {
 
-		private volatile boolean suspended = true;
-		
-		@Override
-		public void run() {
-			waitIfSuspended();
-			while (true) {
-				try {
-					Thread.sleep(10);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				if (((System.currentTimeMillis() - startTime) >= timeLimit || forceTimeoutRequested) && currentDepth > depth) {
-					isTimeout = true;
-					suspend();
-					waitIfSuspended();
-				}
-			}
-		}
-		
-		private void waitIfSuspended() {
-			synchronized (this) {
-				while (suspended) {
-					try {
-						wait();
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		}
-
-		public synchronized void suspend() {
-			suspended = true;
-		}
-
-		public synchronized void resume() {
-			suspended = false;
-			notify();
-		}
-	}
 }
