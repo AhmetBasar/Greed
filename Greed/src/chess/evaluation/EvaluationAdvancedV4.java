@@ -81,14 +81,14 @@ public class EvaluationAdvancedV4 {
 				eval -= PENALTY_ISOLATED_PAWN;
 			}
 			
-			eval += positionalValue[EngineConstants.WHITE_PAWN][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_PAWN][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.WHITE_KNIGHT];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += positionalValue[EngineConstants.WHITE_KNIGHT][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_KNIGHT][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
@@ -96,7 +96,7 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.WHITE_BISHOP];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += positionalValue[EngineConstants.WHITE_BISHOP][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_BISHOP][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 
@@ -113,14 +113,14 @@ public class EvaluationAdvancedV4 {
 			eval = eval - BONUS_ROOK_ON_SEMI_OPEN_FILE * Long.bitCount(file & whitePawns);
 			//
 			
-			eval += positionalValue[EngineConstants.WHITE_ROOK][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_ROOK][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.WHITE_QUEEN];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += positionalValue[EngineConstants.WHITE_QUEEN][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_QUEEN][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
@@ -134,21 +134,21 @@ public class EvaluationAdvancedV4 {
 				eval += PENALTY_ISOLATED_PAWN;
 			}
 			
-			eval += positionalValue[EngineConstants.BLACK_PAWN][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_PAWN][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.BLACK_KNIGHT];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += positionalValue[EngineConstants.BLACK_KNIGHT][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_KNIGHT][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.BLACK_BISHOP];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += positionalValue[EngineConstants.BLACK_BISHOP][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_BISHOP][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
@@ -164,14 +164,14 @@ public class EvaluationAdvancedV4 {
 			eval = eval + BONUS_ROOK_ON_SEMI_OPEN_FILE * Long.bitCount(file & blackPawns);
 			//
 			
-			eval += positionalValue[EngineConstants.BLACK_ROOK][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_ROOK][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.BLACK_QUEEN];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += positionalValue[EngineConstants.BLACK_QUEEN][trailingZeros];
+			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_QUEEN][trailingZeros];
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
@@ -192,7 +192,7 @@ public class EvaluationAdvancedV4 {
 			while (fromBitboard != 0) {
 				trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
 				
-				eval += positionalValueKingEnding[EngineConstants.BLACK][trailingZeros];
+				eval += PieceSquareTable.positionalValueKingEnding[EngineConstants.BLACK][trailingZeros];
 				fromBitboard &= (fromBitboard - 1);
 			}
 			
@@ -200,7 +200,7 @@ public class EvaluationAdvancedV4 {
 			while (fromBitboard != 0) {
 				trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
 				
-				eval += positionalValueKingEnding[EngineConstants.WHITE][trailingZeros];
+				eval += PieceSquareTable.positionalValueKingEnding[EngineConstants.WHITE][trailingZeros];
 				fromBitboard &= (fromBitboard - 1);
 			}
 		} else {
@@ -208,7 +208,7 @@ public class EvaluationAdvancedV4 {
 			while (fromBitboard != 0) {
 				trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
 				
-				eval += positionalValue[EngineConstants.BLACK_KING][trailingZeros];
+				eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_KING][trailingZeros];
 				fromBitboard &= (fromBitboard - 1);
 			}
 			
@@ -216,7 +216,7 @@ public class EvaluationAdvancedV4 {
 			while (fromBitboard != 0) {
 				trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
 				
-				eval += positionalValue[EngineConstants.WHITE_KING][trailingZeros];
+				eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_KING][trailingZeros];
 				fromBitboard &= (fromBitboard - 1);
 			}
 		}
@@ -276,174 +276,4 @@ public class EvaluationAdvancedV4 {
 				   		EngineConstants.WHITE_ROOK_V 	* (wrCount - brCount) +
 				   		EngineConstants.WHITE_QUEEN_V 	* (wqCount - bqCount);
 	}
-
-	// https://www.chessprogramming.org/Simplified_Evaluation_Function
-	public static final int[][] positionalValue={
-			
-			{
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0
-			},
-			{
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0,
-				0,  0,  0,  0,  0,  0,  0,  0
-			},
-			{
-				0,  0,  0,  0,  0,  0,  0,  0,
-				5, 10, 10,-20,-20, 10, 10,  5,
-				5, -5,-10,  0,  0,-10, -5,  5,
-				0,  0,  0, 20, 20,  0,  0,  0,
-				5,  5, 10, 25, 25, 10,  5,  5,
-				10, 10, 20, 30, 30, 20, 10, 10,
-				50, 50, 50, 50, 50, 50, 50, 50,
-				0,  0,  0,  0,  0,  0,  0,  0
-			},
-			{
-				0,  0,  0,  0,  0,  0,  0,  0,
-				-50,-50,-50,-50,-50,-50,-50,-50,
-				-10,-10,-20,-30,-30,-20,-10,-10,
-				-5, -5,-10,-25,-25,-10, -5, -5,
-				0,  0,  0,-20,-20,  0,  0,  0,
-				-5,  5, 10,  0,  0, 10,  5, -5,
-				-5,-10,-10, 20, 20,-10,-10, -5,
-				0,  0,  0,  0,  0,  0,  0,  0
-			},
-			{
-				-50,-40,-30,-30,-30,-30,-40,-50,
-				-40,-20,  0,  5,  5,  0,-20,-40,
-				-30,  5, 10, 15, 15, 10,  5,-30,
-				-30,  0, 15, 20, 20, 15,  0,-30,
-				-30,  5, 15, 20, 20, 15,  5,-30,
-				-30,  0, 10, 15, 15, 10,  0,-30,
-				-40,-20,  0,  0,  0,  0,-20,-40,
-				-50,-40,-30,-30,-30,-30,-40,-50
-			},
-			
-			{
-				50, 40, 30, 30, 30, 30, 40, 50,
-				40, 20,  0,  0,  0,  0, 20, 40,
-				30,  0,-10,-15,-15,-10,  0, 30,
-				30, -5,-15,-20,-20,-15, -5, 30,
-				30,  0,-15,-20,-20,-15,  0, 30,
-				30, -5,-10,-15,-15,-10, -5, 30,
-				40, 20,  0, -5, -5,  0, 20, 40,
-				50, 40, 30, 30, 30, 30, 40, 50
-			},
-			{
-				-20,-10,-10,-10,-10,-10,-10,-20,
-				-10,  5,  0,  0,  0,  0,  5,-10,
-				-10, 10, 10, 10, 10, 10, 10,-10,
-				-10,  0, 10, 10, 10, 10,  0,-10,
-				-10,  5,  5, 10, 10,  5,  5,-10,
-				-10,  0,  5, 10, 10,  5,  0,-10,
-				-10,  0,  0,  0,  0,  0,  0,-10,
-				-20,-10,-10,-10,-10,-10,-10,-20
-			},
-			{
-				20, 10, 10, 10, 10, 10, 10, 20,
-				10,  0,  0,  0,  0,  0,  0, 10,
-				10,  0, -5,-10,-10, -5,  0, 10,
-				10, -5, -5,-10,-10, -5, -5, 10,
-				10,  0,-10,-10,-10,-10,  0, 10,
-				10,-10,-10,-10,-10,-10,-10, 10,
-				10, -5,  0,  0,  0,  0, -5, 10,
-				20, 10, 10, 10, 10, 10, 10, 20
-			},
-			{
-				0,  0,  0,  5,  5,  0,  0,  0,
-				-5,  0,  0,  0,  0,  0,  0, -5,
-				-5,  0,  0,  0,  0,  0,  0, -5,
-				-5,  0,  0,  0,  0,  0,  0, -5,
-				-5,  0,  0,  0,  0,  0,  0, -5,
-				-5,  0,  0,  0,  0,  0,  0, -5,
-				5, 10, 10, 10, 10, 10, 10,  5,
-				0,  0,  0,  0,  0,  0,  0,  0
-			},
-			{
-				0,  0,  0,  0,  0,  0,  0,  0,
-				-5,-10,-10,-10,-10,-10,-10, -5,
-				5,  0,  0,  0,  0,  0,  0,  5,
-				5,  0,  0,  0,  0,  0,  0,  5,
-				5,  0,  0,  0,  0,  0,  0,  5,
-				5,  0,  0,  0,  0,  0,  0,  5,
-				5,  0,  0,  0,  0,  0,  0,  5,
-				0,  0,  0, -5, -5,  0,  0,  0
-			},
-			{
-				-20,-10,-10, -5, -5,-10,-10,-20,
-				-10,  0,  5,  0,  0,  0,  0,-10,
-				-10,  5,  5,  5,  5,  5,  0,-10,
-				0,  0,  5,  5,  5,  5,  0, -5,
-				-5,  0,  5,  5,  5,  5,  0, -5,
-				-10,  0,  5,  5,  5,  5,  0,-10,
-				-10,  0,  0,  0,  0,  0,  0,-10,
-				-20,-10,-10, -5, -5,-10,-10,-20
-			},
-			{
-				20, 10, 10,  5,  5, 10, 10, 20,
-				10,  0,  0,  0,  0,  0,  0, 10,
-				10,  0, -5, -5, -5, -5,  0, 10,
-				5,  0, -5, -5, -5, -5,  0,  5,
-				0,  0, -5, -5, -5, -5,  0,  5,
-				10, -5, -5, -5, -5, -5,  0, 10,
-				10,  0, -5,  0,  0,  0,  0, 10,
-				20, 10, 10,  5,  5, 10, 10, 20
-			},
-			{
-				20, 30, 10,  0,  0, 10, 30, 20,
-				20, 20,  0,  0,  0,  0, 20, 20,
-				-10,-20,-20,-20,-20,-20,-20,-10,
-				-20,-30,-30,-40,-40,-30,-30,-20,
-				-30,-40,-40,-50,-50,-40,-40,-30,
-				-30,-40,-40,-50,-50,-40,-40,-30,
-				-30,-40,-40,-50,-50,-40,-40,-30,
-				-30,-40,-40,-50,-50,-40,-40,-30
-			},
-			{
-				30, 40, 40, 50, 50, 40, 40, 30,
-				30, 40, 40, 50, 50, 40, 40, 30,
-				30, 40, 40, 50, 50, 40, 40, 30,
-				30, 40, 40, 50, 50, 40, 40, 30,
-				20, 30, 30, 40, 40, 30, 30, 20,
-				10, 20, 20, 20, 20, 20, 20, 10,
-				-20,-20,  0,  0,  0,  0,-20,-20,
-				-20,-30,-10,  0,  0,-10,-30,-20
-			}
-	};
-	
-	// https://www.chessprogramming.org/Simplified_Evaluation_Function
-	public static final int[][] positionalValueKingEnding={
-			{
-			  -50,-30,-30,-30,-30,-30,-30,-50,
-			  -30,-30,  0,  0,  0,  0,-30,-30,
-			  -30,-10, 20, 30, 30, 20,-10,-30,
-			  -30,-10, 30, 40, 40, 30,-10,-30,
-			  -30,-10, 30, 40, 40, 30,-10,-30,
-			  -30,-10, 20, 30, 30, 20,-10,-30,
-			  -30,-20,-10,  0,  0,-10,-20,-30,
-			  -50,-40,-30,-20,-20,-30,-40,-50,
-			},
-			{
-			   50, 40, 30, 20, 20, 30, 40, 50,
-			   30, 20, 10,  0,  0, 10, 20, 30,
-			   30, 10,-20,-30,-30,-20, 10, 30,
-			   30, 10,-30,-40,-40,-30, 10, 30,
-			   30, 10,-30,-40,-40,-30, 10, 30,
-			   30, 10,-20,-30,-30,-20, 10, 30,
-			   30, 30,  0,  0,  0,  0, 30, 30,
-			   50, 30, 30, 30, 30, 30, 30, 50,
-			},
-	};
 }
