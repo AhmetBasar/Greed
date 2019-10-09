@@ -28,7 +28,7 @@ public class KingSafety implements EngineConstants {
 			score -= evaluatePawnShield(wp, F2, F3, F4);
 			score -= evaluatePawnShield(wp, G2, G3, G4);
 			score -= evaluatePawnShield(wp, H2, H3, H4);
-		} else if (((wp | bp) & EngineConstants.FILE[Utility.getFile(whiteKingSquare)]) == 0) {
+		} else if (((wp | bp) & EngineConstants.FILE[kingFile]) == 0) {
 			score -= PENALTY_KING_ON_OPEN_FILE;
 		}
 		return (score * blackTotalPieceValue) / EngineConstants.ALL_PIECES_V;
@@ -45,19 +45,19 @@ public class KingSafety implements EngineConstants {
 			score += evaluatePawnShield(bp, F7, F6, F5);
 			score += evaluatePawnShield(bp, G7, G6, G5);
 			score += evaluatePawnShield(bp, H7, H6, H5);
-		} else if (((bp | wp) & EngineConstants.FILE[Utility.getFile(blackKingSquare)]) == 0) {
+		} else if (((bp | wp) & EngineConstants.FILE[kingFile]) == 0) {
 			score += PENALTY_KING_ON_OPEN_FILE;
 		}
 		return (score * whiteTotalPieceValue) / EngineConstants.ALL_PIECES_V;
 	}
 	
 	private static int evaluatePawnShield(long p, int sqOrig, int sqOne, int sqTwo) {
-		if ((p & Utility.SINGLE_BIT[sqOrig]) == 1) {
+		if ((p & Utility.SINGLE_BIT[sqOrig]) != 0) {
 			// no penalty.
 			return 0;
-		} else if ((p & Utility.SINGLE_BIT[sqOne]) == 1) {
+		} else if ((p & Utility.SINGLE_BIT[sqOne]) != 0) {
 			return PENALTY_PAWN_SHIELD_ONE;
-		} else if ((p & Utility.SINGLE_BIT[sqTwo]) == 1) {
+		} else if ((p & Utility.SINGLE_BIT[sqTwo]) != 0) {
 			return PENALTY_PAWN_SHIELD_TWO;
 		} else {
 			return PENALTY_PAWN_SHIELD_GT_TWO;
