@@ -64,7 +64,7 @@ public class DebugUtilityTest {
 			throw new RuntimeException("Failed.");
 		}
 
-		long[] bitboard2 = Transformer.getBitboardStyl(DebugUtility.getBoard2());
+		long[] bitboard2 = Transformer.getBitboardStyl(DebugUtility.getAsymmetricBoard());
 		long[] byteReversedBitboard2 = DebugUtility.reverseBitboard(bitboard2, false);
 		if (Arrays.equals(bitboard2, byteReversedBitboard2)) {
 			throw new RuntimeException("Failed.");

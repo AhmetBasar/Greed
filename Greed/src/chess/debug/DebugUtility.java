@@ -36,39 +36,6 @@ public class DebugUtility {
 			   {     8,     4,     6,    10,    12,     6,     4,     8}
 			   };
 	
-	private static final byte [][] DEFAULT_BOARD2={
-			   {     0,     0,     0,     0,    13,     0,     5,     9},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,    12,     0,     4,     8}
-			   };
-	
-//	private static final byte [][] SPECIAL_BOARD={
-//			   {     0,     0,     0,     0,     0,     0,     13,     0},
-//			   {     0,     0,     0,     0,     0,     0,     0,     0},
-//			   {     0,     0,     0,     0,     0,     0,     0,     0},
-//			   {     0,     0,     0,     0,     0,     0,     0,     0},
-//			   {     3,     0,     0,     0,     0,     0,     5,     0},
-//			   {     0,     0,     0,     0,     0,     0,     0,     0},
-//			   {     0,     0,     0,     0,     0,     0,     0,     0},
-//			   {     0,     0,     0,     6,     0,     0,     12,     0}
-//			   };
-	
-	private static final byte [][] SPECIAL_BOARD={
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     5,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     6,     0,     0,     0,     0}
-			   };
-	
 	private static final byte [][] EMPTY_BOARD={
 			   {     0,     0,     0,     0,     0,     0,     0,     0},
 			   {     0,     0,     0,     0,     0,     0,     0,     0},
@@ -91,50 +58,6 @@ public class DebugUtility {
 			   {     8,     0,     0,     0,    12,     0,     0,     8}
 	};
 	
-	private static final byte [][] BOARD_3={
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     3,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     3,     0,     0,     0,     0},
-			   {    12,     2,     0,     0,     0,     0,     0,     9},
-			   {     0,     8,     0,     0,     0,     3,     0,    13},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     2,     0,     2,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0}
-	};
-	
-	private static final byte [][] BOARD_4={
-			   {     9,     0,     0,     0,    13,     0,     0,     9},
-			   {     2,     3,     3,     3,     0,     3,     3,     3},
-			   {     0,     7,     0,     0,     0,     5,     7,     4},
-			   {     5,     2,     0,     0,     0,     0,     0,     0},
-			   {     6,     6,     2,     0,     2,     0,     0,     0},
-			   {    11,     0,     0,     0,     0,     4,     0,     0},
-			   {     2,     3,     0,     2,     0,     0,     2,     2},
-			   {     8,     0,     0,    10,     0,     8,    12,     0}
-	};
-	
-	private static final byte [][] BOARD_5={
-			   {     9,     5,     7,    11,     0,    13,     0,     9},
-			   {     3,     3,     0,     2,     7,     3,     3,     3},
-			   {     0,     0,     3,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     0,     0,     6,     0,     0,     0,     0,     0},
-			   {     0,     0,     0,     0,     0,     0,     0,     0},
-			   {     2,     2,     2,     0,     4,     5,     2,     2},
-			   {     8,     4,     6,    10,    12,     0,     0,     8}
-			   };
-	
-	private static final byte [][] BOARD_6={
-			   {     9,     0,     0,     0,     0,     9,    13,     0},
-			   {     0,     3,     3,     0,    11,     3,     3,     3},
-			   {     3,     0,     5,     3,     0,     5,     0,     0},
-			   {     0,     0,     7,     0,     3,     0,     6,     0},
-			   {     0,     0,     6,     0,     2,     0,     7,     0},
-			   {     2,     0,     4,     2,     0,     4,     0,     0},
-			   {     0,     2,     2,     0,    10,     2,     2,     2},
-			   {     8,     0,     0,     0,     0,     8,    12,     0}
-	};
-	
 	public static byte[][] getDefaultBoard(){
 		byte[][] board = new byte[8][8];
 		for(int x=0;x<=7;x++){
@@ -155,71 +78,11 @@ public class DebugUtility {
 		return board;
 	}
 	
-	public static byte[][] getDefaultBoard2(){
-		byte[][] board = new byte[8][8];
-		for(int x=0;x<=7;x++){
-			for(int y=0;y<=7;y++){
-				board[x][y]=DEFAULT_BOARD2[y][x];
-			}
-		}
-		return board;
-	}
-	
-	public static byte[][] getBoard2(){
+	public static byte[][] getAsymmetricBoard(){
 		byte[][] board = new byte[8][8];
 		for(int x=0;x<=7;x++){
 			for(int y=0;y<=7;y++){
 				board[x][y]=BOARD_2[y][x];
-			}
-		}
-		return board;
-	}
-	
-	public static byte[][] getSpecialBoard(){
-		byte[][] board = new byte[8][8];
-		for(int x=0;x<=7;x++){
-			for(int y=0;y<=7;y++){
-				board[x][y]=SPECIAL_BOARD[y][x];
-			}
-		}
-		return board;
-	}
-	
-	public static byte[][] getBoard3(){
-		byte[][] board = new byte[8][8];
-		for(int x=0;x<=7;x++){
-			for(int y=0;y<=7;y++){
-				board[x][y]=BOARD_3[y][x];
-			}
-		}
-		return board;
-	}
-	
-	public static byte[][] getBoard4(){
-		byte[][] board = new byte[8][8];
-		for(int x=0;x<=7;x++){
-			for(int y=0;y<=7;y++){
-				board[x][y]=BOARD_4[y][x];
-			}
-		}
-		return board;
-	}
-	
-	public static byte[][] getBoard5(){
-		byte[][] board = new byte[8][8];
-		for(int x=0;x<=7;x++){
-			for(int y=0;y<=7;y++){
-				board[x][y]=BOARD_5[y][x];
-			}
-		}
-		return board;
-	}
-	
-	public static byte[][] getBoard6(){
-		byte[][] board = new byte[8][8];
-		for(int x=0;x<=7;x++){
-			for(int y=0;y<=7;y++){
-				board[x][y]=BOARD_6[y][x];
 			}
 		}
 		return board;

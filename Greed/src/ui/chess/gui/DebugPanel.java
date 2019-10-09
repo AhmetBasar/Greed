@@ -32,7 +32,6 @@ import javax.swing.JTextField;
 import javax.swing.JTextPane;
 
 import chess.database.StorageConstants;
-import chess.debug.DebugUtility;
 import chess.debug.PerformanceTesting;
 import chess.debug.PerformanceTestingSimple;
 import chess.debug.PerformanceTestingSingleThreaded;
@@ -82,7 +81,6 @@ public class DebugPanel extends JPanel{
 	private void initComponents() {
 		buildThreadInfo();
 		buildCastlingRights();
-		buildTestBoards();
 		buildSearchDepthInfo();
 		buildEnpassantInfo();
 		buildFENInfo();
@@ -348,87 +346,6 @@ public class DebugPanel extends JPanel{
 		add(jcbBlackKingSideCastlingRight);
 	}
 	
-	private void buildTestBoards(){
-		JButton jbGetBoard1;
-		JButton jbGetBoard2;
-		JButton jbGetBoard3;
-		JButton jbGetBoard4;
-		JButton jbGetBoard5;
-		JButton jbGetBoard6;
-		
-		jbGetBoard1 = new JButton("board 1");
-		jbGetBoard1.setMargin(new java.awt.Insets(1, 2, 1, 2));
-		jbGetBoard1.setSize(70, 25);
-		jbGetBoard1.setLocation(210, 10);
-		add(jbGetBoard1);
-		jbGetBoard1.addActionListener((new java.awt.event.ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				base.setBoard(DebugUtility.getDefaultBoard());
-			}
-		}));
-		
-		jbGetBoard2 = new JButton("board 2");
-		jbGetBoard2.setMargin(new java.awt.Insets(1, 2, 1, 2));
-		jbGetBoard2.setSize(70, 25);
-		jbGetBoard2.setLocation(280, 10);
-		add(jbGetBoard2);
-		jbGetBoard2.addActionListener((new java.awt.event.ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				base.setBoard(DebugUtility.getBoard2());
-			}
-		}));
-		
-		jbGetBoard3 = new JButton("board 3");
-		jbGetBoard3.setMargin(new java.awt.Insets(1, 2, 1, 2));
-		jbGetBoard3.setSize(70, 25);
-		jbGetBoard3.setLocation(350, 10);
-		add(jbGetBoard3);
-		jbGetBoard3.addActionListener((new java.awt.event.ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				base.setBoard(DebugUtility.getBoard3());
-			}
-		}));
-		
-		jbGetBoard4 = new JButton("board 4");
-		jbGetBoard4.setMargin(new java.awt.Insets(1, 2, 1, 2));
-		jbGetBoard4.setSize(70, 25);
-		jbGetBoard4.setLocation(210, 40);
-		add(jbGetBoard4);
-		jbGetBoard4.addActionListener((new java.awt.event.ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				base.setBoard(DebugUtility.getBoard4());
-			}
-		}));
-		
-		jbGetBoard5 = new JButton("board 5");
-		jbGetBoard5.setMargin(new java.awt.Insets(1, 2, 1, 2));
-		jbGetBoard5.setSize(70, 25);
-		jbGetBoard5.setLocation(280, 40);
-		add(jbGetBoard5);
-		jbGetBoard5.addActionListener((new java.awt.event.ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				base.setBoard(DebugUtility.getBoard5());
-			}
-		}));
-		
-		jbGetBoard6 = new JButton("board 6");
-		jbGetBoard6.setMargin(new java.awt.Insets(1, 2, 1, 2));
-		jbGetBoard6.setSize(70, 25);
-		jbGetBoard6.setLocation(350, 40);
-		add(jbGetBoard6);
-		jbGetBoard6.addActionListener((new java.awt.event.ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				base.setBoard(DebugUtility.getBoard6());
-			}
-		}));
-	}
-
 	private void buildThreadInfo(){
 		JLabel lblThreadCount;
 		JButton jbIncrementThreadCount;
