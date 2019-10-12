@@ -5,14 +5,14 @@ import chess.util.Utility;
 
 public class KingSafety implements EngineConstants {
 	
-	private static final int PENALTY_PAWN_SHIELD_ONE = 10;
-	private static final int PENALTY_PAWN_SHIELD_TWO = 15;
-	private static final int PENALTY_PAWN_SHIELD_GT_TWO = 20;
+	private static final int PENALTY_PAWN_SHIELD_ONE = 5;
+	private static final int PENALTY_PAWN_SHIELD_TWO = 10;
+	private static final int PENALTY_PAWN_SHIELD_GT_TWO = 15;
 	
 	// TODO : decrease this penalty score
 	// TODO : decrease this penalty score
 	// TODO : decrease this penalty score
-	private static final int PENALTY_KING_ON_OPEN_FILE = 50;
+	private static final int PENALTY_KING_ON_OPEN_FILE = 5;
 	// TODO : decrease this penalty score
 	// TODO : decrease this penalty score
 	// TODO : decrease this penalty score
@@ -21,13 +21,13 @@ public class KingSafety implements EngineConstants {
 		int score = 0;
 		int kingFile = Utility.getFile(whiteKingSquare);
 		if (kingFile < 3) {
-			score -= evaluatePawnShield(wp, A2, A3, A4);
+			score -= (evaluatePawnShield(wp, A2, A3, A4));
 			score -= evaluatePawnShield(wp, B2, B3, B4);
-			score -= evaluatePawnShield(wp, C2, C3, C4);
+			score -= evaluatePawnShield(wp, C2, C3, C4/2);
 		} else if (kingFile > 4) {
-			score -= evaluatePawnShield(wp, F2, F3, F4);
+			score -= evaluatePawnShield(wp, F2, F3, F4/2);
 			score -= evaluatePawnShield(wp, G2, G3, G4);
-			score -= evaluatePawnShield(wp, H2, H3, H4);
+			score -= (evaluatePawnShield(wp, H2, H3, H4));
 		} else if (((wp | bp) & EngineConstants.FILE[kingFile]) == 0) {
 			score -= PENALTY_KING_ON_OPEN_FILE;
 		}
