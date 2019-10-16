@@ -23,9 +23,9 @@ public class KingSafety implements EngineConstants {
 		if (kingFile < 3) {
 			score -= (evaluatePawnShield(wp, A2, A3, A4));
 			score -= evaluatePawnShield(wp, B2, B3, B4);
-			score -= evaluatePawnShield(wp, C2, C3, C4/2);
+			score -= (evaluatePawnShield(wp, C2, C3, C4));
 		} else if (kingFile > 4) {
-			score -= evaluatePawnShield(wp, F2, F3, F4/2);
+			score -= (evaluatePawnShield(wp, F2, F3, F4));
 			score -= evaluatePawnShield(wp, G2, G3, G4);
 			score -= (evaluatePawnShield(wp, H2, H3, H4));
 		} else if (((wp | bp) & EngineConstants.FILE[kingFile]) == 0) {
