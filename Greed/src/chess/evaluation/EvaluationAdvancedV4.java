@@ -34,6 +34,8 @@ public class EvaluationAdvancedV4 {
 //	private static final int BONUS_ROOK_ON_OPEN_FILE = 10;
 	private static final int BONUS_ROOK_BATTERY = 10;
 	
+	private static final boolean usePsqt = false;
+	
 	public static int evaluate(long[] bitboard, byte[][] castlingRights, int side){
 		int eval = 0;
 		
@@ -81,14 +83,18 @@ public class EvaluationAdvancedV4 {
 				eval -= PENALTY_ISOLATED_PAWN;
 			}
 			
-			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_PAWN][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_PAWN][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.WHITE_KNIGHT];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_KNIGHT][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_KNIGHT][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
@@ -96,7 +102,9 @@ public class EvaluationAdvancedV4 {
 		fromBitboard=bitboard[EngineConstants.WHITE_BISHOP];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_BISHOP][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_BISHOP][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
 
@@ -113,14 +121,18 @@ public class EvaluationAdvancedV4 {
 			eval = eval - BONUS_ROOK_ON_SEMI_OPEN_FILE * Long.bitCount(file & whitePawns);
 			//
 			
-			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_ROOK][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_ROOK][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.WHITE_QUEEN];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_QUEEN][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_QUEEN][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
@@ -134,21 +146,27 @@ public class EvaluationAdvancedV4 {
 				eval += PENALTY_ISOLATED_PAWN;
 			}
 			
-			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_PAWN][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_PAWN][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.BLACK_KNIGHT];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_KNIGHT][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_KNIGHT][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.BLACK_BISHOP];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_BISHOP][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_BISHOP][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
@@ -164,16 +182,21 @@ public class EvaluationAdvancedV4 {
 			eval = eval + BONUS_ROOK_ON_SEMI_OPEN_FILE * Long.bitCount(file & blackPawns);
 			//
 			
-			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_ROOK][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_ROOK][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
 		fromBitboard=bitboard[EngineConstants.BLACK_QUEEN];
 		while (fromBitboard != 0) {
 			trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
-			eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_QUEEN][trailingZeros];
+			if (usePsqt) {
+				eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_QUEEN][trailingZeros];
+			}
 			fromBitboard &= (fromBitboard - 1);
 		}
+		
 		
 		boolean isEndgame = false;
 		if (side == GuiConstants.WHITES_TURN) {
@@ -192,7 +215,9 @@ public class EvaluationAdvancedV4 {
 			while (fromBitboard != 0) {
 				trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
 				
-				eval += PieceSquareTable.positionalValueKingEnding[EngineConstants.BLACK][trailingZeros];
+				if (usePsqt) {
+					eval += PieceSquareTable.positionalValueKingEnding[EngineConstants.BLACK][trailingZeros];
+				}
 				fromBitboard &= (fromBitboard - 1);
 			}
 			
@@ -200,7 +225,9 @@ public class EvaluationAdvancedV4 {
 			while (fromBitboard != 0) {
 				trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
 				
-				eval += PieceSquareTable.positionalValueKingEnding[EngineConstants.WHITE][trailingZeros];
+				if (usePsqt) {
+					eval += PieceSquareTable.positionalValueKingEnding[EngineConstants.WHITE][trailingZeros];
+				}
 				fromBitboard &= (fromBitboard - 1);
 			}
 		} else {
@@ -208,7 +235,9 @@ public class EvaluationAdvancedV4 {
 			while (fromBitboard != 0) {
 				trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
 				
-				eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_KING][trailingZeros];
+				if (usePsqt) {
+					eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_KING][trailingZeros];
+				}
 				fromBitboard &= (fromBitboard - 1);
 			}
 			
@@ -216,7 +245,9 @@ public class EvaluationAdvancedV4 {
 			while (fromBitboard != 0) {
 				trailingZeros = Long.numberOfTrailingZeros(fromBitboard);
 				
-				eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_KING][trailingZeros];
+				if (usePsqt) {
+					eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_KING][trailingZeros];
+				}
 				fromBitboard &= (fromBitboard - 1);
 			}
 		}
