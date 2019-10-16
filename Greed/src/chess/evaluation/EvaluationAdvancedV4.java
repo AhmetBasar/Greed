@@ -34,7 +34,7 @@ public class EvaluationAdvancedV4 {
 //	private static final int BONUS_ROOK_ON_OPEN_FILE = 10;
 	private static final int BONUS_ROOK_BATTERY = 10;
 	
-	private static final boolean usePsqt = false;
+	private static final boolean usePsqt = true;
 	
 	public static int evaluate(long[] bitboard, byte[][] castlingRights, int side){
 		int eval = 0;
