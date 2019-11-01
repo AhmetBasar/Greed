@@ -35,6 +35,7 @@ public class EvaluationAdvancedV4 {
 	private static final int BONUS_ROOK_BATTERY = 10;
 	
 	private static final boolean usePsqt = true;
+	private static final boolean useBishopPair = true;
 	
 	public static int evaluate(long[] bitboard, byte[][] castlingRights, int side){
 		int eval = 0;
@@ -259,11 +260,13 @@ public class EvaluationAdvancedV4 {
 		eval -= castlingRights[GuiConstants.BLACKS_TURN][0] * BONUS_CASTLING_RIGHT;
 		eval -= castlingRights[GuiConstants.BLACKS_TURN][1] * BONUS_CASTLING_RIGHT;
 		
-		if (wbCount == 2) {
-			eval += BONUS_BISHOP_PAIR;
-		}
-		if (bbCount == 2) {
-			eval -= BONUS_BISHOP_PAIR;
+		if (useBishopPair) {
+			if (wbCount == 2) {
+				eval += BONUS_BISHOP_PAIR;
+			}
+			if (bbCount == 2) {
+				eval -= BONUS_BISHOP_PAIR;
+			}
 		}
 		
 		int pawnCount = Long.bitCount(whitePawns & EngineConstants.FILE_A);

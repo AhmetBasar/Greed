@@ -32,7 +32,7 @@ import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.engine.test.ThreadPool;
 import chess.engine.test.tournament.ChessBoard.GameState;
-import chess.fhv2.SearchEngineFifty8;
+import chess.fhv2.SearchEngineFifty10;
 import chess.gui.GuiConstants;
 
 public class TournamentManagerEngineBasedThreaded implements Runnable {
@@ -58,8 +58,8 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 	public void run() {
 		ChessBoard board = new ChessBoard();
 
-		ISearchableV2 engine1 = SearchEngineFifty8.getNewInstance();
-		ISearchableV2 engine2 = SearchEngineFifty8.getNewInstance();
+		ISearchableV2 engine1 = SearchEngineFifty10.getNewInstance();
+		ISearchableV2 engine2 = SearchEngineFifty10.getNewInstance();
 
 		ISearchableV2 engineWhite = engine1;
 		ISearchableV2 engineBlack = engine2;
@@ -69,7 +69,7 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 				engineWhite.setBoardStateHistory(board.getBoardStateHistory());
 
 				SearchParameters params = new SearchParameters();
-				params.setDepth(1);
+				params.setDepth(2);
 				params.setEpT(board.getEpTarget());
 				params.setEpS(board.getEpSquare());
 				params.setBitboard(board.getBitboard());
@@ -79,7 +79,7 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 				params.setUiZobristKey(board.getZobristKey());
 				params.setTimeLimit(3);
 				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
-				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
 
 				SearchResult searchResult = engineWhite.search(params);
 				board.doMove(searchResult.getBestMove());
@@ -88,7 +88,7 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 				engineBlack.setBoardStateHistory(board.getBoardStateHistory());
 
 				SearchParameters params = new SearchParameters();
-				params.setDepth(1);
+				params.setDepth(2);
 				params.setEpT(board.getEpTarget());
 				params.setEpS(board.getEpSquare());
 				params.setBitboard(board.getBitboard());
@@ -98,7 +98,7 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 				params.setUiZobristKey(board.getZobristKey());
 				params.setTimeLimit(3);
 				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
-				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
 
 				SearchResult searchResult = engineBlack.search(params);
 				board.doMove(searchResult.getBestMove());
@@ -136,6 +136,11 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 				sb.append("positionCountBlack = " + convertToCountBasedMap(positionCountBlack) + "\n");
 				sb.append("engine1Score = " + engine1Score + "\n");
 				sb.append("engine2Score = " + engine2Score + "\n");
+				double totalScore = engine1Score + engine2Score;
+				double engine1Percentage = (100 * engine1Score) / totalScore;
+				double engine2Percentage = (100 * engine2Score) / totalScore;
+				sb.append("engine1Percentage = " + engine1Percentage + "\n");
+				sb.append("engine2Percentage = " + engine2Percentage + "\n");
 				
 				print(sb.toString());
 				

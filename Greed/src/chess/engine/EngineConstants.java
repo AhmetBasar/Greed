@@ -30,6 +30,8 @@ public interface EngineConstants {
 	public static final int WHITE_PAWN_V=100, WHITE_ROOK_V=500, WHITE_KNIGHT_V=320, WHITE_BISHOP_V=330, WHITE_QUEEN_V=900, WHITE_KING_V=20000, 
 			               BLACK_PAWN_V=-100, BLACK_ROOK_V=-500, BLACK_KNIGHT_V=-320, BLACK_BISHOP_V=-330, BLACK_QUEEN_V=-900, BLACK_KING_V=-20000;
 	
+	public static final int ALL_PIECES_V = WHITE_QUEEN_V + (2 * WHITE_ROOK_V) + (2 * WHITE_KNIGHT_V) + (2 * WHITE_BISHOP_V);
+	
 	public static final int END_GAME_THRESHOLD = 1230;
 
 	public static final byte WHITE = 0, BLACK = 1;

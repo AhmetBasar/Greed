@@ -62,7 +62,7 @@ public class TestSuitesTest {
 				@Override
 				public void run() {
 
-					chess.fhv2.SearchEngineFifty8 engine = chess.fhv2.SearchEngineFifty8.getNewInstance();
+					chess.fhv2.SearchEngineFifty10 engine = chess.fhv2.SearchEngineFifty10.getNewInstance();
 					engine.setBoardStateHistory(new HashMap<Long, Integer>());
 
 					for (String epdString : part) {
