@@ -19,7 +19,7 @@
  **********************************************/
 package chess.engine;
 
-public class TT {
+public class TT implements ITranspositionTable {
 	
 	private static final int TT_SIZE = 1048583;
 	private TranspositionElement[] hashTable = new TranspositionElement[TT_SIZE];
