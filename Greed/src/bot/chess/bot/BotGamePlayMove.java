@@ -84,9 +84,9 @@ public class BotGamePlayMove {
 	public void implement() {
 		
 		//Transposition Table//
-		BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristBlackMove;
+		base.updateZobristKey(TranspositionTable.zobristBlackMove);
 		if (currentEpTarget != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side ^ 1][currentEpTarget] & base.getBitboard()[(side) | EngineConstants.PAWN]) != 0) {
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristEnPassantArray[currentEpTarget];
+			base.updateZobristKey(TranspositionTable.zobristEnPassantArray[currentEpTarget]);
 		}
 		//
 		
@@ -94,10 +94,10 @@ public class BotGamePlayMove {
 		if (isSimpleMove()) {
 			
 			//Transposition Table//
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
 			if(capturedPiece > 0){
-				BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				base.updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
 			}
 			//
 			
@@ -110,10 +110,10 @@ public class BotGamePlayMove {
 			
 			//Transposition Table//
 			if ((EngineConstants.PAWN_ATTACK_LOOKUP[side][toBeImplementedEpTarget] & base.getBitboard()[(side ^ 1) | EngineConstants.PAWN]) != 0) {
-				BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristEnPassantArray[toBeImplementedEpTarget];
+				base.updateZobristKey(TranspositionTable.zobristEnPassantArray[toBeImplementedEpTarget]);
 			}
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
 			//
 			
 			base.getGamePlay().setEpTarget(toBeImplementedEpTarget);
@@ -125,9 +125,9 @@ public class BotGamePlayMove {
 		} else if(isEnPassantCapture()){
 			
 			//Transposition Table//
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][currentEpSquare];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][currentEpSquare]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
 			//
 			
 			base.getPieces()[currentEpSquare] = 0;
@@ -139,10 +139,10 @@ public class BotGamePlayMove {
 		} else if(isPromotion()){
 			
 			//Transposition Table//
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[promotedPiece][to];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[promotedPiece][to]);
 			if(capturedPiece > 0) {
-				BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				base.updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
 			}
 			//
 			
@@ -154,10 +154,10 @@ public class BotGamePlayMove {
 		} else if(isQueenSideCastling() || isKingSideCastling()){
 			
     		//Transposition Table//
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getPieces()[castlingRookFrom]][castlingRookFrom];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getPieces()[castlingRookFrom]][castlingRookTo];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[base.getPieces()[castlingRookFrom]][castlingRookFrom]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[base.getPieces()[castlingRookFrom]][castlingRookTo]);
 			//
 			
 			int castlingSide = (move & 0x00010000) >>> 16;
@@ -178,21 +178,21 @@ public class BotGamePlayMove {
 	public void unImplement() {
 		
 		//Transposition Table//
-		BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristBlackMove;
+		base.updateZobristKey(TranspositionTable.zobristBlackMove);
 		if(base.getGamePlay().getEpTarget() != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side][base.getGamePlay().getEpTarget()] & base.getBitboard()[(side ^ 1) | EngineConstants.PAWN]) != 0)
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristEnPassantArray[base.getGamePlay().getEpTarget()];
+			base.updateZobristKey(TranspositionTable.zobristEnPassantArray[base.getGamePlay().getEpTarget()]);
 		if(currentEpTarget != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side ^ 1][currentEpTarget] & base.getBitboard()[(side) | EngineConstants.PAWN]) != 0)
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristEnPassantArray[currentEpTarget];
+			base.updateZobristKey(TranspositionTable.zobristEnPassantArray[currentEpTarget]);
 		//
 		base.getGamePlay().setEpTarget(currentEpTarget);
 		base.getGamePlay().setEpSquare(currentEpSquare);
 		base.getGamePlay().setCastlingRights(DebugUtility.deepCloneMultiDimensionalArray(currentCastlingRights));
 		if (isSimpleMove()) {
 			//Transposition Table//
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
 			if(capturedPiece > 0)
-				BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				base.updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
 			//
 			
 			base.getPieces()[from] = fromPiece;
@@ -203,8 +203,8 @@ public class BotGamePlayMove {
 			
 		} else if (isDoublePush()) {
 			//Transposition Table//
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
 			//
 			
 			base.getPieces()[from] = fromPiece;
@@ -214,9 +214,9 @@ public class BotGamePlayMove {
 			
 		} else if(isEnPassantCapture()){
 			//Transposition Table//
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][currentEpSquare];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][currentEpSquare]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
 			//
 			
 			base.getPieces()[currentEpSquare] = capturedPiece;
@@ -228,10 +228,10 @@ public class BotGamePlayMove {
 			
 		} else if(isPromotion()){
 			//Transposition Table//
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[(byte)(EngineConstants.PAWN | side)][from];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[promotedPiece][to];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[(byte)(EngineConstants.PAWN | side)][from]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[promotedPiece][to]);
 			if(capturedPiece > 0)
-				BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				base.updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
 			//
 			
 			fromPiece = (byte)(side | EngineConstants.PAWN);
@@ -243,10 +243,10 @@ public class BotGamePlayMove {
 			
 		} else if(isQueenSideCastling() || isKingSideCastling()){
     		//Transposition Table//
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getPieces()[castlingRookTo]][castlingRookTo];
-			BotGamePlay.zobristKey = BotGamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getPieces()[castlingRookTo]][castlingRookFrom];
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[base.getPieces()[castlingRookTo]][castlingRookTo]);
+			base.updateZobristKey(TranspositionTable.zobristPositionArray[base.getPieces()[castlingRookTo]][castlingRookFrom]);
 			//
             
 			byte sideToRook = (byte) (side | EngineConstants.ROOK);

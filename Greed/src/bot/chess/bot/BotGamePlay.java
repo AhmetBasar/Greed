@@ -40,7 +40,7 @@ public class BotGamePlay implements IGameController {
 	private byte[][] rookPositions = { { 0, 7 }, { 56, 63 } };
 	private MoveGenerationOnlyQueenPromotions moveGeneration = new MoveGenerationOnlyQueenPromotions();
 	private int perspective;
-	public static long zobristKey;
+	private long zobristKey;
 	private int fiftyMoveCounter = 0;
 	private ArrayList<BotGamePlayMove> moveHistory = new ArrayList<BotGamePlayMove>();
 	
@@ -58,6 +58,10 @@ public class BotGamePlay implements IGameController {
 	
 	public static void main(String[] args) throws Exception{
 		new BotGamePlay();
+	}
+	
+	public void updateZobristKey(long val) {
+		zobristKey = zobristKey ^ val;
 	}
 
 	public BotGamePlay() {
