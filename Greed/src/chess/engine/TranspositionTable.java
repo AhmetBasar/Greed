@@ -31,16 +31,16 @@ public class TranspositionTable {
 	private static final int CASTLING_TYPE = 2;
 	private static final int CASTLING_SIDE = 2;
 
-	public static long[][] zobristPositionArray = new long[PIECE_COUNT][SQUARE_COUNT];
-	public static long[] zobristEnPassantArray = new long[FILE_COUNT * RANK_COUNT];
-	public static long[][] zobristCastlingArray = new long[CASTLING_SIDE][CASTLING_TYPE];
-	public static long zobristBlackMove;
+	public static final long[][] zobristPositionArray = new long[PIECE_COUNT][SQUARE_COUNT];
+	public static final long[] zobristEnPassantArray = new long[FILE_COUNT * RANK_COUNT];
+	public static final long[][] zobristCastlingArray = new long[CASTLING_SIDE][CASTLING_TYPE];
+	public static final long zobristBlackMove;
 
 	// TODO Change This later.
 	// TODO Change This later.
 	// private static HardCodedSecureRandom secureRandom = new
 	// HardCodedSecureRandom();
-	private static PolyGlotRandom secureRandom = new PolyGlotRandom();
+	private static final PolyGlotRandom secureRandom = new PolyGlotRandom();
 	// private static SecureRandom secureRandom = new SecureRandom();
 	// TODO Change This later.
 	// TODO Change This later.

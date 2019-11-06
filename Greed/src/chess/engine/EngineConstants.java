@@ -53,6 +53,10 @@ public interface EngineConstants {
 	public static final int DOUBLE_PUSH_SHIFTED		= DOUBLE_PUSH << 16;
 	public static final int EP_CAPTURE_SHIFTED		= EP_CAPTURE << 16;
 	public static final int PROMOTION_SHIFTED		= PROMOTION << 16;
+	
+	public static final int HASH_EXACT = 1;
+	public static final int HASH_ALPHA = 2;
+	public static final int HASH_BETA = 3;	
 
 	public static final long
 	   ROW_1=0x00000000000000ffL,

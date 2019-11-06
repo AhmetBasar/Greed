@@ -23,7 +23,7 @@ import chess.util.Utility;
 
 public class TTHybrid implements ITranspositionTable {
 
-	private static final int TT_P = 24;
+	private static final int TT_P = 20;
 	private static final int TT_F = 64 - TT_P;
 	private static final int TT_SIZE = (int) Utility.SINGLE_BIT[TT_P] + 3;
 	// private static final int TT_SIZE = 1048576 + 3;
@@ -51,7 +51,7 @@ public class TTHybrid implements ITranspositionTable {
 		int lowestDepth = Integer.MAX_VALUE;
 
 		int key = (int)(zobristKey >>> TT_F);
-		for (int i = key; i < key + 3; i++) {
+		for (int i = key; i < key + 4; i++) {
 
 			TranspositionElement e = hashTable[i];
 			if (e == null) {
@@ -60,7 +60,7 @@ public class TTHybrid implements ITranspositionTable {
 			}
 
 			if (e.zobristKey == zobristKey) {
-				if (e.depth > depth) {
+				if (e.depth > depth && hashType != EngineConstants.HASH_EXACT) {
 					return;
 				}
 				address = i;
