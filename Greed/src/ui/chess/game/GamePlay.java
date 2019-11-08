@@ -59,7 +59,7 @@ public class GamePlay {
 	
 	private Map<Long, Integer> boardStateHistory = new HashMap<Long, Integer>();
 	
-	public static boolean noAnimation = false;
+	private boolean noAnimation = false;
 	
 	private boolean isImplementMove = true;
 	
@@ -560,5 +560,9 @@ public class GamePlay {
 	public int getFiftyMoveCounter() {
 		return fiftyMoveCounter;
 	}
-	
+
+	public boolean isNoAnimation() {
+		return noAnimation;
+	}
+
 }

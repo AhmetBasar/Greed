@@ -84,9 +84,71 @@ public class CodeReviewTest {
 		
 		whiteListClasses.add("chess.bot.BotConstants");
 		whiteListClasses.add("chess.bot.image.ImageType");
+		whiteListClasses.add("chess.engine.EngineConstants");
+		whiteListClasses.add("chess.engine.PrecalculatedAttackTables");
+		whiteListClasses.add("chess.evaluation.PieceSquareTable");
+		whiteListClasses.add("chess.gui.GuiConstants");
+		whiteListClasses.add("chess.engine.test.CodeReviewTest");
 		
 		
-//		whiteListFields.add("chess.bot.BoardInteractionManager.fast");
+		
+		
+		
+		whiteListFields.add("chess.bot.interpreting.CellCoordinateFactory.cache");
+		whiteListFields.add("chess.bot.Robot.robot");
+		whiteListFields.add("chess.debug.DebugUtility.DEFAULT_BOARD");
+		whiteListFields.add("chess.debug.DebugUtility.EMPTY_BOARD");
+		whiteListFields.add("chess.debug.DebugUtility.BOARD_2");
+		
+		whiteListFields.add("chess.debug.PerformanceTesting.aliveThreadCount");
+		whiteListFields.add("chess.debug.PerformanceTesting.deadThreadCount");
+		whiteListFields.add("chess.debug.PerformanceTesting.moveCount");
+		whiteListFields.add("chess.debug.PerformanceTesting.castlingCount");
+		whiteListFields.add("chess.debug.PerformanceTesting.epCount");
+		whiteListFields.add("chess.debug.PerformanceTesting.captureCount");
+		whiteListFields.add("chess.debug.PerformanceTesting.checkMateCount");
+		whiteListFields.add("chess.debug.PerformanceTesting.promotionCount");
+		whiteListFields.add("chess.debug.PerformanceTesting.checkCount");
+		whiteListFields.add("chess.debug.PerformanceTesting.ilk");
+		whiteListFields.add("chess.debug.PerformanceTesting.isFromScreen");
+		whiteListFields.add("chess.debug.PerformanceTesting.base");
+		
+		whiteListFields.add("chess.debug.PerformanceTestingSimple.ilk");
+		whiteListFields.add("chess.debug.PerformanceTestingSimple.isFromScreen");
+		whiteListFields.add("chess.debug.PerformanceTestingSimple.base");
+		whiteListFields.add("chess.debug.PerformanceTestingSimple.aliveThreadCount");
+		whiteListFields.add("chess.debug.PerformanceTestingSimple.deadThreadCount");
+		whiteListFields.add("chess.debug.PerformanceTestingSimple.moveCount");
+		
+		whiteListFields.add("chess.debug.PerformanceTestingSingleThreadedWithBoardInfaThreaded.base");
+		whiteListFields.add("chess.debug.PerformanceTestingSingleThreadedWithBoardInfaThreaded.ilk");
+		whiteListFields.add("chess.debug.PerformanceTestingSingleThreadedWithBoardInfaThreaded.isFromScreen");
+		whiteListFields.add("chess.debug.PerformanceTestingSingleThreadedWithBoardInfaThreaded.aliveThreadCount");
+		whiteListFields.add("chess.debug.PerformanceTestingSingleThreadedWithBoardInfaThreaded.deadThreadCount");
+		whiteListFields.add("chess.debug.PerformanceTestingSingleThreadedWithBoardInfaThreaded.moveCount");
+		
+		whiteListFields.add("chess.engine.TranspositionTable.zobristPositionArray");
+		whiteListFields.add("chess.engine.TranspositionTable.zobristEnPassantArray");
+		whiteListFields.add("chess.engine.TranspositionTable.zobristCastlingArray");
+		whiteListFields.add("chess.engine.TranspositionTable.secureRandom");
+		
+		whiteListFields.add("chess.engine.ZobristHashingPolyGlot.zobristPositionArray");
+		whiteListFields.add("chess.engine.ZobristHashingPolyGlot.zobristEnPassantArray");
+		whiteListFields.add("chess.engine.ZobristHashingPolyGlot.zobristCastlingArray");
+		whiteListFields.add("chess.engine.ZobristHashingPolyGlot.secureRandom");
+		
+		whiteListFields.add("chess.engine.Transformer.rIndexMap");
+		whiteListFields.add("chess.engine.Transformer.indexMap");
+		
+		whiteListFields.add("chess.engine.test.suites.SanGenerator.FILES");
+		whiteListFields.add("chess.engine.test.suites.SanGenerator.PIECES");
+		
+		whiteListFields.add("chess.gui.PieceEffects.timerPool");
+		whiteListFields.add("chess.gui.ChessImageCache.instance");
+		whiteListFields.add("chess.util.Utility.SINGLE_BIT");
+		
+		whiteListFields.add("chess.engine.test.ThreadPool.instance");
+		
 		
 	}
 

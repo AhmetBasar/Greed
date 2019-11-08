@@ -358,7 +358,7 @@ class SuggestMoveActionListener implements ActionListener {
 				params.setPieces(Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())));
 				params.setCastlingRights(gamePlay.getCastlingRights());
 				params.setSide(gamePlay.getSide());
-				params.setUiZobristKey(GamePlay.getZobristKey());
+				params.setUiZobristKey(gamePlay.getZobristKey());
 				params.setTimeLimit(1L);
 				params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
 				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
@@ -371,7 +371,7 @@ class SuggestMoveActionListener implements ActionListener {
 				move = (SearchResult) method.invoke(obj, debugPanel.getSearchDepth(), 
 						gamePlay.getEpTarget(), gamePlay.getEpSquare(), Transformer.getBitboardStyl(base.getBoard()),
 						Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())),
-						gamePlay.getCastlingRights(), gamePlay.getSide(), GamePlay.getZobristKey(), 1, gamePlay.getFiftyMoveCounter());
+						gamePlay.getCastlingRights(), gamePlay.getSide(), gamePlay.getZobristKey(), 1, gamePlay.getFiftyMoveCounter());
 			}
 			
 			System.out.println("time consumed =  "+ (System.currentTimeMillis() - ilk));

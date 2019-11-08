@@ -31,12 +31,12 @@ public class ZobristHashingPolyGlot {
 	private static final int CASTLING_TYPE = 2;
 	private static final int CASTLING_SIDE = 2;
 
-	public static long[][] zobristPositionArray = new long[PIECE_COUNT][SQUARE_COUNT];
-	public static long[] zobristEnPassantArray = new long[FILE_COUNT * RANK_COUNT];
-	public static long[][] zobristCastlingArray = new long[CASTLING_SIDE][CASTLING_TYPE];
-	public static long zobristBlackMove;
+	public static final long[][] zobristPositionArray = new long[PIECE_COUNT][SQUARE_COUNT];
+	public static final long[] zobristEnPassantArray = new long[FILE_COUNT * RANK_COUNT];
+	public static final long[][] zobristCastlingArray = new long[CASTLING_SIDE][CASTLING_TYPE];
+	public static final long zobristBlackMove;
 
-	private static PolyGlotRandom secureRandom = new PolyGlotRandom();
+	private static final PolyGlotRandom secureRandom = new PolyGlotRandom();
 
 	static {
 		for (int piece = 2; piece < PIECE_COUNT; piece++) {

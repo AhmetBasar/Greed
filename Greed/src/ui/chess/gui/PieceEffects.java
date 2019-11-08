@@ -45,7 +45,7 @@ public class PieceEffects implements ActionListener {
 	private static ArrayList<Timer> timerPool = new ArrayList<Timer>();
 
 	public static void doEffect(BaseGui base, int sourceIndex, int targetIndex) {
-		if (GamePlay.noAnimation) {
+		if (base.getGamePlay().isNoAnimation()) {
 			// For Debugging Purpose.
 			byte movingItem = base.getChessBoardPanel().getCell(sourceIndex).getItem();
 			base.getChessBoardPanel().getCell(sourceIndex).setItem(EngineConstants.BLANK);
