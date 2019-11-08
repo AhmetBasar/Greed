@@ -36,7 +36,7 @@ public class BoardInteractionManager {
 		this.imageCache = imageCache;
 	}
 	
-	public static boolean fast = false;
+	private boolean fast = false;
 	
 	public void doMove(BotMove move) {
 		doMove(move, true);
@@ -108,6 +108,14 @@ public class BoardInteractionManager {
 		Robot.moveMouseCursor(p);
 		Utility.sleep(Utility.generateStrongRandomNumber(11, 33));
 		Robot.getRobot().mouseRelease(mask);
+	}
+
+	public boolean isFast() {
+		return fast;
+	}
+
+	public void setFast(boolean fast) {
+		this.fast = fast;
 	}
 	
 //	public static void doMouseReleasedUltraFast(Point p) {

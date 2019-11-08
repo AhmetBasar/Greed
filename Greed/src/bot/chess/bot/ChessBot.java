@@ -305,4 +305,8 @@ public class ChessBot implements Runnable {
 		return controller;
 	}
 
+	public BoardInteractionManager getBoardInteractionManager() {
+		return boardInteractionManager;
+	}
+
 }

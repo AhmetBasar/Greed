@@ -33,9 +33,9 @@ public class EngineController implements Runnable {
 	private IGameController gameController;
 	private ICallBack callback;
 	
-	public static int DEFAULT_DEPTH_LIMIT = 7;
-	public static int depthLimit = DEFAULT_DEPTH_LIMIT;
-	public static int timeLimit = 2000;
+	public static final int DEFAULT_DEPTH_LIMIT = 7;
+	private int depthLimit = DEFAULT_DEPTH_LIMIT;
+	private int timeLimit = 2000;
 
 	public EngineController(IGameController gameController) {
 		this.gameController = gameController;
@@ -172,5 +172,33 @@ public class EngineController implements Runnable {
 			return true;
 		}
 	}
+
+	public void setDepthLimit(int depthLimit) {
+		this.depthLimit = depthLimit;
+	}
+	
+	public void incrementDepthLimit() {
+		this.depthLimit++;
+	}
+	
+	public void decrementDepthLimit() {
+		this.depthLimit--;
+	}
+
+	public void setTimeLimit(int timeLimit) {
+		this.timeLimit = timeLimit;
+	}
+
+	public int getDepthLimit() {
+		return depthLimit;
+	}
+
+	public int getTimeLimit() {
+		return timeLimit;
+	}
+	
+	
+	
+	
 
 }

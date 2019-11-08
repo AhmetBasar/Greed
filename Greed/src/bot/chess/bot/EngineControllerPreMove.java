@@ -29,8 +29,8 @@ public class EngineControllerPreMove implements Runnable {
 	private IGameController gameController;
 	private ICallBackPreMove callbackPreMove;
 	
-	public static int DEFAULT_DEPTH_LIMIT = 6;
-	public static int depth = DEFAULT_DEPTH_LIMIT;
+	public static final int DEFAULT_DEPTH_LIMIT = 6;
+	private int depth = DEFAULT_DEPTH_LIMIT;
 //	public static int timeLimit = 500;
 
 	public EngineControllerPreMove(IGameController gameController) {

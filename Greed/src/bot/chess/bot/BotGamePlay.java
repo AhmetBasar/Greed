@@ -434,5 +434,13 @@ public class BotGamePlay implements IGameController {
 	public int getFiftyMoveCounter() {
 		return fiftyMoveCounter;
 	}
+
+	public EngineController getEngineController() {
+		return engineController;
+	}
+
+	public ChessBot getBot() {
+		return bot;
+	}
 	
 }

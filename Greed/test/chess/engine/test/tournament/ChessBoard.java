@@ -45,7 +45,7 @@ public class ChessBoard {
 	private GameState gameState = GameState.PLAYING;
 	private LegalityV4 legality = new LegalityV4();
 	
-	enum GameState{PLAYING, DRAW, WHITE_WINS, BLACK_WINS};
+	public enum GameState{PLAYING, DRAW, WHITE_WINS, BLACK_WINS};
 	
 	long[] bitboard;
 	private byte[] pieces;
