@@ -47,109 +47,113 @@ public class TournamentManagerEngineBased implements Runnable {
 
 	@Override
 	public void run() {
-
-		if (base != null) {
-			// WARNING: High frequency Hard Drive usage may be harmful.
-			return;
-		}
-
-		HashMap<Long, Long> positionCountDraw = new HashMap<Long, Long>();
-		HashMap<Long, Long> positionCountWhite = new HashMap<Long, Long>();
-		HashMap<Long, Long> positionCountBlack = new HashMap<Long, Long>();
-
-		// TODO Auto-generated method stub
-		ChessBoard board = new ChessBoard();
-
-		ISearchableV2 engine1 = SearchEngineFifty8.getNewInstance();
-		ISearchableV2 engine2 = SearchEngineFifty8.getNewInstance();
-
-		double engine1Score = 0d;
-		double engine2Score = 0d;
-		
-		ISearchableV2 engineWhite = engine1;
-		ISearchableV2 engineBlack = engine2;
-
-		while (true) {
-			if (board.getSide() == GuiConstants.WHITES_TURN) {
-				engineWhite.setBoardStateHistory(board.getBoardStateHistory());
-
-				SearchParameters params = new SearchParameters();
-				params.setDepth(1);
-				params.setEpT(board.getEpTarget());
-				params.setEpS(board.getEpSquare());
-				params.setBitboard(board.getBitboard());
-				params.setPieces(board.getPieces());
-				params.setCastlingRights(board.getCastlingRights());
-				params.setSide(board.getSide());
-				params.setUiZobristKey(board.getZobristKey());
-				params.setTimeLimit(3);
-				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
-				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
-
-				SearchResult searchResult = engineWhite.search(params);
-				board.doMove(searchResult.getBestMove());
-
-			} else {
-				engineBlack.setBoardStateHistory(board.getBoardStateHistory());
-
-				SearchParameters params = new SearchParameters();
-				params.setDepth(1);
-				params.setEpT(board.getEpTarget());
-				params.setEpS(board.getEpSquare());
-				params.setBitboard(board.getBitboard());
-				params.setPieces(board.getPieces());
-				params.setCastlingRights(board.getCastlingRights());
-				params.setSide(board.getSide());
-				params.setUiZobristKey(board.getZobristKey());
-				params.setTimeLimit(3);
-				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
-				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
-
-				SearchResult searchResult = engineBlack.search(params);
-				board.doMove(searchResult.getBestMove());
-			}
-
+		try {
 			if (base != null) {
-				base.setBoard(Transformer.getTwoDimByteArrayStyl(board.getBitboard()));
+				// WARNING: High frequency Hard Drive usage may be harmful.
+				return;
 			}
 
-			GameState gameState = board.getGameState();
-			if (gameState != GameState.PLAYING) {
-				
-				engineWhite.resetTT();
-				engineBlack.resetTT();
-				if (gameState == GameState.WHITE_WINS) {
-					increment(positionCountWhite, board.getZobristKey());
-					if (engineWhite == engine1) {
-						engine1Score = engine1Score + 1;
-					} else {
-						engine2Score = engine2Score + 1;
-					}
-				} else if (gameState == GameState.BLACK_WINS) {
-					increment(positionCountBlack, board.getZobristKey());
-					if (engineBlack == engine1) {
-						engine1Score = engine1Score + 1;
-					} else {
-						engine2Score = engine2Score + 1;
-					}
+			HashMap<Long, Long> positionCountDraw = new HashMap<Long, Long>();
+			HashMap<Long, Long> positionCountWhite = new HashMap<Long, Long>();
+			HashMap<Long, Long> positionCountBlack = new HashMap<Long, Long>();
+
+			// TODO Auto-generated method stub
+			ChessBoard board = new ChessBoard();
+
+			ISearchableV2 engine1 = SearchEngineFifty8.getNewInstance();
+			ISearchableV2 engine2 = SearchEngineFifty8.getNewInstance();
+
+			double engine1Score = 0d;
+			double engine2Score = 0d;
+			
+			ISearchableV2 engineWhite = engine1;
+			ISearchableV2 engineBlack = engine2;
+
+			while (true) {
+				if (board.getSide() == GuiConstants.WHITES_TURN) {
+					engineWhite.setBoardStateHistory(board.getBoardStateHistory());
+
+					SearchParameters params = new SearchParameters();
+					params.setDepth(1);
+					params.setEpT(board.getEpTarget());
+					params.setEpS(board.getEpSquare());
+					params.setBitboard(board.getBitboard());
+					params.setPieces(board.getPieces());
+					params.setCastlingRights(board.getCastlingRights());
+					params.setSide(board.getSide());
+					params.setUiZobristKey(board.getZobristKey());
+					params.setTimeLimit(3);
+					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
+					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+
+					SearchResult searchResult = engineWhite.search(params);
+					board.doMove(searchResult.getBestMove());
+
 				} else {
-					increment(positionCountDraw, board.getZobristKey());
-					engine1Score = engine1Score + 0.5d;
-					engine2Score = engine2Score + 0.5d;
-				}
-				board.resetAll();
-				System.out.println("positionCountDraw = " + convertToCountBasedMap(positionCountDraw));
-				System.out.println("positionCountWhite = " + convertToCountBasedMap(positionCountWhite));
-				System.out.println("positionCountBlack = " + convertToCountBasedMap(positionCountBlack));
-				
-				System.out.println("engine1Score = " + engine1Score);
-				System.out.println("engine2Score = " + engine2Score);
-				
-				ISearchableV2 tempEngine = engineWhite;
-				engineWhite = engineBlack;
-				engineBlack = tempEngine;
-			}
+					engineBlack.setBoardStateHistory(board.getBoardStateHistory());
 
+					SearchParameters params = new SearchParameters();
+					params.setDepth(1);
+					params.setEpT(board.getEpTarget());
+					params.setEpS(board.getEpSquare());
+					params.setBitboard(board.getBitboard());
+					params.setPieces(board.getPieces());
+					params.setCastlingRights(board.getCastlingRights());
+					params.setSide(board.getSide());
+					params.setUiZobristKey(board.getZobristKey());
+					params.setTimeLimit(3);
+					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
+					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+
+					SearchResult searchResult = engineBlack.search(params);
+					board.doMove(searchResult.getBestMove());
+				}
+
+				if (base != null) {
+					base.setBoard(Transformer.getTwoDimByteArrayStyl(board.getBitboard()));
+				}
+
+				GameState gameState = board.getGameState();
+				if (gameState != GameState.PLAYING) {
+					
+					engineWhite.resetTT();
+					engineBlack.resetTT();
+					if (gameState == GameState.WHITE_WINS) {
+						increment(positionCountWhite, board.getZobristKey());
+						if (engineWhite == engine1) {
+							engine1Score = engine1Score + 1;
+						} else {
+							engine2Score = engine2Score + 1;
+						}
+					} else if (gameState == GameState.BLACK_WINS) {
+						increment(positionCountBlack, board.getZobristKey());
+						if (engineBlack == engine1) {
+							engine1Score = engine1Score + 1;
+						} else {
+							engine2Score = engine2Score + 1;
+						}
+					} else {
+						increment(positionCountDraw, board.getZobristKey());
+						engine1Score = engine1Score + 0.5d;
+						engine2Score = engine2Score + 0.5d;
+					}
+					board.resetAll();
+					System.out.println("positionCountDraw = " + convertToCountBasedMap(positionCountDraw));
+					System.out.println("positionCountWhite = " + convertToCountBasedMap(positionCountWhite));
+					System.out.println("positionCountBlack = " + convertToCountBasedMap(positionCountBlack));
+					
+					System.out.println("engine1Score = " + engine1Score);
+					System.out.println("engine2Score = " + engine2Score);
+					
+					ISearchableV2 tempEngine = engineWhite;
+					engineWhite = engineBlack;
+					engineBlack = tempEngine;
+				}
+
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	

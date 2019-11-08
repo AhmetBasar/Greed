@@ -80,68 +80,68 @@ public class KeyListenerGeneric implements NativeKeyListener {
 						botGamePlay.resetAll();
 						botGamePlay.resetBot();
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_4)) {
-						EngineController.depthLimit = 4;
-						System.out.println("depth limit = " + EngineController.depthLimit);
+						botGamePlay.getEngineController().setDepthLimit(4);
+						System.out.println("depth limit = " + botGamePlay.getEngineController().getDepthLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_5)) {
-						EngineController.depthLimit = 5;
-						System.out.println("depth limit = " + EngineController.depthLimit);
+						botGamePlay.getEngineController().setDepthLimit(5);
+						System.out.println("depth limit = " + botGamePlay.getEngineController().getDepthLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_6)) {
-						EngineController.depthLimit = 6;
-						System.out.println("depth limit = " + EngineController.depthLimit);
+						botGamePlay.getEngineController().setDepthLimit(6);
+						System.out.println("depth limit = " + botGamePlay.getEngineController().getDepthLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_7)) {
-						EngineController.depthLimit = 7;
-						System.out.println("depth limit = " + EngineController.depthLimit);
+						botGamePlay.getEngineController().setDepthLimit(7);
+						System.out.println("depth limit = " + botGamePlay.getEngineController().getDepthLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_8)) {
-						EngineController.depthLimit = 8;
-						System.out.println("depth limit = " + EngineController.depthLimit);
+						botGamePlay.getEngineController().setDepthLimit(8);
+						System.out.println("depth limit = " + botGamePlay.getEngineController().getDepthLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_9)) {
-						EngineController.depthLimit = 9;
-						System.out.println("depth limit = " + EngineController.depthLimit);
+						botGamePlay.getEngineController().setDepthLimit(9);
+						System.out.println("depth limit = " + botGamePlay.getEngineController().getDepthLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_0)) {
-						EngineController.depthLimit = 10;
-						System.out.println("depth limit = " + EngineController.depthLimit);
+						botGamePlay.getEngineController().setDepthLimit(10);
+						System.out.println("depth limit = " + botGamePlay.getEngineController().getDepthLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_UP)) {
-						EngineController.depthLimit++;
-						System.out.println("depth limit = " + EngineController.depthLimit);
+						botGamePlay.getEngineController().incrementDepthLimit();
+						System.out.println("depth limit = " + botGamePlay.getEngineController().getDepthLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_DOWN)) {
-						EngineController.depthLimit--;
-						System.out.println("depth limit = " + EngineController.depthLimit);
+						botGamePlay.getEngineController().decrementDepthLimit();
+						System.out.println("depth limit = " + botGamePlay.getEngineController().getDepthLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_COMMA)) {
-						BoardInteractionManager.fast = true;
+						botGamePlay.getBot().getBoardInteractionManager().setFast(true);
 						System.out.println("FASTTT");
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_CONTROL, NativeKeyEvent.VC_DELETE)) {
-						BoardInteractionManager.fast = false;
+						botGamePlay.getBot().getBoardInteractionManager().setFast(false);
 						System.out.println("SLOW");
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_1)) {
-						EngineController.timeLimit = 1000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(1000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_2)) {
-						EngineController.timeLimit = 2000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(2000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_3)) {
-						EngineController.timeLimit = 3000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(3000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_4)) {
-						EngineController.timeLimit = 4000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(4000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_5)) {
-						EngineController.timeLimit = 5000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(5000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_6)) {
-						EngineController.timeLimit = 6000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(6000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_7)) {
-						EngineController.timeLimit = 7000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(7000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_8)) {
-						EngineController.timeLimit = 8000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(8000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_9)) {
-						EngineController.timeLimit = 9000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(9000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_ALT, NativeKeyEvent.VC_0)) {
-						EngineController.timeLimit = 10000;
-						System.out.println("timeLimit = " + EngineController.timeLimit);
+						botGamePlay.getEngineController().setTimeLimit(10000);
+						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_DELETE)) {
 						System.out.println("Del requested.");
 						SearchEngineFifty8.forceTimeoutRequested = true;

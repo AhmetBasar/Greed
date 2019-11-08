@@ -212,4 +212,17 @@ Chess Bot Programming.
   - Use precalculated singlebit lookup for all 1 << n operations.
   - Java performance optimizations. (such as static final methods.)
   - do not use shared objects. Review code. do not use static variables. but static method is permitted.
+  - if there is no castling rights, call move generator that doesn't search castling moves.
+  - ttBestMove is tried first. but then, all possible moves are tried. do we need to try ttBestMove again?
+  - capture moves should be handled by see, not killer heuristic.
+  - return contempt factor.
+  - do not use while loop to iterate kings. As there is always one king per side on the board..
+  - write pawn shield evaluation in a more smarter way. (i.e. faster)
+  - change isEndGame evaluation. (must be independent from side to move)
+  - in all run methods, use try catch block and invoke printStackTrace and System.exit(1); methods from catch block. Search that "void run"
+  - Write a test method that scans source code and detects static variables, signed right shift operators etc. etc.
+  - Write a smart assertion mechanishm that has no effect on performance.
+  - write incremental occupied bitboard calculation. it may be far better in best case thanks to good move ordering.
+  - custom thread pool does not use 100 percent cpu, but util concurrent does. why?
+  - Do not use singleton pattern!
  
