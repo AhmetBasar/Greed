@@ -442,5 +442,10 @@ public class BotGamePlay implements IGameController {
 	public ChessBot getBot() {
 		return bot;
 	}
+
+	@Override
+	public int getMoveCount() {
+		return bot.getMoveCount();
+	}
 	
 }

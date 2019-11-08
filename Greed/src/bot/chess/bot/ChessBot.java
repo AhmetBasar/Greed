@@ -43,7 +43,7 @@ public class ChessBot implements Runnable {
 	private volatile boolean restarted = false;
 	private volatile boolean preMoved = false;
 	private BotMove scheduledPreMove;
-	private static int moveCount = 0;
+	private int moveCount = 0;
 
 	public static void main(String[] args) {
 		ChessBot chessBot = new ChessBot(null);
@@ -293,11 +293,11 @@ public class ChessBot implements Runnable {
 		}
 	}
 
-	public static void incrementMoveCount() {
+	public void incrementMoveCount() {
 		moveCount++;
 	}
 
-	public static int getMoveCount() {
+	public int getMoveCount() {
 		return moveCount;
 	}
 

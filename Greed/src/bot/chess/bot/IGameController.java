@@ -70,4 +70,6 @@ public interface IGameController {
 	
 	int getFiftyMoveCounter();
 	
+	int getMoveCount();
+	
 }

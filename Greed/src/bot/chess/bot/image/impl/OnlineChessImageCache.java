@@ -56,7 +56,7 @@ public class OnlineChessImageCache extends AbstractImageCache {
 		x = x + 6;
 		y = y - 556;
 
-		Robot.getRobot().mouseMove(x, y);
+		Robot.mouseMove(x, y);
 
 		System.out.println("Done.");
 
@@ -139,7 +139,7 @@ public class OnlineChessImageCache extends AbstractImageCache {
 
 			Point p = Utility.findSubImagePoint(rgbScreenShot, rgbPattern);
 
-			Robot.getRobot().mouseMove(p.x, p.y);
+			Robot.mouseMove(p.x, p.y);
 
 			System.out.println("Done.");
 

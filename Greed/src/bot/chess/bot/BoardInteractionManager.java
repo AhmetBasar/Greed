@@ -81,11 +81,11 @@ public class BoardInteractionManager {
 		int mask = InputEvent.BUTTON1_DOWN_MASK;
 //		Robot.moveMouseCursor(p);
 		Utility.sleep(Utility.generateStrongRandomNumber(2, 12));
-		Robot.getRobot().mouseMove(p.x, p.y);
+		Robot.mouseMove(p.x, p.y);
 		Utility.sleep(Utility.generateStrongRandomNumber(2, 12));
-		Robot.getRobot().mousePress(mask);
+		Robot.mousePress(mask);
 		Utility.sleep(Utility.generateStrongRandomNumber(2, 12));
-		Robot.getRobot().mouseRelease(mask);
+		Robot.mouseRelease(mask);
 		Utility.sleep(Utility.generateStrongRandomNumber(2, 12));
 	}
 	
@@ -93,7 +93,7 @@ public class BoardInteractionManager {
 		int mask = InputEvent.BUTTON1_DOWN_MASK;
 		Robot.moveMouseCursor(p);
 		Utility.sleep(Utility.generateStrongRandomNumber(5, 27));
-		Robot.getRobot().mousePress(mask);
+		Robot.mousePress(mask);
 	}
 	
 //	public static void doMousePressedUltraFast(Point p) {
@@ -107,7 +107,7 @@ public class BoardInteractionManager {
 		int mask = InputEvent.BUTTON1_DOWN_MASK;
 		Robot.moveMouseCursor(p);
 		Utility.sleep(Utility.generateStrongRandomNumber(11, 33));
-		Robot.getRobot().mouseRelease(mask);
+		Robot.mouseRelease(mask);
 	}
 
 	public boolean isFast() {

@@ -56,7 +56,7 @@ public class EngineController implements Runnable {
 				int dl = depthLimit;
 				
 				// 1 move fast, 1 move slow, human like thinking.
-				if (ChessBot.getMoveCount() % 2 == 0 && Utility.generateStrongRandomNumber(1, 10) > 3) {
+				if (gameController.getMoveCount() % 2 == 0 && Utility.generateStrongRandomNumber(1, 10) > 3) {
 					tl = tl / 2;
 				} else {
 					tl = tl * 2;
@@ -83,7 +83,7 @@ public class EngineController implements Runnable {
 					tl = Utility.generateStrongRandomNumber(15000, 25000);
 				}
 				
-				if (ChessBot.getMoveCount() <= 1) {
+				if (gameController.getMoveCount() <= 1) {
 					dl = 5;
 					tl = Utility.generateStrongRandomNumber(70, 500);
 				}
@@ -163,7 +163,7 @@ public class EngineController implements Runnable {
 				return true;
 			}
 			
-			if (ChessBot.getMoveCount() < Utility.generateStrongRandomNumber(5, 10) && Utility.doProbability(85)) {
+			if (gameController.getMoveCount() < Utility.generateStrongRandomNumber(5, 10) && Utility.doProbability(85)) {
 				return true;
 			}
 			

@@ -42,27 +42,23 @@ public class Robot {
 		
 	}
 
-	public static BufferedImage takeScreenShot() {
+	public synchronized static BufferedImage takeScreenShot() {
 		Rectangle screenRect = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
 		BufferedImage screenFullImage = robot.createScreenCapture(screenRect);
 		return screenFullImage;
 	}
 
-	public static java.awt.Robot getRobot() {
-		return robot;
-	}
-	
-	public static void moveMouseCursor(Point to) {
+	public synchronized static void moveMouseCursor(Point to) {
 		Point from = MouseInfo.getPointerInfo().getLocation();
 		mouseGlide(from.x, from.y, to.x, to.y, 1, Utility.generateStrongRandomNumber(400, 600));
 	}
 	
-	public static void moveMouseCursoUltraFast(Point to) {
+	public synchronized static void moveMouseCursoUltraFast(Point to) {
 		Point from = MouseInfo.getPointerInfo().getLocation();
 		mouseGlide(from.x, from.y, to.x, to.y, 1, 200);
 	}
 	
-	public static void mouseGlide(int x1, int y1, int x2, int y2, int t, int n) {
+	public synchronized static void mouseGlide(int x1, int y1, int x2, int y2, int t, int n) {
 		double dx = (x2 - x1) / ((double) n);
 		double dy = (y2 - y1) / ((double) n);
 		double dt = t / ((double) n);
@@ -70,6 +66,18 @@ public class Robot {
 			Utility.sleep((int) dt);
 			robot.mouseMove((int) (x1 + dx * step), (int) (y1 + dy * step));
 		}
+	}
+	
+	public synchronized static void mouseMove(int x, int y) {
+		robot.mouseMove(x, y);
+	}
+	
+	public synchronized static void mousePress(int buttons) {
+		robot.mousePress(buttons);
+	}
+	
+	public synchronized static void mouseRelease(int buttons) {
+		robot.mouseRelease(buttons);
 	}
 	
 }
