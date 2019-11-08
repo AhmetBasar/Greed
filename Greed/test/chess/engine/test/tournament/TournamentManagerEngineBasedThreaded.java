@@ -27,12 +27,14 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import chess.engine.EngineConstants;
+import chess.engine.EngineConstants.EngineMode;
 import chess.engine.ISearchableV2;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.engine.test.ThreadPool;
 import chess.engine.test.tournament.ChessBoard.GameState;
 import chess.fhv2.SearchEngineFifty10;
+import chess.fhv2.SearchEngineFifty8;
 import chess.gui.GuiConstants;
 
 public class TournamentManagerEngineBasedThreaded implements Runnable {
@@ -50,105 +52,116 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 		}
 		ThreadPool.getInstance().execute(runnables, true);
 	}
-
+	
 	public TournamentManagerEngineBasedThreaded() {
 	}
 
 	@Override
 	public void run() {
-		ChessBoard board = new ChessBoard();
-
-		ISearchableV2 engine1 = SearchEngineFifty10.getNewInstance();
-		ISearchableV2 engine2 = SearchEngineFifty10.getNewInstance();
-
-		ISearchableV2 engineWhite = engine1;
-		ISearchableV2 engineBlack = engine2;
-
-		while (true) {
-			if (board.getSide() == GuiConstants.WHITES_TURN) {
-				engineWhite.setBoardStateHistory(board.getBoardStateHistory());
-
-				SearchParameters params = new SearchParameters();
-				params.setDepth(2);
-				params.setEpT(board.getEpTarget());
-				params.setEpS(board.getEpSquare());
-				params.setBitboard(board.getBitboard());
-				params.setPieces(board.getPieces());
-				params.setCastlingRights(board.getCastlingRights());
-				params.setSide(board.getSide());
-				params.setUiZobristKey(board.getZobristKey());
-				params.setTimeLimit(3);
-				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
-				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
-
-				SearchResult searchResult = engineWhite.search(params);
-				board.doMove(searchResult.getBestMove());
-
-			} else {
-				engineBlack.setBoardStateHistory(board.getBoardStateHistory());
-
-				SearchParameters params = new SearchParameters();
-				params.setDepth(2);
-				params.setEpT(board.getEpTarget());
-				params.setEpS(board.getEpSquare());
-				params.setBitboard(board.getBitboard());
-				params.setPieces(board.getPieces());
-				params.setCastlingRights(board.getCastlingRights());
-				params.setSide(board.getSide());
-				params.setUiZobristKey(board.getZobristKey());
-				params.setTimeLimit(3);
-				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
-				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
-
-				SearchResult searchResult = engineBlack.search(params);
-				board.doMove(searchResult.getBestMove());
-			}
-
-			GameState gameState = board.getGameState();
-			if (gameState != GameState.PLAYING) {
-
-				engineWhite.resetTT();
-				engineBlack.resetTT();
-				if (gameState == GameState.WHITE_WINS) {
-					increment(positionCountWhite, board.getZobristKey());
-					if (engineWhite == engine1) {
-						incrementEngine1Score(1);
-					} else {
-						incrementEngine2Score(1);
-					}
-				} else if (gameState == GameState.BLACK_WINS) {
-					increment(positionCountBlack, board.getZobristKey());
-					if (engineBlack == engine1) {
-						incrementEngine1Score(1);
-					} else {
-						incrementEngine2Score(1);
-					}
+		
+		try {
+			ChessBoard board = new ChessBoard();
+			
+			final int depth = 1;
+			final int timeLimit = 5;
+			final EngineMode engineMode = EngineConstants.EngineMode.NON_FIXED_DEPTH;
+			
+			ISearchableV2 engine1 = SearchEngineFifty10.getNewInstance();
+			ISearchableV2 engine2 = SearchEngineFifty8.getNewInstance();
+			
+			ISearchableV2 engineWhite = engine1;
+			ISearchableV2 engineBlack = engine2;
+			
+			while (true) {
+				if (board.getSide() == GuiConstants.WHITES_TURN) {
+					engineWhite.setBoardStateHistory(board.getBoardStateHistory());
+					
+					SearchParameters params = new SearchParameters();
+					params.setDepth(depth);
+					params.setEpT(board.getEpTarget());
+					params.setEpS(board.getEpSquare());
+					params.setBitboard(board.getBitboard());
+					params.setPieces(board.getPieces());
+					params.setCastlingRights(board.getCastlingRights());
+					params.setSide(board.getSide());
+					params.setUiZobristKey(board.getZobristKey());
+					params.setTimeLimit(timeLimit);
+					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
+					params.setEngineMode(engineMode);
+					
+					SearchResult searchResult = engineWhite.search(params);
+					board.doMove(searchResult.getBestMove());
+					
 				} else {
-					increment(positionCountDraw, board.getZobristKey());
-					incrementEngine1Score(0.5d);
-					incrementEngine2Score(0.5d);
+					engineBlack.setBoardStateHistory(board.getBoardStateHistory());
+					
+					SearchParameters params = new SearchParameters();
+					params.setDepth(depth);
+					params.setEpT(board.getEpTarget());
+					params.setEpS(board.getEpSquare());
+					params.setBitboard(board.getBitboard());
+					params.setPieces(board.getPieces());
+					params.setCastlingRights(board.getCastlingRights());
+					params.setSide(board.getSide());
+					params.setUiZobristKey(board.getZobristKey());
+					params.setTimeLimit(timeLimit);
+					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
+					params.setEngineMode(engineMode);
+					
+					SearchResult searchResult = engineBlack.search(params);
+					board.doMove(searchResult.getBestMove());
 				}
-				board.resetAll();
 				
-				StringBuilder sb = new StringBuilder();
-				sb.append("positionCountDraw = " + convertToCountBasedMap(positionCountDraw) + "\n");
-				sb.append("positionCountWhite = " + convertToCountBasedMap(positionCountWhite) + "\n");
-				sb.append("positionCountBlack = " + convertToCountBasedMap(positionCountBlack) + "\n");
-				sb.append("engine1Score = " + engine1Score + "\n");
-				sb.append("engine2Score = " + engine2Score + "\n");
-				double totalScore = engine1Score + engine2Score;
-				double engine1Percentage = (100 * engine1Score) / totalScore;
-				double engine2Percentage = (100 * engine2Score) / totalScore;
-				sb.append("engine1Percentage = " + engine1Percentage + "\n");
-				sb.append("engine2Percentage = " + engine2Percentage + "\n");
+				GameState gameState = board.getGameState();
+				if (gameState != GameState.PLAYING) {
+					
+					engineWhite.resetTT();
+					engineBlack.resetTT();
+					if (gameState == GameState.WHITE_WINS) {
+						increment(positionCountWhite, board.getZobristKey());
+						if (engineWhite == engine1) {
+							incrementEngine1Score(1);
+						} else {
+							incrementEngine2Score(1);
+						}
+					} else if (gameState == GameState.BLACK_WINS) {
+						increment(positionCountBlack, board.getZobristKey());
+						if (engineBlack == engine1) {
+							incrementEngine1Score(1);
+						} else {
+							incrementEngine2Score(1);
+						}
+					} else {
+						increment(positionCountDraw, board.getZobristKey());
+						incrementEngine1Score(0.5d);
+						incrementEngine2Score(0.5d);
+					}
+					board.resetAll();
+					
+					StringBuilder sb = new StringBuilder();
+					sb.append("positionCountDraw = " + convertToCountBasedMap(positionCountDraw) + "\n");
+					sb.append("positionCountWhite = " + convertToCountBasedMap(positionCountWhite) + "\n");
+					sb.append("positionCountBlack = " + convertToCountBasedMap(positionCountBlack) + "\n");
+					sb.append("engine1Score = " + engine1Score + "\n");
+					sb.append("engine2Score = " + engine2Score + "\n");
+					double totalScore = engine1Score + engine2Score;
+					double engine1Percentage = (100 * engine1Score) / totalScore;
+					double engine2Percentage = (100 * engine2Score) / totalScore;
+					sb.append("engine1Percentage = " + engine1Percentage + "\n");
+					sb.append("engine2Percentage = " + engine2Percentage + "\n");
+					
+//				print(sb.toString());
+					
+					ISearchableV2 tempEngine = engineWhite;
+					engineWhite = engineBlack;
+					engineBlack = tempEngine;
+				}
 				
-				print(sb.toString());
-				
-				ISearchableV2 tempEngine = engineWhite;
-				engineWhite = engineBlack;
-				engineBlack = tempEngine;
 			}
-
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 
@@ -165,7 +178,7 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 		engine2Score = engine2Score + d;
 	}
 
-	private synchronized TreeMap<Long, Long> convertToCountBasedMap(Map<Long, Long> map) {
+	private synchronized static TreeMap<Long, Long> convertToCountBasedMap(Map<Long, Long> map) {
 		TreeMap<Long, Long> retMap = new TreeMap<>();
 		for (Map.Entry<Long, Long> entry : map.entrySet()) {
 			Long count = entry.getValue();
