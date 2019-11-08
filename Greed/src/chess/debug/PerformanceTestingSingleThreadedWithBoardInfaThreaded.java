@@ -70,11 +70,12 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		moveCount = moveCount + moveC;
 		if (deadThreadCount == aliveThreadCount) {
 			if(isFromScreen){
-				outputMessage = outputMessage + "moveCount = " + moveCount + "\n";
-				outputMessage = outputMessage + "----------------------------" + "\n";
-				outputMessage = outputMessage + "active thread count = " + aliveThreadCount + "\n";
-				outputMessage = outputMessage + "Time Consumed = " + (System.currentTimeMillis() - ilk) + "\n";
-				base.getDebugPanel().setOutputMessage(outputMessage);
+				StringBuilder outputMessage = new StringBuilder();
+				outputMessage.append("moveCount = " + moveCount + "\n");
+				outputMessage.append("----------------------------" + "\n");
+				outputMessage.append("active thread count = " + aliveThreadCount + "\n");
+				outputMessage.append("Time Consumed = " + (System.currentTimeMillis() - ilk) + "\n");
+				base.getDebugPanel().setOutputMessage(outputMessage.toString());
 				base.getDebugPanel().setEnableAll(true);
 			} else {
 				System.out.println("moveCount = " + moveCount);
@@ -213,13 +214,11 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 	private static int aliveThreadCount = 0;
 	private static int deadThreadCount = 0;
 	private static long moveCount = 0;
-	private static String outputMessage;
 	
 	private synchronized static void resetCounters(){
 		aliveThreadCount = 0;
 		deadThreadCount = 0;
 		moveCount = 0;
-		outputMessage = "";
 		ilk = System.currentTimeMillis();
 	}
 

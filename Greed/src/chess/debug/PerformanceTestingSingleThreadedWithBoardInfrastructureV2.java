@@ -31,9 +31,8 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 	private LegalityV4 legality = new LegalityV4();
 	private PerftResult perftResult = new PerftResult();
 
-	private static long ilk = System.currentTimeMillis();
-
 	public static void main(String[] args) {
+		long ilk = System.currentTimeMillis();
 		byte[][] sourceBoard = DebugUtility.getDefaultBoard();
 		long[] bitboard = Transformer.getBitboardStyl(sourceBoard);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));

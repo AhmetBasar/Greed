@@ -39,12 +39,8 @@ public class PerformanceTestingSingleThreadedCopyMake {
 	private int globalEpTarget;
 	private int globalEpSquare;
 	
-	private static BaseGui base;
-	
-	
-	private static long ilk = System.currentTimeMillis();
-	
 	public static void main(String[] args) {
+		long ilk = System.currentTimeMillis();
 		byte[][] sourceBoard = DebugUtility.getDefaultBoard();
 		long[] bitboard = Transformer.getBitboardStyl(sourceBoard);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
@@ -54,15 +50,14 @@ public class PerformanceTestingSingleThreadedCopyMake {
 	}
 	
 	public static void getAllVariations(byte[][] board, int side, int depth, byte[][] castlingRights, BaseGui baseGui, int threadCount, int epTarget, int epSquare){
-		base = baseGui;
 		long[] bitboard = Transformer.getBitboardStyl(board);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(board));
-		ilk = System.currentTimeMillis();
+		long ilk = System.currentTimeMillis();
 		String outputMessage = "";
 		outputMessage = outputMessage + "moveCount = " + new PerformanceTestingSingleThreadedCopyMake().perft(depth, epTarget, epSquare, bitboard, pieces, castlingRights, side ^ 1) + "\n";
 		outputMessage = outputMessage + "----------------------------" + "\n";
 		outputMessage = outputMessage + "Time Consumed = " + (System.currentTimeMillis() - ilk) + "\n";
-		base.getDebugPanel().setOutputMessage(outputMessage);
+		baseGui.getDebugPanel().setOutputMessage(outputMessage);
 	}
 
 	public long perft(int depth, int epT, int epS, long[] bitboard, byte[] pieces, byte[][] castlingRights, int side) {

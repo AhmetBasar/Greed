@@ -36,11 +36,8 @@ public class PerformanceTestingSingleThreaded {
 	private byte[] kingPositions = { 4, 60 };
 	private byte[][] rookPositions = { { 0, 7 }, { 56, 63 } };
 	
-	private static long ilk = System.currentTimeMillis();
-	
-	private static BaseGui base;
-	
 	public static void main(String[] args) {
+		long ilk = System.currentTimeMillis();
 		byte[][] sourceBoard = DebugUtility.getDefaultBoard();
 		long[] bitboard = Transformer.getBitboardStyl(sourceBoard);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
@@ -51,16 +48,15 @@ public class PerformanceTestingSingleThreaded {
 	
 	public static void getAllVariations(byte[][] board, int side, int depth, byte[][] castlingRights, BaseGui baseGui, int threadCount, int epTarget, int epSquare){
 		System.out.println("Single Threaded...");
-		base = baseGui;
 		long[] bitboard = Transformer.getBitboardStyl(board);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(board));
-		ilk = System.currentTimeMillis();
+		long ilk = System.currentTimeMillis();
 		String outputMessage = "";
 		outputMessage = outputMessage + "moveCount = " + new PerformanceTestingSingleThreaded().perft(depth, epTarget, epSquare, bitboard, pieces, castlingRights, side ^ 1) + "\n";
 		outputMessage = outputMessage + "----------------------------" + "\n";
 		outputMessage = outputMessage + "Time Consumed = " + (System.currentTimeMillis() - ilk) + "\n";
-		base.getDebugPanel().setOutputMessage(outputMessage);
-		base.getDebugPanel().setEnableAll(true);
+		baseGui.getDebugPanel().setOutputMessage(outputMessage);
+		baseGui.getDebugPanel().setEnableAll(true);
 	}
 
 	public long perft(int depth, int epT, int epS, long[] bitboard, byte[] pieces, byte[][] castlingRights, int side) {
