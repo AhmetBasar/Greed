@@ -49,7 +49,7 @@ public class GamePlay {
 	private byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 	private byte[] kingPositions = { 4, 60 };
 	private byte[][] rookPositions = { { 0, 7 }, { 56, 63 } };
-	public static long zobristKey;
+	private long zobristKey;
 	private int fiftyMoveCounter = 0;
 	private Storage dbManager;
 	private HashMap<String, String> preferences = new HashMap<String, String>();
@@ -238,63 +238,6 @@ public class GamePlay {
 		//
 		new KeyListenerGeneric(null);
 		//
-	}
-	
-	public static final int[] arrMoves2 = new int[]{5382, 74547, 72459, 10809, 4609, 7738, 9237, 9258, 9243, 
-			11316, 6915, 9502, 6171, 10802, 73230, 11813, 5122, 75575, 10014, 10030, 3589, 13374, 8724, 9524, 
-			15650, 15676, 6424, 15933, 12569, 14648, 12337, 2361, 262660, 14601, 1543, 14142, 7182, 14393, 8752,
-			8248, 10786, 14651, 9500, 9516, 8963, 14911, 13098, 8992, 8978, 9273, 14899, 36, 2818, 1536, 9530, 
-			11815, 7461, 262, 7965, 15927, 15135, 14142, 7995, 15927, 15135, 14142, 72716, 11573, 13115, 12087, 
-			5939, 10030, 5143, 14127, 5908, 12087, 5143, 14127, 5908, 12087};
-	
-	public static final int[] arrMoves = new int[]{72716, 10809, 72459, 74547, 4609, 11316, 5382, 11582, 8453,
-			7213, 7186, 7203, 10785, 10801, 9237, 8746, 3075, 6946, 7180, 9019, 7452, 11573, 5412, 9260, 7965,
-			10787, 4618, 4635, 329220, 2322, 2306, 2602, 9225, 9261, 9237, 11069, 10015, 11830, 9767, 343612,
-			512, 2058, 11812, 11831, 11814, 16190, 12078, 15935, 11823, 16190, 12078, 15935, 11823};
-	
-	
-	static int counter = 0;
-//	static int bcounter = 71;
-	static int bcounter = 41;
-	static int bsleep = 5;
-
-	public synchronized void triggerThreadFinishEvent2() {
-		updateCastlingRights();
-		if (isImplementMove) {
-			incrementBoardStateCount();
-		}
-		zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), getEpTarget(), castlingRights, side);
-		if(side == GuiConstants.BLACKS_TURN){
-			if(base.getControlPanel().isBlackEngineEnabled()){
-				
-				if (counter == bcounter) {
-					return;
-				}
-				
-				try {
-					Thread.sleep(bsleep);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				doMove(arrMoves[counter++]);
-			}
-		} else {
-			if(base.getControlPanel().isWhiteEngineEnabled()){
-				
-				if (counter == bcounter) {
-					return;
-				}
-				
-				try {
-					Thread.sleep(bsleep);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				doMove(arrMoves[counter++]);
-			}
-		}
 	}
 	
 	public synchronized void triggerThreadFinishEvent() {
@@ -594,8 +537,16 @@ public class GamePlay {
 		boardStateHistory.put(zobristKey, boardStateCount.intValue() - 1);
 	}
 
-	public static long getZobristKey() {
+	public long getZobristKey() {
 		return zobristKey;
+	}
+	
+	public void setZobristKey(long zobristKey) {
+		this.zobristKey = zobristKey;
+	}
+
+	public void updateZobristKey(long val) {
+		zobristKey = zobristKey ^ val;
 	}
 	
 	public void recalculateZobristKey() {

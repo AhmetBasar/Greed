@@ -87,56 +87,56 @@ public class GamePlayMove {
 		long[] bitboard = Transformer.getBitboardStyl(base.getBoard());
 		
 		//Transposition Table//
-		GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristBlackMove;
+		base.getGamePlay().updateZobristKey(TranspositionTable.zobristBlackMove);
 		if(currentEpTarget != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side ^ 1][currentEpTarget] & bitboard[(side) | EngineConstants.PAWN]) != 0)
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristEnPassantArray[currentEpTarget];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristEnPassantArray[currentEpTarget]);
 		//
 		base.getGamePlay().resetGameFlags();
 		if (isSimpleMove()) {
 			//Transposition Table//
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][to];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][to]);
 			if(capturedPiece > 0)
-				GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
 			//
 			PieceEffects.doEffect(base, from, to);
 		} else if (isDoublePush()) {
 			//Transposition Table//
 			if ((EngineConstants.PAWN_ATTACK_LOOKUP[side][toBeImplementedEpTarget] & bitboard[(side ^ 1) | EngineConstants.PAWN]) != 0) {
-				GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristEnPassantArray[toBeImplementedEpTarget];
+				base.getGamePlay().updateZobristKey(TranspositionTable.zobristEnPassantArray[toBeImplementedEpTarget]);
 			}
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][to];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][to]);
 			//
 			base.getGamePlay().setEpTarget(toBeImplementedEpTarget);
 			base.getGamePlay().setEpSquare(toBeImplementedEpSquare);
 			PieceEffects.doEffect(base, from, to);
 		} else if(isEnPassantCapture()){
 			//Transposition Table//
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(currentEpSquare).getItem()][currentEpSquare];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][to];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(currentEpSquare).getItem()][currentEpSquare]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][to]);
 			//
 			base.getChessBoardPanel().getCell(currentEpSquare).setItem(EngineConstants.BLANK);
 			PieceEffects.doEffect(base, from, to);
 		} else if(isPromotion()){
 			//Transposition Table//
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from]);
 			/** BURASI AÇIKÇA HATALI. base.getChessBoardPanel().getCell(promotedPiece).getItem() yerine sadece promotedPiece yazýlmalýydý. */
 //			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(promotedPiece).getItem()][to];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[promotedPiece][to];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[promotedPiece][to]);
 			if(capturedPiece > 0)
-				GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
 			//
 			base.getChessBoardPanel().getCell(from).setItem(promotedPiece);
 			PieceEffects.doEffect(base, from, to);
 		} else if(isQueenSideCastling() || isKingSideCastling()){
             byte fromItem = base.getChessBoardPanel().getCell(from).getItem();
     		//Transposition Table//
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][to];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(castlingRookFrom).getItem()][castlingRookFrom];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(castlingRookFrom).getItem()][castlingRookTo];
+            base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][from]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(from).getItem()][to]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(castlingRookFrom).getItem()][castlingRookFrom]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(castlingRookFrom).getItem()][castlingRookTo]);
 			//
             base.getChessBoardPanel().getCell(from).setItem(EngineConstants.BLANK);
             base.getChessBoardPanel().getCell(to).setItem(fromItem);
@@ -149,44 +149,44 @@ public class GamePlayMove {
 		long[] bitboard = Transformer.getBitboardStyl(base.getBoard());
 		
 		//Transposition Table//
-		GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristBlackMove;
+		base.getGamePlay().updateZobristKey(TranspositionTable.zobristBlackMove);
 		if(base.getGamePlay().getEpTarget() != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side][base.getGamePlay().getEpTarget()] & bitboard[(side ^ 1) | EngineConstants.PAWN]) != 0)
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristEnPassantArray[base.getGamePlay().getEpTarget()];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristEnPassantArray[base.getGamePlay().getEpTarget()]);
 		if(currentEpTarget != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side ^ 1][currentEpTarget] & bitboard[(side) | EngineConstants.PAWN]) != 0)
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristEnPassantArray[currentEpTarget];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristEnPassantArray[currentEpTarget]);
 		//
 		base.getGamePlay().setEpTarget(currentEpTarget);
 		base.getGamePlay().setEpSquare(currentEpSquare);
 		base.getGamePlay().setCastlingRights(DebugUtility.deepCloneMultiDimensionalArray(currentCastlingRights));
 		if (isSimpleMove()) {
 			//Transposition Table//
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][to];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][from];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][to]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][from]);
 			if(capturedPiece > 0)
-				GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
 			//
 			PieceEffects.doEffect(base, to, from);
 			base.getChessBoardPanel().getCell(to).setItem(capturedPiece);
 		} else if (isDoublePush()) {
 			//Transposition Table//
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][to];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][from];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][to]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][from]);
 			//
 			PieceEffects.doEffect(base, to, from);
 		} else if(isEnPassantCapture()){
 			//Transposition Table//
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][currentEpSquare];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][to];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][from];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][currentEpSquare]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][to]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][from]);
 			//
 			PieceEffects.doEffect(base, to, from);
 			base.getChessBoardPanel().getCell(currentEpSquare).setItem(capturedPiece);
 		} else if(isPromotion()){
 			//Transposition Table//
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[(byte)(EngineConstants.PAWN | side)][from];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[promotedPiece][to];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[(byte)(EngineConstants.PAWN | side)][from]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[promotedPiece][to]);
 			if(capturedPiece > 0)
-				GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
 			//
 			base.getChessBoardPanel().getCell(to).setItem((byte)(EngineConstants.PAWN | side));
 			PieceEffects.doEffect(base, to, from);
@@ -194,10 +194,10 @@ public class GamePlayMove {
 		} else if(isQueenSideCastling() || isKingSideCastling()){
 			byte fromItem = base.getChessBoardPanel().getCell(to).getItem();
     		//Transposition Table//
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][to];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][from];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(castlingRookTo).getItem()][castlingRookTo];
-			GamePlay.zobristKey = GamePlay.zobristKey ^ TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(castlingRookTo).getItem()][castlingRookFrom];
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][to]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(to).getItem()][from]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(castlingRookTo).getItem()][castlingRookTo]);
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristPositionArray[base.getChessBoardPanel().getCell(castlingRookTo).getItem()][castlingRookFrom]);
 			//
             base.getChessBoardPanel().getCell(to).setItem(EngineConstants.BLANK);
             base.getChessBoardPanel().getCell(from).setItem(fromItem);

@@ -21,7 +21,7 @@ package chess.engine;
 
 public class Transformer {
 	
-	public static byte[][] rIndexMap={
+	public static final byte[][] rIndexMap={
 			   {56,57,58,59,60,61,62,63},
 			   {48,49,50,51,52,53,54,55},
 			   {40,41,42,43,44,45,46,47},
@@ -32,7 +32,7 @@ public class Transformer {
 			   { 0, 1, 2, 3, 4, 5, 6, 7},
 			   };
 	
-	public static byte[][] indexMap={
+	public static final byte[][] indexMap={
 			   {0,7},{1,7},{2,7},{3,7},{4,7},{5,7},{6,7},{7,7},
 			   {0,6},{1,6},{2,6},{3,6},{4,6},{5,6},{6,6},{7,6},
 			   {0,5},{1,5},{2,5},{3,5},{4,5},{5,5},{6,5},{7,5},
