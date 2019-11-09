@@ -25,7 +25,6 @@ public class MoveGenerationOnlyQueenPromotions {
 	private long[] doublePushMask = { EngineConstants.ROW_3, EngineConstants.ROW_6 };
 	private long[] fileMask = { ~EngineConstants.FILE_H, ~EngineConstants.FILE_A };
 	private int[][] attackDiffs = { { 7, 64 - 9 }, { 9, 64 - 7 } };
-	private long rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup;
 	private int[][][] castlingShift = { { {1, 2, 3} , {5, 6} } , { {57, 58, 59} , {61, 62} } };
 	private int[][] castlingTarget = {{2, 6}, {58, 62}};
 	private int[][] betweenKingAndRook = {{3, 5}, {59, 61}};
@@ -161,6 +160,8 @@ public class MoveGenerationOnlyQueenPromotions {
 			}
 			fromBitboard = fromBitboard & ~(1L << from);
 		}
+		
+		long rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup;
 
 		// ROOK ATTACKS.
 		fromBitboard = bitboard[side | EngineConstants.ROOK];
