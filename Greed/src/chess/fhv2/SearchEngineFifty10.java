@@ -95,13 +95,13 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		forceTimeoutRequested = false;
 	}
 	
-	public static boolean forceTimeoutRequested = false;
 	
 	private boolean isTimeout = false;
 	private int currentDepth;
 	private long startTime;
 	private long timeLimit;
 	private int depth;
+	private boolean forceTimeoutRequested = false;
 	
 	private ICallBackTimeout callBackTimeOut = new ICallBackTimeout(){
 		public void onTimeout() {
@@ -148,7 +148,8 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 //				long e = System.currentTimeMillis();
 //				System.out.println("Opening Book Time Consumed = " + (e - s));
 				if (bookMove != 0) {
-					move = bookMove;	
+					move = bookMove;
+					searchResult.setBookMove(true);
 					break;
 				}
 			}
@@ -177,6 +178,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		
 		searchResult.setBestMove(move);
 		
+		searchResult.setTimeConsumed(System.currentTimeMillis() - startTime);
 		return searchResult;
 	}
 	
@@ -468,6 +470,10 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 				moveList[sizeMinusOne] = secondaryKiller;
 			}
 		}
+	}
+
+	public void setForceTimeoutRequested(boolean forceTimeoutRequested) {
+		this.forceTimeoutRequested = forceTimeoutRequested;
 	}
 
 }

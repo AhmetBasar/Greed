@@ -34,8 +34,6 @@ import org.jnativehook.keyboard.NativeKeyListener;
 import org.jnativehook.mouse.NativeMouseWheelEvent;
 import org.jnativehook.mouse.NativeMouseWheelListener;
 
-import chess.fhv2.SearchEngineFifty8;
-
 // https://github.com/kwhat/jnativehook
 public class KeyListenerGeneric implements NativeKeyListener {
 
@@ -144,7 +142,7 @@ public class KeyListenerGeneric implements NativeKeyListener {
 						System.out.println("timeLimit = " + botGamePlay.getEngineController().getTimeLimit());
 					} else if (keyPressQueue.matches(NativeKeyEvent.VC_DELETE)) {
 						System.out.println("Del requested.");
-						SearchEngineFifty8.forceTimeoutRequested = true;
+						botGamePlay.getEngineController().setForceTimeoutRequested(true);
 					}			
 					
 				} catch (Exception ex) {
@@ -179,8 +177,7 @@ class GlobalMouseWheelListenerExample implements NativeMouseWheelListener {
 	private BotGamePlay botGamePlay;
 
 	public void nativeMouseWheelMoved(NativeMouseWheelEvent e) {
-		SearchEngineFifty8.forceTimeoutRequested = true;
-		SearchEngineFifty8.forceTimeoutRequested = true;
+		botGamePlay.getEngineController().setForceTimeoutRequested(true);
 	}
 
 	public GlobalMouseWheelListenerExample(BotGamePlay botGamePlay) {

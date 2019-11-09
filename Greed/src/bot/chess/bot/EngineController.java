@@ -198,8 +198,8 @@ public class EngineController implements Runnable {
 		return timeLimit;
 	}
 
-	public ISearchableV2 getEngine() {
-		return engine;
+	public void setForceTimeoutRequested(boolean forceTimeoutRequested) {
+		engine.setForceTimeoutRequested(forceTimeoutRequested);
 	}
 	
 }
