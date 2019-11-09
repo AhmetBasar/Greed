@@ -35,14 +35,12 @@ import chess.engine.test.ThreadPool;
 import chess.engine.test.tournament.ChessBoard;
 import chess.engine.test.tournament.ChessBoard.GameState;
 import chess.fhv2.SearchEngineFifty10;
-import chess.fhv2.SearchEngineFifty8;
-import chess.gui.GuiConstants;
 
 public class EngineEqualityComparator implements Runnable {
 	
 	private static final int depth = 1;
 	private static final int timeLimit = 5;
-	private static final EngineMode engineMode = EngineConstants.EngineMode.NON_FIXED_DEPTH;
+	private static final EngineMode engineMode = EngineConstants.EngineMode.FIXED_DEPTH;
 
 	@Override
 	public void run() {
@@ -50,21 +48,30 @@ public class EngineEqualityComparator implements Runnable {
 			ChessBoard board = new ChessBoard();
 			
 			ISearchableV2 engine1 = SearchEngineFifty10.getNewInstance();
-			ISearchableV2 engine2 = SearchEngineFifty8.getNewInstance();
+			ISearchableV2 engine2 = SearchEngineFifty10.getNewInstance();
+			
+			engine1.setBoardStateHistory(board.getBoardStateHistory());
+			engine2.setBoardStateHistory(board.getBoardStateHistory());
 			
 			ISearchableV2 engineWhite = engine1;
 			ISearchableV2 engineBlack = engine2;
 			
 			while (true) {
-				if (board.getSide() == GuiConstants.WHITES_TURN) {
-					engineWhite.setBoardStateHistory(board.getBoardStateHistory());
-					SearchResult searchResult = engineWhite.search(getSearchParameters(board));
-					board.doMove(searchResult.getBestMove());
-				} else {
-					engineBlack.setBoardStateHistory(board.getBoardStateHistory());
-					SearchResult searchResult = engineBlack.search(getSearchParameters(board));
-					board.doMove(searchResult.getBestMove());
+				SearchParameters params = getSearchParameters(board);
+				SearchResult srw = engineWhite.search(params);
+				SearchResult srb = engineBlack.search(params);
+				
+				if (srb.isBookMove() != srw.isBookMove()) {
+					throw new RuntimeException("Failed.");
 				}
+				
+				if (!srw.isBookMove()) {
+					if (!srw.equals(srb)) {
+						throw new RuntimeException("Failed.");
+					}
+				}
+				
+				board.doMove(srw.getBestMove());
 				
 				GameState gameState = board.getGameState();
 				if (gameState != GameState.PLAYING) {
@@ -85,7 +92,7 @@ public class EngineEqualityComparator implements Runnable {
 					sb.append("positionCountWhite = " + convertToCountBasedMap(positionCountWhite) + "\n");
 					sb.append("positionCountBlack = " + convertToCountBasedMap(positionCountBlack) + "\n");
 					
-//				print(sb.toString());
+				print(sb.toString());
 					
 					ISearchableV2 tempEngine = engineWhite;
 					engineWhite = engineBlack;

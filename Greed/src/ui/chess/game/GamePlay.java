@@ -59,7 +59,7 @@ public class GamePlay {
 	
 	private Map<Long, Integer> boardStateHistory = new HashMap<Long, Integer>();
 	
-	private boolean noAnimation = false;
+	private boolean noAnimation = true;
 	
 	private boolean isImplementMove = true;
 	
@@ -296,7 +296,7 @@ public class GamePlay {
 			restartGame();
 			
 			long s = System.currentTimeMillis();
-			chess.fhv2.SearchEngineFifty8 engine = chess.fhv2.SearchEngineFifty8.getInstance();
+			chess.fhv2.SearchEngineFifty10 engine = chess.fhv2.SearchEngineFifty10.getInstance();
 			engine.setBoardStateHistory(getBoardStateHistory());
 			
 			SearchParameters params = new SearchParameters();
@@ -323,7 +323,7 @@ public class GamePlay {
 				if(base.getControlPanel().isBlackEngineEnabled()){
 					
 					long s = System.currentTimeMillis();
-					chess.fhv2.SearchEngineFifty8 engine = chess.fhv2.SearchEngineFifty8.getInstance();
+					chess.fhv2.SearchEngineFifty10 engine = chess.fhv2.SearchEngineFifty10.getInstance();
 					//
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
@@ -355,7 +355,7 @@ public class GamePlay {
 				if(base.getControlPanel().isWhiteEngineEnabled()){
 					
 					long s = System.currentTimeMillis();
-					chess.fhv2.SearchEngineFifty8 engine = chess.fhv2.SearchEngineFifty8.getInstance();
+					chess.fhv2.SearchEngineFifty10 engine = chess.fhv2.SearchEngineFifty10.getInstance();
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.

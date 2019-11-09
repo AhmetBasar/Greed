@@ -43,7 +43,7 @@ public class SearchResult {
 	
 	@Override
 	public String toString() {
-		return " bestMove = " + bestMove + " evaluatedLeafNodeCount = " + evaluatedLeafNodeCount + " preMove = " + preMove + " possibleMoves = " + possibleMoves;
+		return " bestMove = " + bestMove + " evaluatedLeafNodeCount = " + evaluatedLeafNodeCount + " preMove = " + preMove + " possibleMoves = " + possibleMoves + " isBookMove = " + isBookMove + " timeConsumed = " + timeConsumed ;
 	}
 	
 	public void reset() {
@@ -51,6 +51,8 @@ public class SearchResult {
 		bestMove = 0;
 		evaluatedLeafNodeCount = 0;
 		preMove = 0;
+		isBookMove = false;
+		timeConsumed = 0;
 	}
 
 	public Map<Integer, Integer> getPossibleMoves() {

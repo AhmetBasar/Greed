@@ -34,7 +34,6 @@ import chess.engine.SearchResult;
 import chess.engine.test.ThreadPool;
 import chess.engine.test.tournament.ChessBoard.GameState;
 import chess.fhv2.SearchEngineFifty10;
-import chess.fhv2.SearchEngineFifty8;
 import chess.gui.GuiConstants;
 
 public class TournamentManagerEngineBasedThreaded implements Runnable {
@@ -67,7 +66,7 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 			final EngineMode engineMode = EngineConstants.EngineMode.NON_FIXED_DEPTH;
 			
 			ISearchableV2 engine1 = SearchEngineFifty10.getNewInstance();
-			ISearchableV2 engine2 = SearchEngineFifty8.getNewInstance();
+			ISearchableV2 engine2 = SearchEngineFifty10.getNewInstance();
 			
 			ISearchableV2 engineWhite = engine1;
 			ISearchableV2 engineBlack = engine2;

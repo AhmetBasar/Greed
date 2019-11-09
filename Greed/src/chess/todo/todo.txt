@@ -225,4 +225,7 @@ Chess Bot Programming.
   - write incremental occupied bitboard calculation. it may be far better in best case thanks to good move ordering.
   - custom thread pool does not use 100 percent cpu, but util concurrent does. why?
   - Do not use singleton pattern!
+  - Use TimerPool for PieceEffects class.
+  - use static methods instead of instance methods.
+  - prefer eager initialization instead of lazy one.
  

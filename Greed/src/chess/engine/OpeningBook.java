@@ -33,20 +33,13 @@ public class OpeningBook {
 	
 	private MoveGenerationOnlyQueenPromotions moveGeneration = new MoveGenerationOnlyQueenPromotions();
 	private LegalityV4 legality = new LegalityV4();
-	private static volatile OpeningBook instance;
+	private static OpeningBook instance = new OpeningBook();
 	private static final SecureRandom rgn = new SecureRandom();
 
 	private OpeningBook() {
 	}
 
 	public static OpeningBook getInstance() {
-		if (instance == null) {
-			synchronized (OpeningBook.class) {
-				if (instance == null) {
-					instance = new OpeningBook();
-				}
-			}
-		}
 		return instance;
 	}
 

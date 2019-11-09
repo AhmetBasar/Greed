@@ -24,11 +24,11 @@ import java.util.ArrayList;
 import chess.engine.EngineConstants;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
-import chess.fhv2.SearchEngineFifty8;
+import chess.fhv2.SearchEngineFifty10;
 
 public class EngineController implements Runnable {
 
-	private SearchEngineFifty8 engine;
+	private SearchEngineFifty10 engine;
 	private volatile boolean suspended = true;
 	private IGameController gameController;
 	private ICallBack callback;
@@ -39,7 +39,7 @@ public class EngineController implements Runnable {
 
 	public EngineController(IGameController gameController) {
 		this.gameController = gameController;
-		engine = SearchEngineFifty8.getInstance();
+		engine = SearchEngineFifty10.getInstance();
 		engine.setBoardStateHistory(gameController.getBoardStateHistory());
 	}
 

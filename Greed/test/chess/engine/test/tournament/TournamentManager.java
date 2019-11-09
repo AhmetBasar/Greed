@@ -28,7 +28,7 @@ import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.engine.Transformer;
 import chess.engine.test.tournament.ChessBoard.GameState;
-import chess.fhv2.SearchEngineFifty8;
+import chess.fhv2.SearchEngineFifty10;
 import chess.gui.BaseGui;
 import chess.gui.GuiConstants;
 
@@ -59,8 +59,8 @@ public class TournamentManager implements Runnable {
 		// TODO Auto-generated method stub
 		ChessBoard board = new ChessBoard();
 
-		SearchEngineFifty8 engineW = SearchEngineFifty8.getNewInstance();
-		SearchEngineFifty8 engineB = SearchEngineFifty8.getNewInstance();
+		SearchEngineFifty10 engineW = SearchEngineFifty10.getNewInstance();
+		SearchEngineFifty10 engineB = SearchEngineFifty10.getNewInstance();
 
 		int drawCount = 0;
 		int whiteWinCount = 0;
