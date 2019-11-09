@@ -24,7 +24,6 @@ public class MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 {
 	private long[] promotionMask = { EngineConstants.ROW_8, EngineConstants.ROW_1 };
 	private long[] fileMask = { ~EngineConstants.FILE_H, ~EngineConstants.FILE_A };
 	private int[][] attackDiffs = { { 7, 64 - 9 }, { 9, 64 - 7 } };
-	private long rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup;
 
 	public void generateMoves(IBoard board, int side, int depthPlusOne, int depth) {
 		generateMoves(board.getBitboard(), board.getPieces(), side, board.getEpTarget(depthPlusOne), board.getCastlingRights(depthPlusOne), board, depth);
@@ -150,6 +149,8 @@ public class MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 {
 			}
 			fromBitboard &= (fromBitboard - 1);
 		}
+		
+		long rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup;
 
 		// ROOK ATTACKS.
 		fromBitboard = bitboard[side | EngineConstants.ROOK];
