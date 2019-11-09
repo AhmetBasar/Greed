@@ -28,6 +28,8 @@ public class SearchResult {
 	private int bestMove;
 	private long evaluatedLeafNodeCount;
 	private int preMove;
+	private boolean isBookMove;
+	private long timeConsumed;
 	
 	@Override
 	public boolean equals(Object obj) {
@@ -83,5 +85,22 @@ public class SearchResult {
 	public void setPreMove(int preMove) {
 		this.preMove = preMove;
 	}
+
+	public boolean isBookMove() {
+		return isBookMove;
+	}
+
+	public void setBookMove(boolean isBookMove) {
+		this.isBookMove = isBookMove;
+	}
+
+	public long getTimeConsumed() {
+		return timeConsumed;
+	}
+
+	public void setTimeConsumed(long timeConsumed) {
+		this.timeConsumed = timeConsumed;
+	}
+	
 	
 }

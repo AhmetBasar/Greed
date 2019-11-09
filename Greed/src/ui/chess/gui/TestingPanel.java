@@ -179,7 +179,7 @@ public class TestingPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					GamePlay.zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), gamePlay.getEpTarget(), gamePlay.getCastlingRights(), gamePlay.getSide());
+					gamePlay.setZobristKey(TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), gamePlay.getEpTarget(), gamePlay.getCastlingRights(), gamePlay.getSide()));
 					resume();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -268,8 +268,8 @@ public class TestingPanel extends JPanel{
 		Object obj = m1.invoke(null);
 		
 		//
-//		Method m3 = cls.getDeclaredMethod("resetTT", new Class[] {});
-//		m3.invoke(obj);
+		Method m3 = cls.getDeclaredMethod("resetTT", new Class[] {});
+		m3.invoke(obj);
 		//
 		
 		Method m2 = cls.getDeclaredMethod("setBoardStateHistory", new Class[] {Map.class});
@@ -288,7 +288,7 @@ public class TestingPanel extends JPanel{
 			params.setPieces(Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())));
 			params.setCastlingRights(gamePlay.getCastlingRights());
 			params.setSide(gamePlay.getSide());
-			params.setUiZobristKey(GamePlay.getZobristKey());
+			params.setUiZobristKey(gamePlay.getZobristKey());
 			params.setTimeLimit(1L);
 			params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
 			params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
@@ -302,7 +302,7 @@ public class TestingPanel extends JPanel{
 			searchResult = (SearchResult) method.invoke(obj, Integer.parseInt(jtEngineDepth.getText()), 
 					gamePlay.getEpTarget(), gamePlay.getEpSquare(), Transformer.getBitboardStyl(base.getBoard()),
 					Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())),
-					gamePlay.getCastlingRights(), gamePlay.getSide(), GamePlay.getZobristKey(), 1L, gamePlay.getFiftyMoveCounter());
+					gamePlay.getCastlingRights(), gamePlay.getSide(), gamePlay.getZobristKey(), 1L, gamePlay.getFiftyMoveCounter());
 //		System.out.println("time consumed =  "+ (System.currentTimeMillis() - ilk));
 			
 		}

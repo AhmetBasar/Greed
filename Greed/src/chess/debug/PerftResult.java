@@ -28,6 +28,7 @@ public class PerftResult {
 	private int checkMateCount;
 	private int promotionCount;
 	private int checkCount;
+	private long timeConsumed;
 	
 	public void resetCounters() {
 		nodeCount = 0;
@@ -54,6 +55,8 @@ public class PerftResult {
 		sb.append("checkCount     = " + checkCount);
 		sb.append("\n");
 		sb.append("checkMateCount = " + checkMateCount);
+		sb.append("\n");
+		sb.append("timeConsumed = " + timeConsumed);
 		return sb.toString();
 	}
 
@@ -111,6 +114,14 @@ public class PerftResult {
 
 	public void incrementCheckCount() {
 		checkCount++;
+	}
+
+	public long getTimeConsumed() {
+		return timeConsumed;
+	}
+
+	public void setTimeConsumed(long timeConsumed) {
+		this.timeConsumed = timeConsumed;
 	}
 
 }

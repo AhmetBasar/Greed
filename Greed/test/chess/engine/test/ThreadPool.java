@@ -80,5 +80,9 @@ public class ThreadPool {
 		}
 		return callables;
 	}
+	
+	public void shutDown() {
+		executorService.shutdown();
+	}
 
 }

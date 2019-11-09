@@ -25,6 +25,7 @@ import chess.engine.IBoard;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGeneration;
 import chess.engine.Transformer;
+import chess.gui.BaseGui;
 
 public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 	private MoveGeneration moveGeneration = new MoveGeneration();
@@ -43,6 +44,18 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		obj.perft(depth, board, 1);
 		System.out.println(obj.perftResult);
 		System.out.println("time = " + (System.currentTimeMillis() - ilk));
+	}
+	
+	public static void getAllVariations(byte[][] boardArray, int side, int depth, byte[][] castlingRights, BaseGui baseGui, int threadCount, int epTarget, int epSquare){
+		long startTime = System.currentTimeMillis();
+		long[] bitboard = Transformer.getBitboardStyl(boardArray);
+		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, epSquare, depth, castlingRights, 0L, 0);
+		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
+		obj.perft(depth, board, 1);
+		obj.perftResult.setTimeConsumed(System.currentTimeMillis() - startTime);
+		baseGui.getDebugPanel().setOutputMessage(obj.perftResult.toString());
+		baseGui.getDebugPanel().setEnableAll(true);
 	}
 
 	public void perft(int depth, IBoard board, int side) {
