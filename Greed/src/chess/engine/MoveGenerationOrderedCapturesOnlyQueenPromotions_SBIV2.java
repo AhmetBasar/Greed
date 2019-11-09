@@ -19,11 +19,7 @@
  **********************************************/
 package chess.engine;
 
-public class MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 {
-	private int[] pushDiffs = { 8, 64 - 8 };
-	private long[] promotionMask = { EngineConstants.ROW_8, EngineConstants.ROW_1 };
-	private long[] fileMask = { ~EngineConstants.FILE_H, ~EngineConstants.FILE_A };
-	private int[][] attackDiffs = { { 7, 64 - 9 }, { 9, 64 - 7 } };
+public class MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 implements MoveGenerationConstants {
 
 	public void generateMoves(IBoard board, int side, int depthPlusOne, int depth) {
 		generateMoves(board.getBitboard(), board.getPieces(), side, board.getEpTarget(depthPlusOne), board.getCastlingRights(depthPlusOne), board, depth);

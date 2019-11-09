@@ -19,16 +19,8 @@
  **********************************************/
 package chess.engine;
 
-public class MoveGenerationOrderedOnlyQueenPromotions_SBIV2 {
-	private int[] pushDiffs = { 8, 64 - 8 };
-	private long[] promotionMask = { EngineConstants.ROW_8, EngineConstants.ROW_1 };
-	private long[] doublePushMask = { EngineConstants.ROW_3, EngineConstants.ROW_6 };
-	private long[] fileMask = { ~EngineConstants.FILE_H, ~EngineConstants.FILE_A };
-	private int[][] attackDiffs = { { 7, 64 - 9 }, { 9, 64 - 7 } };
-	private int[][][] castlingShift = { { {1, 2, 3} , {5, 6} } , { {57, 58, 59} , {61, 62} } };
-	private int[][] castlingTarget = {{2, 6}, {58, 62}};
-	private int[][] betweenKingAndRook = {{3, 5}, {59, 61}};
-	private byte[] kingPositions = { 4, 60 };
+public class MoveGenerationOrderedOnlyQueenPromotions_SBIV2 implements MoveGenerationConstants {
+
 	private LegalityV4 legality = new LegalityV4();
 
 	public void generateMoves(IBoard board, int side, int depthPlusOne, int depth) {
