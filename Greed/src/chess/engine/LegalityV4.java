@@ -20,8 +20,6 @@
 package chess.engine;
 
 public class LegalityV4 {
-	private long rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup;
-
 	public boolean isKingInCheck(long[] bitboard, int side) {
 		int opSide = side ^ 1;
 		long toBitboard;
@@ -67,6 +65,8 @@ public class LegalityV4 {
 			return true;
 		}
 
+		long rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup;
+		
 		// ROOK ATTACKS.
 		opSideBitBoard = bitboard[opSide | EngineConstants.ROOK];
 
