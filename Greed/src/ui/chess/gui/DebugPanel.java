@@ -36,6 +36,7 @@ import chess.debug.PerformanceTesting;
 import chess.debug.PerformanceTestingSimple;
 import chess.debug.PerformanceTestingSingleThreaded;
 import chess.debug.PerformanceTestingSingleThreadedCopyMake;
+import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV2;
 
 public class DebugPanel extends JPanel{
 
@@ -187,6 +188,70 @@ public class DebugPanel extends JPanel{
 //				}
 				
 				setEnableAll(false);
+			}
+		}));
+		
+		jbSearchCopyMake = new JButton("1");
+		jbSearchCopyMake.setMargin(new java.awt.Insets(1, 2, 1, 2));
+		jbSearchCopyMake.setSize(50, 25);
+		jbSearchCopyMake.setLocation(340, 10);
+		add(jbSearchCopyMake);
+		jbSearchCopyMake.addActionListener((new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jtpResult.setText("");
+				castlingRights[0][0] = jcbWhiteQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
+				castlingRights[0][1] = jcbWhiteKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
+				castlingRights[1][0] = jcbBlackQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
+				castlingRights[1][1] = jcbBlackKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
+				threadCount = Integer.parseInt(jtThredCount.getText());
+				
+				if (jcbUseActualGameParameters.isSelected()) {
+					PerformanceTestingSingleThreadedWithBoardInfrastructureV2.getAllVariations(base.getBoard(),
+							base.getGamePlay().getSide(),
+							Integer.parseInt(jtSearchDepth.getText()),
+							base.getGamePlay().getCastlingRights(),
+							base,
+							threadCount,
+							base.getGamePlay().getEpTarget(),
+							base.getGamePlay().getEpSquare());
+				} else {
+					PerformanceTestingSingleThreadedWithBoardInfrastructureV2.getAllVariations(base.getBoard(), base.getGamePlay().getSide(), Integer.parseInt(jtSearchDepth.getText()), castlingRights, base, threadCount,
+							Integer.parseInt(jtEnpassantTarget.getText()), Integer.parseInt(jtEnpassantSquare.getText()));
+				}
+//				setEnableAll(false);
+			}
+		}));
+		
+		jbSearchCopyMake = new JButton("2");
+		jbSearchCopyMake.setMargin(new java.awt.Insets(1, 2, 1, 2));
+		jbSearchCopyMake.setSize(50, 25);
+		jbSearchCopyMake.setLocation(340, 40);
+		add(jbSearchCopyMake);
+		jbSearchCopyMake.addActionListener((new java.awt.event.ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				jtpResult.setText("");
+				castlingRights[0][0] = jcbWhiteQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
+				castlingRights[0][1] = jcbWhiteKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
+				castlingRights[1][0] = jcbBlackQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
+				castlingRights[1][1] = jcbBlackKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
+				threadCount = Integer.parseInt(jtThredCount.getText());
+				
+				if (jcbUseActualGameParameters.isSelected()) {
+					PerformanceTestingSingleThreadedWithBoardInfrastructureV2.getAllVariations(base.getBoard(),
+							base.getGamePlay().getSide(),
+							Integer.parseInt(jtSearchDepth.getText()),
+							base.getGamePlay().getCastlingRights(),
+							base,
+							threadCount,
+							base.getGamePlay().getEpTarget(),
+							base.getGamePlay().getEpSquare());
+				} else {
+					PerformanceTestingSingleThreadedWithBoardInfrastructureV2.getAllVariations(base.getBoard(), base.getGamePlay().getSide(), Integer.parseInt(jtSearchDepth.getText()), castlingRights, base, threadCount,
+							Integer.parseInt(jtEnpassantTarget.getText()), Integer.parseInt(jtEnpassantSquare.getText()));
+				}
+//				setEnableAll(false);
 			}
 		}));
 		
