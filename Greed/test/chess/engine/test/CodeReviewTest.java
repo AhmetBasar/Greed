@@ -12,14 +12,16 @@ import java.util.Set;
 public class CodeReviewTest {
 	
 	public static void main(String[] args) {
+		testAll();
+	}
+	
+	public static void testAll() {
 		URL a = CodeReviewTest.class.getClassLoader().getResource(".");
 		File binaryFile = new File(a.getPath());
 		File projectFile = binaryFile.getParentFile();
 		List<File> javaFiles = new ArrayList<File>();
 		retrieveJavaFiles(projectFile, javaFiles);
-		
 		String projectName = projectFile.getName();
-		System.out.println("projectName = " + projectName);
 		
 		int counter = 0;
 		for (File javaFile : javaFiles) {
@@ -60,7 +62,11 @@ public class CodeReviewTest {
 				throw new RuntimeException(e);
 			}
 		}
-		System.out.println("counter = " + counter);
+		if (counter != 0) {
+			System.err.println("counter = " + counter);
+			throw new RuntimeException("Failed.");
+			
+		}
 	}
 	
 	private static void retrieveJavaFiles(File dir, List<File> lst) {
@@ -89,9 +95,7 @@ public class CodeReviewTest {
 		whiteListClasses.add("chess.evaluation.PieceSquareTable");
 		whiteListClasses.add("chess.gui.GuiConstants");
 		whiteListClasses.add("chess.engine.test.CodeReviewTest");
-		
-		
-		
+		whiteListClasses.add("chess.engine.MoveGenerationConstants");
 		
 		
 		whiteListFields.add("chess.bot.interpreting.CellCoordinateFactory.cache");
@@ -148,8 +152,22 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.util.Utility.SINGLE_BIT");
 		
 		whiteListFields.add("chess.engine.test.ThreadPool.instance");
+		whiteListFields.add("chess.engine.OpeningBook.instance");
+		whiteListFields.add("chess.engine.OpeningBook.rgn");
 		
+		whiteListFields.add("chess.engine.test.equality.EngineEqualityComparator.positionCountDraw");
+		whiteListFields.add("chess.engine.test.equality.EngineEqualityComparator.positionCountWhite");
+		whiteListFields.add("chess.engine.test.equality.EngineEqualityComparator.positionCountBlack");
+		whiteListFields.add("chess.engine.test.tournament.TournamentManagerEngineBasedThreaded.positionCountDraw");
+		whiteListFields.add("chess.engine.test.tournament.TournamentManagerEngineBasedThreaded.positionCountWhite");
+		whiteListFields.add("chess.engine.test.tournament.TournamentManagerEngineBasedThreaded.positionCountBlack");
+		whiteListFields.add("chess.engine.test.tournament.TournamentManagerEngineBasedThreaded.engine1Score");
+		whiteListFields.add("chess.engine.test.tournament.TournamentManagerEngineBasedThreaded.engine2Score");
 		
+		whiteListFields.add("chess.fhv2.SearchEngineFifty10.instance");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty10.newInstances");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty9.instance");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty9.newInstances");
 	}
 
 }

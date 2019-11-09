@@ -40,7 +40,6 @@ public class EngineEqualityComparator implements Runnable {
 	
 	private static final int depth = 1;
 	private static final int timeLimit = 5;
-	private static final EngineMode engineMode = EngineConstants.EngineMode.FIXED_DEPTH;
 
 	@Override
 	public void run() {
@@ -120,7 +119,7 @@ public class EngineEqualityComparator implements Runnable {
 		params.setUiZobristKey(board.getZobristKey());
 		params.setTimeLimit(timeLimit);
 		params.setFiftyMoveCounter(board.getFiftyMoveCounter());
-		params.setEngineMode(engineMode);
+		params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
 		return params;
 	}
 	

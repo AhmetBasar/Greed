@@ -22,13 +22,14 @@ package chess.bot;
 import java.util.ArrayList;
 
 import chess.engine.EngineConstants;
+import chess.engine.ISearchableV2;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.fhv2.SearchEngineFifty10;
 
 public class EngineController implements Runnable {
 
-	private SearchEngineFifty10 engine;
+	private ISearchableV2 engine;
 	private volatile boolean suspended = true;
 	private IGameController gameController;
 	private ICallBack callback;
@@ -196,9 +197,9 @@ public class EngineController implements Runnable {
 	public int getTimeLimit() {
 		return timeLimit;
 	}
-	
-	
-	
-	
 
+	public ISearchableV2 getEngine() {
+		return engine;
+	}
+	
 }

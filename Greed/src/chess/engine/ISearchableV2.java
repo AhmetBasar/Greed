@@ -29,4 +29,6 @@ public interface ISearchableV2 {
 	
 	void resetTT();
 
+	void setForceTimeoutRequested(boolean forceTimeoutRequested);
+	
 }
