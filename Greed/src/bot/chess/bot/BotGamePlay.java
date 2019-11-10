@@ -41,6 +41,7 @@ public class BotGamePlay implements IGameController {
 	private MoveGenerationOnlyQueenPromotions moveGeneration = new MoveGenerationOnlyQueenPromotions();
 	private int perspective;
 	private long zobristKey;
+	private long pawnZobristKey;
 	private int fiftyMoveCounter = 0;
 	private ArrayList<BotGamePlayMove> moveHistory = new ArrayList<BotGamePlayMove>();
 	
@@ -62,6 +63,10 @@ public class BotGamePlay implements IGameController {
 	
 	public void updateZobristKey(long val) {
 		zobristKey = zobristKey ^ val;
+	}
+	
+	public void updatePawnZobristKey(long val) {
+		pawnZobristKey = pawnZobristKey ^ val;
 	}
 
 	public BotGamePlay() {
@@ -104,6 +109,7 @@ public class BotGamePlay implements IGameController {
 		new KeyListenerGeneric(this);
 		
 		zobristKey = TranspositionTable.getZobristKey(getBitboard(), getEpTarget(), getCastlingRights(), getSide());
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(getBitboard());
 	}
 
 	
@@ -335,6 +341,7 @@ public class BotGamePlay implements IGameController {
 		engineController.suspend();
 		engineControllerPreMove.suspend();
 		zobristKey = TranspositionTable.getZobristKey(getBitboard(), getEpTarget(), getCastlingRights(), getSide());
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(getBitboard());
 
 		moveHistory.clear();
 		boardStateHistory.clear();
@@ -446,6 +453,14 @@ public class BotGamePlay implements IGameController {
 	@Override
 	public int getMoveCount() {
 		return bot.getMoveCount();
+	}
+
+	public long getPawnZobristKey() {
+		return pawnZobristKey;
+	}
+
+	public void setPawnZobristKey(long pawnZobristKey) {
+		this.pawnZobristKey = pawnZobristKey;
 	}
 	
 }

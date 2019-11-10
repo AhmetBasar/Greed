@@ -61,54 +61,59 @@ public class TestSuitesTest {
 
 				@Override
 				public void run() {
-
-					chess.fhv2.SearchEngineFifty10 engine = chess.fhv2.SearchEngineFifty10.getNewInstance();
-					engine.setBoardStateHistory(new HashMap<Long, Integer>());
-
-					for (String epdString : part) {
-						if (epdString.startsWith(TestConstants.COMMENT_INDICATOR)) {
-							continue;
-						}
-						EpdOperations eo = new EpdOperations();
-						eo.setEpdString(epdString.trim());
-
-						SearchParameters params = new SearchParameters();
-						params.setDepth(1);
-						params.setEpT(eo.getFenOperations().getEpTarget());
-						params.setEpS(eo.getFenOperations().getEpSquare());
-						params.setBitboard(Transformer.getBitboardStyl(eo.getFenOperations().getBoard()));
-						params.setPieces(Transformer
-								.getByteArrayStyl(Transformer.getBitboardStyl(eo.getFenOperations().getBoard())));
-						params.setCastlingRights(eo.getFenOperations().getCastlingRights());
-						params.setSide(eo.getFenOperations().getSide());
-						params.setUiZobristKey(eo.getFenOperations().getZobristKey());
-						params.setTimeLimit(TestingFramework.QUICK_TEST ? 500 : 5000);
-						params.setFiftyMoveCounter(0);
-						params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
-						params.setBookName(null);
-
-						SearchResult searchResult = engine.search(params);
-
-						String sanMove = SanGenerator.convertSanMove(searchResult.getBestMove(), params.getPieces(),
-								params.getBitboard(), params.getSide(), params.getEpT(), params.getEpS(),
-								params.getCastlingRights());
-
-						if (eo.getOperations().containsKey(EpdOperations.OPCODE_BEST_MOVES)) {
-							List<String> bestMoves = eo.getOperations().get(EpdOperations.OPCODE_BEST_MOVES);
-							if (bestMoves.contains(sanMove)) {
-								testSuiteResult.incrementSolvedSuiteCount();
-							} else {
+					try {
+						chess.fhv2.SearchEngineFifty10 engine = chess.fhv2.SearchEngineFifty10.getNewInstance();
+						engine.setBoardStateHistory(new HashMap<Long, Integer>());
+						
+						for (String epdString : part) {
+							if (epdString.startsWith(TestConstants.COMMENT_INDICATOR)) {
+								continue;
+							}
+							EpdOperations eo = new EpdOperations();
+							eo.setEpdString(epdString.trim());
+							
+							SearchParameters params = new SearchParameters();
+							params.setDepth(1);
+							params.setEpT(eo.getFenOperations().getEpTarget());
+							params.setEpS(eo.getFenOperations().getEpSquare());
+							params.setBitboard(Transformer.getBitboardStyl(eo.getFenOperations().getBoard()));
+							params.setPieces(Transformer
+									.getByteArrayStyl(Transformer.getBitboardStyl(eo.getFenOperations().getBoard())));
+							params.setCastlingRights(eo.getFenOperations().getCastlingRights());
+							params.setSide(eo.getFenOperations().getSide());
+							params.setUiZobristKey(eo.getFenOperations().getZobristKey());
+							params.setUiPawnZobristKey(eo.getFenOperations().getPawnZobristKey());
+							params.setTimeLimit(TestingFramework.QUICK_TEST ? 500 : 5000);
+							params.setFiftyMoveCounter(0);
+							params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+							params.setBookName(null);
+							
+							SearchResult searchResult = engine.search(params);
+							
+							String sanMove = SanGenerator.convertSanMove(searchResult.getBestMove(), params.getPieces(),
+									params.getBitboard(), params.getSide(), params.getEpT(), params.getEpS(),
+									params.getCastlingRights());
+							
+							if (eo.getOperations().containsKey(EpdOperations.OPCODE_BEST_MOVES)) {
+								List<String> bestMoves = eo.getOperations().get(EpdOperations.OPCODE_BEST_MOVES);
+								if (bestMoves.contains(sanMove)) {
+									testSuiteResult.incrementSolvedSuiteCount();
+								} else {
 //								System.err.println("sanMove = " + sanMove + " but bestMoves = " + bestMoves);
-							}
-						} else {
-							List<String> avoidMoves = eo.getOperations().get(EpdOperations.OPCODE_AVOID_MOVES);
-							if (avoidMoves.contains(sanMove)) {
-//								System.err.println("sanMove = " + sanMove + " but avoidMoves = " + avoidMoves);
+								}
 							} else {
-								testSuiteResult.incrementSolvedSuiteCount();
+								List<String> avoidMoves = eo.getOperations().get(EpdOperations.OPCODE_AVOID_MOVES);
+								if (avoidMoves.contains(sanMove)) {
+//								System.err.println("sanMove = " + sanMove + " but avoidMoves = " + avoidMoves);
+								} else {
+									testSuiteResult.incrementSolvedSuiteCount();
+								}
 							}
+							testSuiteResult.incrementTotalSuiteCount();
 						}
-						testSuiteResult.incrementTotalSuiteCount();
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
 					}
 				}
 			};

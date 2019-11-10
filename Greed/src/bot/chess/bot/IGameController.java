@@ -58,6 +58,8 @@ public interface IGameController {
 	
 	long getZobristKey();
 	
+	long getPawnZobristKey();
+	
 	ArrayList<BotGamePlayMove> getMoveHistory();
 	
 	boolean isLastMoveCapture();

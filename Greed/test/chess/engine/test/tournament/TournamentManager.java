@@ -46,96 +46,102 @@ public class TournamentManager implements Runnable {
 
 	@Override
 	public void run() {
-
-		if (base != null) {
-			// WARNING: High frequency Hard Drive usage may be harmful.
-			return;
-		}
-
-		HashMap<Long, Long> positionCountDraw = new HashMap<Long, Long>();
-		HashMap<Long, Long> positionCountWhite = new HashMap<Long, Long>();
-		HashMap<Long, Long> positionCountBlack = new HashMap<Long, Long>();
-
-		// TODO Auto-generated method stub
-		ChessBoard board = new ChessBoard();
-
-		SearchEngineFifty10 engineW = SearchEngineFifty10.getNewInstance();
-		SearchEngineFifty10 engineB = SearchEngineFifty10.getNewInstance();
-
-		int drawCount = 0;
-		int whiteWinCount = 0;
-		int blackWinCount = 0;
-
-		while (true) {
-			if (board.getSide() == GuiConstants.WHITES_TURN) {
-				engineW.setBoardStateHistory(board.getBoardStateHistory());
-
-				SearchParameters params = new SearchParameters();
-				params.setDepth(5);
-				params.setEpT(board.getEpTarget());
-				params.setEpS(board.getEpSquare());
-				params.setBitboard(board.getBitboard());
-				params.setPieces(board.getPieces());
-				params.setCastlingRights(board.getCastlingRights());
-				params.setSide(board.getSide());
-				params.setUiZobristKey(board.getZobristKey());
-				params.setUiPawnZobristKey(board.getPawnZobristKey());
-				params.setTimeLimit(1);
-				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
-				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
-
-				SearchResult searchResult = engineW.search(params);
-				board.doMove(searchResult.getBestMove());
-
-			} else {
-				engineB.setBoardStateHistory(board.getBoardStateHistory());
-
-				SearchParameters params = new SearchParameters();
-				params.setDepth(5);
-				params.setEpT(board.getEpTarget());
-				params.setEpS(board.getEpSquare());
-				params.setBitboard(board.getBitboard());
-				params.setPieces(board.getPieces());
-				params.setCastlingRights(board.getCastlingRights());
-				params.setSide(board.getSide());
-				params.setUiZobristKey(board.getZobristKey());
-				params.setUiPawnZobristKey(board.getPawnZobristKey());
-				params.setTimeLimit(1);
-				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
-				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
-
-				SearchResult searchResult = engineB.search(params);
-				board.doMove(searchResult.getBestMove());
-			}
-
+		
+		try {
 			if (base != null) {
-				base.setBoard(Transformer.getTwoDimByteArrayStyl(board.getBitboard()));
+				// WARNING: High frequency Hard Drive usage may be harmful.
+				return;
 			}
-
-			GameState gameState = board.getGameState();
-			if (gameState != GameState.PLAYING) {
-				engineB.resetTT();
-				engineW.resetTT();
-				if (gameState == GameState.WHITE_WINS) {
-					whiteWinCount++;
-					increment(positionCountWhite, board.getZobristKey());
-				} else if (gameState == GameState.BLACK_WINS) {
-					blackWinCount++;
-					increment(positionCountBlack, board.getZobristKey());
+			
+			HashMap<Long, Long> positionCountDraw = new HashMap<Long, Long>();
+			HashMap<Long, Long> positionCountWhite = new HashMap<Long, Long>();
+			HashMap<Long, Long> positionCountBlack = new HashMap<Long, Long>();
+			
+			// TODO Auto-generated method stub
+			ChessBoard board = new ChessBoard();
+			
+			SearchEngineFifty10 engineW = SearchEngineFifty10.getNewInstance();
+			SearchEngineFifty10 engineB = SearchEngineFifty10.getNewInstance();
+			
+			int drawCount = 0;
+			int whiteWinCount = 0;
+			int blackWinCount = 0;
+			
+			while (true) {
+				if (board.getSide() == GuiConstants.WHITES_TURN) {
+					engineW.setBoardStateHistory(board.getBoardStateHistory());
+					
+					SearchParameters params = new SearchParameters();
+					params.setDepth(5);
+					params.setEpT(board.getEpTarget());
+					params.setEpS(board.getEpSquare());
+					params.setBitboard(board.getBitboard());
+					params.setPieces(board.getPieces());
+					params.setCastlingRights(board.getCastlingRights());
+					params.setSide(board.getSide());
+					params.setUiZobristKey(board.getZobristKey());
+					params.setUiPawnZobristKey(board.getPawnZobristKey());
+					params.setTimeLimit(1);
+					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
+					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+					
+					SearchResult searchResult = engineW.search(params);
+					board.doMove(searchResult.getBestMove());
+					
 				} else {
-					drawCount++;
-					increment(positionCountDraw, board.getZobristKey());
+					engineB.setBoardStateHistory(board.getBoardStateHistory());
+					
+					SearchParameters params = new SearchParameters();
+					params.setDepth(5);
+					params.setEpT(board.getEpTarget());
+					params.setEpS(board.getEpSquare());
+					params.setBitboard(board.getBitboard());
+					params.setPieces(board.getPieces());
+					params.setCastlingRights(board.getCastlingRights());
+					params.setSide(board.getSide());
+					params.setUiZobristKey(board.getZobristKey());
+					params.setUiPawnZobristKey(board.getPawnZobristKey());
+					params.setTimeLimit(1);
+					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
+					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+					
+					SearchResult searchResult = engineB.search(params);
+					board.doMove(searchResult.getBestMove());
 				}
-				System.out.println("drawCount = " + drawCount);
-				System.out.println("whiteWinCount = " + whiteWinCount);
-				System.out.println("blackWinCount = " + blackWinCount);
-				board.resetAll();
-				System.out.println("positionCountDraw = " + convertToCountBasedMap(positionCountDraw));
-				System.out.println("positionCountWhite = " + convertToCountBasedMap(positionCountWhite));
-				System.out.println("positionCountBlack = " + convertToCountBasedMap(positionCountBlack));
+				
+				if (base != null) {
+					base.setBoard(Transformer.getTwoDimByteArrayStyl(board.getBitboard()));
+				}
+				
+				GameState gameState = board.getGameState();
+				if (gameState != GameState.PLAYING) {
+					engineB.resetTT();
+					engineW.resetTT();
+					if (gameState == GameState.WHITE_WINS) {
+						whiteWinCount++;
+						increment(positionCountWhite, board.getZobristKey());
+					} else if (gameState == GameState.BLACK_WINS) {
+						blackWinCount++;
+						increment(positionCountBlack, board.getZobristKey());
+					} else {
+						drawCount++;
+						increment(positionCountDraw, board.getZobristKey());
+					}
+					System.out.println("drawCount = " + drawCount);
+					System.out.println("whiteWinCount = " + whiteWinCount);
+					System.out.println("blackWinCount = " + blackWinCount);
+					board.resetAll();
+					System.out.println("positionCountDraw = " + convertToCountBasedMap(positionCountDraw));
+					System.out.println("positionCountWhite = " + convertToCountBasedMap(positionCountWhite));
+					System.out.println("positionCountBlack = " + convertToCountBasedMap(positionCountBlack));
+				}
+				
 			}
-
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
+
 	}
 
 	public void increment(HashMap<Long, Long> map, Long key) {
