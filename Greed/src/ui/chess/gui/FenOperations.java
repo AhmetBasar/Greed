@@ -34,6 +34,7 @@ public class FenOperations {
 	private int epTarget = 64;
 	private int epSquare = -1;
 	private long zobristKey;
+	private long pawnZobristKey;
 	
 	private static final char WHITE_PAWN 			= 'P';
 	private static final char WHITE_KNIGHT 			= 'N';
@@ -87,7 +88,10 @@ public class FenOperations {
 		if(base != null){
 			base.getGamePlay().recalculateZobristKey();
 		}
-		zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(board), epTarget, castlingRights, side);
+		
+		long[] bb = Transformer.getBitboardStyl(board);
+		zobristKey = TranspositionTable.getZobristKey(bb, epTarget, castlingRights, side);
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(bb);
 	}
 	
 	private void setEnpassantTarget(String enPassant) {
@@ -264,6 +268,9 @@ public class FenOperations {
 	public long getZobristKey() {
 		return zobristKey;
 	}
-	
-	
+
+	public long getPawnZobristKey() {
+		return pawnZobristKey;
+	}
+
 }

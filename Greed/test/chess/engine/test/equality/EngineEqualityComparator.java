@@ -34,7 +34,6 @@ import chess.engine.test.ThreadPool;
 import chess.engine.test.tournament.ChessBoard;
 import chess.engine.test.tournament.ChessBoard.GameState;
 import chess.fhv2.SearchEngineFifty10;
-import chess.fhv2.SearchEngineFifty12;
 
 public class EngineEqualityComparator implements Runnable {
 	
@@ -47,7 +46,7 @@ public class EngineEqualityComparator implements Runnable {
 			ChessBoard board = new ChessBoard();
 			
 			ISearchableV2 engine1 = SearchEngineFifty10.getNewInstance();
-			ISearchableV2 engine2 = SearchEngineFifty12.getNewInstance();
+			ISearchableV2 engine2 = SearchEngineFifty10.getNewInstance();
 			
 			engine1.setBoardStateHistory(board.getBoardStateHistory());
 			engine2.setBoardStateHistory(board.getBoardStateHistory());

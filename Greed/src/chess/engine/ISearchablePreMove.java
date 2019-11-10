@@ -23,7 +23,7 @@ import java.util.Map;
 
 public interface ISearchablePreMove {
 	
-	public SearchResult search(int depth, int epT, int epS, long[] bitboard, byte[] pieces, byte[][] castlingRights, int side, long uiZobristKey, int firstMove, long timeLimit, int fiftyMoveCounter);
+	public SearchResult search(int depth, int epT, int epS, long[] bitboard, byte[] pieces, byte[][] castlingRights, int side, long uiZobristKey, int firstMove, long timeLimit, int fiftyMoveCounter, long uiPawnZobristKey);
 	
 	void setBoardStateHistory(Map<Long, Integer> boardStateHistory);
 	

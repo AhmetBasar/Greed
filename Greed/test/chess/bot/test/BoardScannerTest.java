@@ -53,7 +53,12 @@ public class BoardScannerTest implements Runnable {
 				SwingUtilities.invokeAndWait(new Runnable() {
 					@Override
 					public void run() {
-						base.setBoard(randomBoard);
+						try {
+							base.setBoard(randomBoard);
+						} catch (Exception e) {
+							e.printStackTrace();
+							System.exit(1);
+						}
 					}
 				});
 
@@ -74,7 +79,12 @@ public class BoardScannerTest implements Runnable {
 
 	@Override
 	public void run() {
-		runTest();
+		try {
+			runTest();
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
 	}
 
 }

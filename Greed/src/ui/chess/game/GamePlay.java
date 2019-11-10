@@ -234,8 +234,9 @@ public class GamePlay {
 	public void init() throws Exception{
 		initDatabase();
 		base = new BaseGui(this);
-		zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), getEpTarget(), getCastlingRights(), getSide());
-		pawnZobristKey = TranspositionTable.getPawnZobristKey(Transformer.getBitboardStyl(base.getBoard()));
+		long[] bb = Transformer.getBitboardStyl(base.getBoard());
+		zobristKey = TranspositionTable.getZobristKey(bb, getEpTarget(), getCastlingRights(), getSide());
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(bb);
 		
 		//
 		new KeyListenerGeneric(null);
@@ -402,8 +403,10 @@ public class GamePlay {
 		moveHistory.clear();
 		
 		castlingRights = new byte[][] { { 1, 1 }, { 1, 1 } };
-		zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), getEpTarget(), getCastlingRights(), getSide());
-		pawnZobristKey = TranspositionTable.getPawnZobristKey(Transformer.getBitboardStyl(base.getBoard()));
+		
+		long[] bb = Transformer.getBitboardStyl(base.getBoard());
+		zobristKey = TranspositionTable.getZobristKey(bb, getEpTarget(), getCastlingRights(), getSide());
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(bb);
 		
 		boardStateHistory.clear();
 		
@@ -560,8 +563,9 @@ public class GamePlay {
 	}
 	
 	public void recalculateZobristKey() {
-		zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), getEpTarget(), castlingRights, side);
-		pawnZobristKey = TranspositionTable.getPawnZobristKey(Transformer.getBitboardStyl(base.getBoard()));
+		long[] bb = Transformer.getBitboardStyl(base.getBoard());
+		zobristKey = TranspositionTable.getZobristKey(bb, getEpTarget(), castlingRights, side);
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(bb);
 	}
 
 	public ArrayList<GamePlayMove> getMoveHistory() {
