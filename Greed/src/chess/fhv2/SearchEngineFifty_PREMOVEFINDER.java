@@ -334,7 +334,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		
 		if (!existsLegalMove) {
 			if (legality.isKingInCheck(board.getBitboard(), side)) {
-				return color * (side == GuiConstants.WHITES_TURN ? -99999 : 99999);
+				return MINUS_INFINITY + distance;
 			} else {
 				return 0;
 			}

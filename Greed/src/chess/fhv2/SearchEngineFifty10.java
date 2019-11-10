@@ -52,6 +52,8 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	private static final int HASH_ALPHA = 2;
 	private static final int HASH_BETA = 3;
 	
+	private static final boolean NULL_MOVE_PRUNING = true;
+	
 	private Map<Long, Integer> boardStateHistory;
 	
 	private int[] primaryKillerss = new int[128]; // The index corresponds to the ply the killer move is located in
@@ -309,25 +311,26 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		boolean existsLegalMove = false;
 		boolean foundPv = false;
 		
-		//=>> NullMove Begin
-		if (!isKingInCheck && allowNullMove && depth > 2) {
-
-			board.doNullMove(depth, side);
-			
-			board.deeperDive(depth - 1);
-			board.deeperDive(depth - 2);
-			
-			tempValue = -negamax(depth - 1 - R, board, side, -color, -beta, -beta + 1, ttBestMove, firstMove, false, distance + 1);
-			
-			board.undoNullMove(depth);
-			
-			
-			if (tempValue >= beta) {
-				return beta;
+		if (NULL_MOVE_PRUNING) {
+			//=>> NullMove Begin
+			if (!isKingInCheck && allowNullMove && depth > 2) {
+				
+				board.doNullMove(depth, side);
+				
+				board.deeperDive(depth - 1);
+				board.deeperDive(depth - 2);
+				
+				tempValue = -negamax(depth - 1 - R, board, side, -color, -beta, -beta + 1, ttBestMove, firstMove, false, distance + 1);
+				
+				board.undoNullMove(depth);
+				
+				
+				if (tempValue >= beta) {
+					return beta;
+				}
 			}
+			//=>> NullMove End
 		}
-		//=>> NullMove End
-		
 		
 		//
 		if(ttBestMove != 0){
@@ -429,14 +432,14 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
 			board.doMoveWithoutZobrist(move, side, opSide, depth);
 			if (!legality.isKingInCheck(board.getBitboard(), side)) {
-					if (foundPv) {
-						tempValue = -quiescentSearch(board, side, -color, -alpha - 1, -alpha, depth - 1);
-						if (tempValue > alpha) {
-							tempValue = -quiescentSearch(board, side, -color, -beta, -alpha, depth - 1);
-						}
-					} else {
+				if (foundPv) {
+					tempValue = -quiescentSearch(board, side, -color, -alpha - 1, -alpha, depth - 1);
+					if (tempValue > alpha) {
 						tempValue = -quiescentSearch(board, side, -color, -beta, -alpha, depth - 1);
 					}
+				} else {
+					tempValue = -quiescentSearch(board, side, -color, -beta, -alpha, depth - 1);
+				}
 				
 				if(tempValue >= beta){
 					board.undoMoveWithoutZobrist(move, side, opSide, depth);
