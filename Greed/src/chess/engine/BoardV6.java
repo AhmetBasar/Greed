@@ -107,11 +107,6 @@ public class BoardV6 implements IBoard {
 		}
 		zobristKeys[depth] = zz;
 
-		//
-		// TODO: is it necessary?
-		pawnZobristKeys[depth] = pawnZobristKeys[depthPlusOne];
-		//
-		
 		int fiftyMoveCounter = fiftyMoveCounters[depthPlusOne];
 		fiftyMoveCounter++;
 		fiftyMoveCounters[depth] = fiftyMoveCounter;
@@ -122,11 +117,6 @@ public class BoardV6 implements IBoard {
 		depth = convertToInternalDepth(depth);
 		int depthPlusOne = depth + 1;
 		zobristKeys[depth] = zobristKeys[depthPlusOne];
-		
-		//
-		// TODO: is it necessary?
-		pawnZobristKeys[depth] = pawnZobristKeys[depthPlusOne];
-		//
 		
 		fiftyMoveCounters[depth] = fiftyMoveCounters[depthPlusOne];
 		nullMoveCounters[depth] = nullMoveCounters[depthPlusOne];
