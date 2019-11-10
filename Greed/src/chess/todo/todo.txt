@@ -228,4 +228,10 @@ Chess Bot Programming.
   - Use TimerPool for PieceEffects class.
   - use static methods instead of instance methods.
   - prefer eager initialization instead of lazy one.
+  - do Exclusive Or operation for incremental update of BitBoards. it will be much more efficient.
+  - rewrite resetTT method with smarter way, maybe Arrays.fill
+  - Change pawn HashTable size.
+  - Change pawn HashTable implementation to 4 buckets.
+  - rewrite PREMOVEFINDER with modern implementations.
+  - Use switch case statement when checking the piece is WhitePawn or BlackPawn in PawnZobristkey calculation.
  
