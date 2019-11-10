@@ -19,6 +19,8 @@
  **********************************************/
 package chess.bot;
 
+import chess.engine.EngineConstants;
+import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.fhv2.SearchEngineFifty_PREMOVEFINDER;
 
@@ -49,9 +51,23 @@ public class EngineControllerPreMove implements Runnable {
 			try {
 				waitIfSuspended();
 				long start = System.currentTimeMillis();
-				SearchResult searchResult = engine.search(depth, gameController.getEpTarget(), gameController.getEpSquare(),
-						gameController.getBitboard(), gameController.getPieces(), gameController.getCastlingRights(),
-						gameController.getSide(), gameController.getZobristKey(), gameController.getLastMove(), -1L, gameController.getFiftyMoveCounter(), gameController.getPawnZobristKey());
+				
+				SearchParameters params = new SearchParameters();
+				params.setDepth(depth);
+				params.setEpT(gameController.getEpTarget());
+				params.setEpS(gameController.getEpSquare());
+				params.setBitboard(gameController.getBitboard());
+				params.setPieces(gameController.getPieces());
+				params.setCastlingRights(gameController.getCastlingRights());
+				params.setSide(gameController.getSide());
+				params.setUiZobristKey(gameController.getZobristKey());
+				params.setUiPawnZobristKey(gameController.getPawnZobristKey());
+				params.setTimeLimit(-1L);
+				params.setFiftyMoveCounter(gameController.getFiftyMoveCounter());
+				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
+				params.setFirstMove(gameController.getLastMove());
+				
+				SearchResult searchResult = engine.search(params);
 				
 				long e = System.currentTimeMillis();
 				System.out.println("fark PREMOVE = " + (e - start));

@@ -36,6 +36,7 @@ public class SearchParameters {
 	private int fiftyMoveCounter;
 	private EngineMode engineMode;
 	private String bookName = "book_small.bin";
+	private int firstMove; // for PREMOVEFINDER
 
 	public int getDepth() {
 		return depth;
@@ -141,4 +142,12 @@ public class SearchParameters {
 		this.bookName = bookName;
 	}
 
+	public int getFirstMove() {
+		return firstMove;
+	}
+
+	public void setFirstMove(int firstMove) {
+		this.firstMove = firstMove;
+	}
+	
 }

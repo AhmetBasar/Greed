@@ -33,6 +33,7 @@ import chess.engine.LegalityV4;
 import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;
 import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.engine.PawnHashTable;
+import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.engine.TT;
 import chess.engine.TranspositionElement;
@@ -79,17 +80,19 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		blackListMap = new HashMap<>();
 	}
 	
-	public SearchResult search(int depth, int epT, int epS, long[] bitboard, byte[] pieces, byte[][] castlingRights, int side, long uiZobristKey, int firstMove, long timeLimit, int fiftyMoveCounter, long uiPawnZobristKey) {
+	public SearchResult search(SearchParameters sp) {
+		
+		int depth = sp.getDepth();
 		
 		reset();
 		
-		long zobristKey = TranspositionTable.getZobristKey(bitboard, epT, castlingRights, side);
-		if (uiZobristKey != zobristKey) {
+		long zobristKey = TranspositionTable.getZobristKey(sp.getBitboard(), sp.getEpT(), sp.getCastlingRights(), sp.getSide());
+		if (sp.getUiZobristKey() != zobristKey) {
 			throw new RuntimeException("Zobrist key is incorrect.");
 		}
 		
-		long pawnZobristKey = TranspositionTable.getPawnZobristKey(bitboard);
-		if (uiPawnZobristKey != pawnZobristKey) {
+		long pawnZobristKey = TranspositionTable.getPawnZobristKey(sp.getBitboard());
+		if (sp.getUiPawnZobristKey() != pawnZobristKey) {
 			throw new RuntimeException("Pawn Zobrist key is incorrect.");
 		}
 		
@@ -97,13 +100,13 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		for (int i = 1; i <= depth; i++) {
 			boolean isLastIteration = i == depth;
 			int preMoveDepth = depth - 1;
-			IBoard board = BoardFactory.getInstance(bitboard, pieces, epT, epS, i, castlingRights, uiZobristKey, fiftyMoveCounter, pawnZobristKey);
-			move = getBestMovee(i, board, side, isLastIteration, preMoveDepth, 0, firstMove);	
+			IBoard board = BoardFactory.getInstance(sp.getBitboard(), sp.getPieces(), sp.getEpT(), sp.getEpS(), i, sp.getCastlingRights(), sp.getUiZobristKey(), sp.getFiftyMoveCounter(), sp.getUiPawnZobristKey());
+			move = getBestMovee(i, board, sp.getSide(), isLastIteration, preMoveDepth, 0, sp.getFirstMove());	
 		}
 		
 		opponentsBestMove = move;
 		
-		doFinalPreMove(firstMove);
+		doFinalPreMove(sp.getFirstMove());
 		
 		searchResult.setBestMove(move);
 		
