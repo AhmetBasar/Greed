@@ -28,7 +28,7 @@ import java.util.Set;
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
-import chess.engine.ISearchablePreMove;
+import chess.engine.ISearchableV2;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;
 import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
@@ -42,7 +42,7 @@ import chess.evaluation.EvaluationAdvancedV4;
 import chess.gui.GuiConstants;
 
 // http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm
-public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
+public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 	
 	private MoveGenerationOrderedOnlyQueenPromotions_SBIV2 moveGenerationOrdered = new MoveGenerationOrderedOnlyQueenPromotions_SBIV2();
 	private MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 moveGenerationCaptures = new MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2();
@@ -69,8 +69,30 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 	
 	SearchResult searchResult = new SearchResult();
 	
-	public SearchEngineFifty_PREMOVEFINDER(){
+	private static SearchEngineFifty_PREMOVEFINDER instance;
+	private static SearchEngineFifty_PREMOVEFINDER[] newInstances = new SearchEngineFifty_PREMOVEFINDER[16];
+	
+	private SearchEngineFifty_PREMOVEFINDER(){
 		TranspositionTable.fillZobristArrays();
+	}
+	
+	public static SearchEngineFifty_PREMOVEFINDER getInstance() {
+		if (instance == null) {
+			instance = new SearchEngineFifty_PREMOVEFINDER();
+		}
+		return instance;
+	}
+	
+	public static synchronized SearchEngineFifty_PREMOVEFINDER getNewInstance() {
+		for (int i = 0; i < newInstances.length; i++) {
+			if (newInstances[i] == null) {
+				newInstances[i] = new SearchEngineFifty_PREMOVEFINDER();
+				return newInstances[i];
+			}
+		}
+		System.out.println("Max instance count exceeded.");
+		System.exit(-1);
+		throw new RuntimeException();
 	}
 	
 	private void reset() {
@@ -83,6 +105,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 	public SearchResult search(SearchParameters sp) {
 		
 		int depth = sp.getDepth();
+		long startTime = System.currentTimeMillis();
 		
 		reset();
 		
@@ -109,6 +132,8 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		doFinalPreMove(sp.getFirstMove());
 		
 		searchResult.setBestMove(move);
+		
+		searchResult.setTimeConsumed(System.currentTimeMillis() - startTime);
 		
 		return searchResult;
 		
@@ -487,6 +512,12 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 				moveList[sizeMinusOne] = secondaryKiller;
 			}
 		}
+	}
+
+	@Override
+	public void setForceTimeoutRequested(boolean forceTimeoutRequested) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }
