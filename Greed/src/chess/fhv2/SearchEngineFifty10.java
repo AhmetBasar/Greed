@@ -30,6 +30,7 @@ import chess.engine.LegalityV4;
 import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;
 import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.engine.OpeningBook;
+import chess.engine.PawnHashTable;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.engine.TT;
@@ -117,6 +118,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	private EngineMode engineMode;
 	
 	private TT tt = new TT();
+	private PawnHashTable pawnHashTable = new PawnHashTable();
 	
 	public SearchResult search(SearchParameters searchParameters) {
 		
@@ -137,10 +139,16 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			throw new RuntimeException("Zobrist key is incorrect.");
 		}
 		
+		long pawnZobristKey = TranspositionTable.getPawnZobristKey(searchParameters.getBitboard());
+		
+		if (searchParameters.getUiPawnZobristKey() != pawnZobristKey) {
+			throw new RuntimeException("Pawn Zobrist key is incorrect.");
+		}
+		
 		int move = 0;
 		for (int i = 1; isFixedDepth ? (i <= depth) : true; i++) {
 			currentDepth = i;
-			IBoard board = BoardFactory.getInstance(searchParameters.getBitboard(), searchParameters.getPieces(), searchParameters.getEpT(), searchParameters.getEpS(), i, searchParameters.getCastlingRights(), searchParameters.getUiZobristKey(), searchParameters.getFiftyMoveCounter());
+			IBoard board = BoardFactory.getInstance(searchParameters.getBitboard(), searchParameters.getPieces(), searchParameters.getEpT(), searchParameters.getEpS(), i, searchParameters.getCastlingRights(), searchParameters.getUiZobristKey(), searchParameters.getFiftyMoveCounter(), pawnZobristKey);
 			
 			if (i == 1 && searchParameters.getBookName() != null) {
 //				long s = System.currentTimeMillis();
@@ -184,6 +192,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	
 	public void resetTT() {
 		tt.resetTT();
+		pawnHashTable.resetTT();
 	}
 	
 	public int getBestMovee(int depth, IBoard board, int side, int distance){
@@ -404,7 +413,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	}
 	
 	private int quiescentSearch(IBoard board, int side, int color, int alpha, int beta, int depth){
-		int standPatScore =  color * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(depth + 1), side ^ 1);
+		int standPatScore =  color * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(depth + 1), side ^ 1, board.getPawnZobristKey(depth + 1), pawnHashTable);
 		
 		if(standPatScore >= beta){
 			return beta;
