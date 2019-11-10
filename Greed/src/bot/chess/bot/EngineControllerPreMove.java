@@ -51,7 +51,7 @@ public class EngineControllerPreMove implements Runnable {
 				long start = System.currentTimeMillis();
 				SearchResult searchResult = engine.search(depth, gameController.getEpTarget(), gameController.getEpSquare(),
 						gameController.getBitboard(), gameController.getPieces(), gameController.getCastlingRights(),
-						gameController.getSide(), gameController.getZobristKey(), gameController.getLastMove(), -1L, gameController.getFiftyMoveCounter());
+						gameController.getSide(), gameController.getZobristKey(), gameController.getLastMove(), -1L, gameController.getFiftyMoveCounter(), gameController.getPawnZobristKey());
 				
 				long e = System.currentTimeMillis();
 				System.out.println("fark PREMOVE = " + (e - start));

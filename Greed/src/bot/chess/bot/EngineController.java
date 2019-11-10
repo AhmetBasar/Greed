@@ -102,6 +102,7 @@ public class EngineController implements Runnable {
 				params.setCastlingRights(gameController.getCastlingRights());
 				params.setSide(gameController.getSide());
 				params.setUiZobristKey(gameController.getZobristKey());
+				params.setUiPawnZobristKey(gameController.getPawnZobristKey());
 				params.setTimeLimit(tl);
 				params.setFiftyMoveCounter(gameController.getFiftyMoveCounter());
 				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
