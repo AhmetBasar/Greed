@@ -34,6 +34,7 @@ import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;
 import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.engine.PawnHashTable;
 import chess.engine.SearchResult;
+import chess.engine.TT;
 import chess.engine.TranspositionElement;
 import chess.engine.TranspositionTable;
 import chess.evaluation.EvaluationAdvancedV4;
@@ -49,7 +50,6 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 	private final int MINUS_INFINITY = -99999;
 	private final int PLUS_INFINITY = 99999;
 	
-	private static final int TT_SIZE = 1048583;
 	private static final int HASH_EXACT = 1;
 	private static final int HASH_ALPHA = 2;
 	private static final int HASH_BETA = 3;
@@ -59,7 +59,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 	private int opponentsBestMove;
 	private Map<Long, Integer> boardStateHistory;
 	
-	private TranspositionElement[] hashTable = new TranspositionElement[TT_SIZE];
+	private TT tt = new TT();
 	private PawnHashTable pawnHashTable = new PawnHashTable();
 	
 	//TODO change slot count and comparen performance.
@@ -112,7 +112,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 	}
 	
 	public void resetTT() {
-		hashTable = new TranspositionElement[TT_SIZE];
+		tt.resetTT();
 		pawnHashTable.resetTT();
 	}
 	
@@ -131,7 +131,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		int hashType = HASH_ALPHA;
 		
 		int ttBestMove = 0;
-		TranspositionElement ttElement = hashTable[(int)Math.abs(board.getZobristKey(depth) % TT_SIZE)];
+		TranspositionElement ttElement = tt.probe(board.getZobristKey(depth));
 		if(ttElement != null && ttElement.zobristKey == board.getZobristKey(depth)){
 			ttBestMove = ttElement.bestMove;
 		}
@@ -157,7 +157,6 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 			board.undoMove(ttBestMove, side, opSide, depth);
 		}
 		
-		 
 		moveGenerationOrdered.generateMoves(board, side, depth + 1, depth);
 		int[] moveList = board.getMoveList(depth);
 		Arrays.sort(moveList);
@@ -180,11 +179,10 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 					bestMove = move;
 				}
 			}
-			
 			board.undoMove(move, side, opSide, depth);
 		}
 		
-		recordTranspositionTable(board.getZobristKey(depth), alpha, bestMove, depth, hashType);
+		tt.recordTranspositionTable(board.getZobristKey(depth), alpha, bestMove, depth, hashType, false);
 		
 		return bestMove;
 	}
@@ -212,13 +210,12 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		int hashType = HASH_ALPHA;
 		board.deepDive(depth);
 		long zobristKey = board.getZobristKey(depth);
-		
 		if (isLeadsToDraw(zobristKey, board, depth)) {
 			return 0;
 		}
 		
 		int ttBestMove = 0;
-		TranspositionElement ttElement = hashTable[(int)Math.abs(zobristKey % TT_SIZE)];
+		TranspositionElement ttElement = tt.probe(zobristKey);
 		if(ttElement != null && ttElement.zobristKey == zobristKey){
 			if(ttElement.depth >= depth){
 				switch (ttElement.hashType) {
@@ -248,7 +245,6 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 			ttBestMove = ttElement.bestMove;
 		}
 		
-		// check extension.
 		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), side ^ 1);
 		if(!isKingInCheck && depth <= 0){
 			searchResult.incrementEvaluatedLeafNodeCount();
@@ -267,19 +263,17 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 			board.doMove(ttBestMove, side, opSide, depth);
 			
 			if (!legality.isKingInCheck(board.getBitboard(), side)) {
-				
 				existsLegalMove = true;
 				
 				tempValue = -negamax(depth - 1, board, side, -color, -beta, -alpha, ttBestMove, firstMove, preMoveDepth, distance + 1);
-				
+
 				if (tempValue >= beta) {
 					board.undoMove(ttBestMove, side, opSide, depth);
-					recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA);
+					tt.recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA, false);
 					if (depth == preMoveDepth) {
 						decidePreMove(ttBestMove, previousMove, firstMove);
 					}
 					addKiller(ttBestMove, distance);
-					
 					return beta;
 				}
 				
@@ -302,10 +296,9 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 		int move;
 		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
 			board.doMove(move, side, opSide, depth);
+			
 			if (!legality.isKingInCheck(board.getBitboard(), side)) {
-				
 				existsLegalMove = true;
-				
 				if (foundPv) {
 					tempValue = -negamax(depth - 1, board, side, -color, -alpha - 1, -alpha, move, firstMove, preMoveDepth, distance + 1);
 					if (tempValue > alpha) {
@@ -317,13 +310,12 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 				
 				if (tempValue >= beta) {
 					board.undoMove(move, side, opSide, depth);
-					recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA);
+					tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, false);
 					addKiller(move, distance);
 					if (depth == preMoveDepth) {
 						decidePreMove(move, previousMove, firstMove);
 					}
 					return beta;
-					
 				}
 				
 				if(tempValue > alpha){
@@ -349,7 +341,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 			decidePreMove(bestMove, previousMove, firstMove);
 		}
 		
-		recordTranspositionTable(zobristKey, alpha, bestMove, depth, hashType);
+		tt.recordTranspositionTable(zobristKey, alpha, bestMove, depth, hashType, false);
 		
 		return alpha;
 	}
@@ -389,11 +381,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 				}
 				
 				if(tempValue >= beta){
-					
-					// Board infrastructure.
 					board.undoMoveWithoutZobrist(move, side, opSide, depth);
-					// Board infrastructure.
-					
 					return beta;
 				}
 				if(tempValue > alpha){
@@ -404,28 +392,6 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 			board.undoMoveWithoutZobrist(move, side, opSide, depth);
 		}
 		return alpha;
-	}
-	
-	private void recordTranspositionTable(long zobristKey, int value, int bestMove, int depth, int hashType){
-		int index = (int)Math.abs(zobristKey % hashTable.length);
-		TranspositionElement ttElement = hashTable[index];
-		if(ttElement != null){
-//			if(ttElement.depth <= depth){ // try only greater than...
-				ttElement.zobristKey = zobristKey;
-				ttElement.score = value;
-				ttElement.depth = depth;
-				ttElement.bestMove = bestMove;
-				ttElement.hashType = hashType;
-//			}
-		} else {
-			ttElement = new TranspositionElement(); // Maybe when engine initiates, instantiate all Transposition object. in order to reduce new object cost.
-			ttElement.zobristKey = zobristKey;
-			ttElement.score = value;
-			ttElement.depth = depth;
-			ttElement.bestMove = bestMove;
-			ttElement.hashType = hashType;
-			hashTable[index] = ttElement;
-		}
 	}
 	
 	private void decidePreMove(int bestMove, int previousMove, int firstMove) {
@@ -504,14 +470,10 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchablePreMove {
 	}
 	
 	public void sortMoves(int[] moveList, int distance) {
-		
 		Arrays.sort(moveList);
-		
 		int primaryKiller = primaryKillerss[distance];
 		int secondaryKiller = secondaryKillerss[distance];
-		
 		int sizeMinusOne = EngineConstants.MOVE_LIST_SIZE - 1;
-		
 		int move;
 		for ( int i = sizeMinusOne  ; (move = moveList[i]) != 0 ; i--) {
 			if (move == primaryKiller) {

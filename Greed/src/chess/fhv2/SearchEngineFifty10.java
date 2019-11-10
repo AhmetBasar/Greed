@@ -175,14 +175,6 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			}
 		}
 		
-//		long usedTTSize = 0;
-//		for (int i = 0; i < hashTable.length; i++) {
-//			if (hashTable[i] != null) {
-//				usedTTSize++;
-//			}
-//		}
-//		System.out.println("usedTTSize = " + usedTTSize);
-//		System.out.println("Yüzde = % " + (100 * usedTTSize) / TT_SIZE);
 		
 		searchResult.setBestMove(move);
 		
