@@ -79,6 +79,7 @@ public class TournamentManager implements Runnable {
 				params.setCastlingRights(board.getCastlingRights());
 				params.setSide(board.getSide());
 				params.setUiZobristKey(board.getZobristKey());
+				params.setUiPawnZobristKey(board.getPawnZobristKey());
 				params.setTimeLimit(1);
 				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
 				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
@@ -98,6 +99,7 @@ public class TournamentManager implements Runnable {
 				params.setCastlingRights(board.getCastlingRights());
 				params.setSide(board.getSide());
 				params.setUiZobristKey(board.getZobristKey());
+				params.setUiPawnZobristKey(board.getPawnZobristKey());
 				params.setTimeLimit(1);
 				params.setFiftyMoveCounter(board.getFiftyMoveCounter());
 				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);

@@ -40,6 +40,7 @@ public class ChessBoard {
 	private byte[][] rookPositions = { { 0, 7 }, { 56, 63 } };
 	private MoveGenerationOnlyQueenPromotions moveGeneration = new MoveGenerationOnlyQueenPromotions();
 	private long zobristKey;
+	private long pawnZobristKey;
 	private int fiftyMoveCounter = 0;
 	private ArrayList<ChessMove> moveHistory = new ArrayList<ChessMove>();
 	private GameState gameState = GameState.PLAYING;
@@ -246,6 +247,7 @@ public class ChessBoard {
 		bitboard = Transformer.getBitboardStyl(DebugUtility.getDefaultBoard());
 		pieces = Transformer.getByteArrayStyl(bitboard);
 		zobristKey = TranspositionTable.getZobristKey(getBitboard(), getEpTarget(), getCastlingRights(), getSide());
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(getBitboard());
 
 		moveHistory.clear();
 		boardStateHistory.clear();
@@ -310,6 +312,10 @@ public class ChessBoard {
 		zobristKey = zobristKey ^ val;
 	}
 	
+	public void updatePawnZobristKey(long val) {
+		pawnZobristKey = pawnZobristKey ^ val;
+	}
+	
 	public GameState getGameState() {
 		if (!existsValidMove()) {
 			if (legality.isKingInCheck(bitboard, side)) {
@@ -366,6 +372,14 @@ public class ChessBoard {
 		}
 		
 		return isKingInSafe;
+	}
+
+	public long getPawnZobristKey() {
+		return pawnZobristKey;
+	}
+
+	public void setPawnZobristKey(long pawnZobristKey) {
+		this.pawnZobristKey = pawnZobristKey;
 	}
 	
 }

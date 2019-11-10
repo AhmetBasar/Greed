@@ -48,6 +48,8 @@ public class ChessMove {
 	private int[][] castlingRookTargets = {{3, 5}, {59, 61}};
 	private ChessBoard base;
 	private LegalityV4 legality = new LegalityV4();
+	
+	private long currentPawnZobristKey;
 
 	public ChessMove(int move, ChessBoard base) {
 		this.base = base;
@@ -56,6 +58,8 @@ public class ChessMove {
 		currentEpSquare 		= base.getGamePlay().getEpSquare();
 		side            		= base.getGamePlay().getSide();
 		currentCastlingRights	= DebugUtility.deepCloneMultiDimensionalArray(base.getGamePlay().getCastlingRights()); // safe deep copy.
+		
+		currentPawnZobristKey = base.getGamePlay().getPawnZobristKey();
 		
 		int diff = pushDiffs[side];
 		to = (move & 0x0000ff00) >>> 8;
@@ -101,6 +105,17 @@ public class ChessMove {
 			}
 			//
 			
+			byte fromPieceWc = (byte)(fromPiece & 0XFE);
+			if (fromPieceWc == EngineConstants.PAWN) {
+				base.updatePawnZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
+				base.updatePawnZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
+			}
+			
+			byte capturedPieceWc = (byte)(capturedPiece & 0XFE);
+			if (capturedPieceWc == EngineConstants.PAWN) {
+				base.updatePawnZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
+			}
+			
 			base.getPieces()[from] = 0;
 			base.getPieces()[to] = fromPiece;
 			base.getBitboard()[fromPiece] &= ~(1L << from);
@@ -116,6 +131,9 @@ public class ChessMove {
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
 			//
 			
+			base.updatePawnZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
+			base.updatePawnZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
+			
 			base.getGamePlay().setEpTarget(toBeImplementedEpTarget);
 			base.getGamePlay().setEpSquare(toBeImplementedEpSquare);
 			base.getPieces()[from] = 0;
@@ -129,6 +147,10 @@ public class ChessMove {
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
 			//
+			
+			base.updatePawnZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][currentEpSquare]);
+			base.updatePawnZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
+			base.updatePawnZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
 			
 			base.getPieces()[currentEpSquare] = 0;
 			base.getPieces()[from] = 0;
@@ -145,6 +167,8 @@ public class ChessMove {
 				base.updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][to]);
 			}
 			//
+			
+			base.updatePawnZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
 			
 			base.getPieces()[from] = 0;
 			base.getPieces()[to] = promotedPiece;
@@ -176,6 +200,9 @@ public class ChessMove {
 	}
 	
 	public void unImplement() {
+		
+		base.getGamePlay().setPawnZobristKey(currentPawnZobristKey);
+		
 		//Transposition Table//
 		base.updateZobristKey(TranspositionTable.zobristBlackMove);
 		if(base.getGamePlay().getEpTarget() != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side][base.getGamePlay().getEpTarget()] & base.getBitboard()[(side ^ 1) | EngineConstants.PAWN]) != 0)

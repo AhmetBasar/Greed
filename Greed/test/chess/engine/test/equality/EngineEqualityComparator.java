@@ -130,6 +130,7 @@ public class EngineEqualityComparator implements Runnable {
 		params.setCastlingRights(board.getCastlingRights());
 		params.setSide(board.getSide());
 		params.setUiZobristKey(board.getZobristKey());
+		params.setUiPawnZobristKey(board.getPawnZobristKey());
 		params.setTimeLimit(timeLimit);
 		params.setFiftyMoveCounter(board.getFiftyMoveCounter());
 		params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);

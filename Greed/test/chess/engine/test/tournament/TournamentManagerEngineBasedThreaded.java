@@ -84,6 +84,7 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 					params.setCastlingRights(board.getCastlingRights());
 					params.setSide(board.getSide());
 					params.setUiZobristKey(board.getZobristKey());
+					params.setUiPawnZobristKey(board.getPawnZobristKey());
 					params.setTimeLimit(timeLimit);
 					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
 					params.setEngineMode(engineMode);
@@ -103,6 +104,7 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 					params.setCastlingRights(board.getCastlingRights());
 					params.setSide(board.getSide());
 					params.setUiZobristKey(board.getZobristKey());
+					params.setUiPawnZobristKey(board.getPawnZobristKey());
 					params.setTimeLimit(timeLimit);
 					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
 					params.setEngineMode(engineMode);
