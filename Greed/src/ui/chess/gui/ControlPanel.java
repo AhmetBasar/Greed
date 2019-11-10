@@ -359,6 +359,7 @@ class SuggestMoveActionListener implements ActionListener {
 				params.setCastlingRights(gamePlay.getCastlingRights());
 				params.setSide(gamePlay.getSide());
 				params.setUiZobristKey(gamePlay.getZobristKey());
+				params.setUiPawnZobristKey(gamePlay.getPawnZobristKey());
 				params.setTimeLimit(1L);
 				params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
 				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);

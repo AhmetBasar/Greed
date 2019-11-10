@@ -31,6 +31,7 @@ public class SearchParameters {
 	private byte[][] castlingRights;
 	private int side;
 	private long uiZobristKey;
+	private long uiPawnZobristKey;
 	private long timeLimit;
 	private int fiftyMoveCounter;
 	private EngineMode engineMode;
@@ -98,6 +99,14 @@ public class SearchParameters {
 
 	public void setUiZobristKey(long uiZobristKey) {
 		this.uiZobristKey = uiZobristKey;
+	}
+	
+	public long getUiPawnZobristKey() {
+		return uiPawnZobristKey;
+	}
+
+	public void setUiPawnZobristKey(long uiPawnZobristKey) {
+		this.uiPawnZobristKey = uiPawnZobristKey;
 	}
 
 	public long getTimeLimit() {

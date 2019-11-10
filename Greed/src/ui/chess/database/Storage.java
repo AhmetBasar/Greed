@@ -48,6 +48,7 @@ public class Storage {
 		try {
 			fis = new FileOutputStream("src/resources/Storage.properties");
 			properties.store(fis, null);
+			fis.flush();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		} finally {

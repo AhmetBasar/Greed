@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import chess.engine.EngineConstants;
-import chess.engine.EngineConstants.EngineMode;
 import chess.engine.ISearchableV2;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
@@ -35,10 +34,11 @@ import chess.engine.test.ThreadPool;
 import chess.engine.test.tournament.ChessBoard;
 import chess.engine.test.tournament.ChessBoard.GameState;
 import chess.fhv2.SearchEngineFifty10;
+import chess.fhv2.SearchEngineFifty12;
 
 public class EngineEqualityComparator implements Runnable {
 	
-	private static final int depth = 1;
+	private static final int depth = 6;
 	private static final int timeLimit = 5;
 
 	@Override
@@ -47,7 +47,7 @@ public class EngineEqualityComparator implements Runnable {
 			ChessBoard board = new ChessBoard();
 			
 			ISearchableV2 engine1 = SearchEngineFifty10.getNewInstance();
-			ISearchableV2 engine2 = SearchEngineFifty10.getNewInstance();
+			ISearchableV2 engine2 = SearchEngineFifty12.getNewInstance();
 			
 			engine1.setBoardStateHistory(board.getBoardStateHistory());
 			engine2.setBoardStateHistory(board.getBoardStateHistory());
@@ -59,6 +59,9 @@ public class EngineEqualityComparator implements Runnable {
 				SearchParameters params = getSearchParameters(board);
 				SearchResult srw = engineWhite.search(params);
 				SearchResult srb = engineBlack.search(params);
+				
+				increment(mapTimeConsumeds, engineWhite.getClass(), srw.getTimeConsumed());
+				increment(mapTimeConsumeds, engineBlack.getClass(), srb.getTimeConsumed());
 				
 				if (srb.isBookMove() != srw.isBookMove()) {
 					throw new RuntimeException("Failed.");
@@ -77,6 +80,7 @@ public class EngineEqualityComparator implements Runnable {
 					
 					engineWhite.resetTT();
 					engineBlack.resetTT();
+					
 					if (gameState == GameState.WHITE_WINS) {
 						increment(positionCountWhite, board.getZobristKey());
 					} else if (gameState == GameState.BLACK_WINS) {
@@ -90,6 +94,15 @@ public class EngineEqualityComparator implements Runnable {
 					sb.append("positionCountDraw = " + convertToCountBasedMap(positionCountDraw) + "\n");
 					sb.append("positionCountWhite = " + convertToCountBasedMap(positionCountWhite) + "\n");
 					sb.append("positionCountBlack = " + convertToCountBasedMap(positionCountBlack) + "\n");
+					sb.append("mapTimeConsumeds = " + mapTimeConsumeds + "\n");
+					
+					long engine1Time = mapTimeConsumeds.get(engine1.getClass());
+					long engine2Time = mapTimeConsumeds.get(engine2.getClass());
+					double totalTime = engine1Time + engine2Time;
+					double engine1TimePercentage = (100 * engine1Time) / totalTime;
+					double engine2TimePercentage = (100 * engine2Time) / totalTime;
+					sb.append("engine1TimePercentage = " + engine1TimePercentage + "\n");
+					sb.append("engine2TimePercentage = " + engine2TimePercentage + "\n");
 					
 				print(sb.toString());
 					
@@ -127,6 +140,11 @@ public class EngineEqualityComparator implements Runnable {
 		Long count = map.get(key);
 		map.put(key, count != null ? count.longValue() + 1 : 1);
 	}
+	
+	private synchronized static void increment(Map<Class<?>, Long> map, Class<?> key, long v) {
+		Long count = map.get(key);
+		map.put(key, count != null ? count.longValue() + v : v);
+	}
 
 	private synchronized static TreeMap<Long, Long> convertToCountBasedMap(Map<Long, Long> map) {
 		TreeMap<Long, Long> retMap = new TreeMap<>();
@@ -146,6 +164,7 @@ public class EngineEqualityComparator implements Runnable {
 	private static final Map<Long, Long> positionCountDraw = Collections.synchronizedMap(new HashMap<>());
 	private static final Map<Long, Long> positionCountWhite = Collections.synchronizedMap(new HashMap<>());
 	private static final Map<Long, Long> positionCountBlack = Collections.synchronizedMap(new HashMap<>());
+	private static final Map<Class<?>, Long> mapTimeConsumeds = Collections.synchronizedMap(new HashMap<>());
 	
 	public static void main(String[] args) {
 		List<Runnable> runnables = new ArrayList<>();

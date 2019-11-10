@@ -102,5 +102,19 @@ public class TranspositionTable {
 
 		return zobristKey;
 	}
+	
+	public static long getPawnZobristKey(long[] bitboard) {
+		long zobristKey = 0L;
+		int trailingZeros;
+		for (byte i = 2; i < 4; i++) {
+			long bb = bitboard[i];
+			while (bb != 0) {
+				trailingZeros = Long.numberOfTrailingZeros(bb);
+				zobristKey ^= zobristPositionArray[i][trailingZeros];
+				bb = bb & ~(1L << trailingZeros);
+			}
+		}
+		return zobristKey;
+	}
 
 }

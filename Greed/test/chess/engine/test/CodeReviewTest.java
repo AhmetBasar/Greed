@@ -158,6 +158,7 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.engine.test.equality.EngineEqualityComparator.positionCountDraw");
 		whiteListFields.add("chess.engine.test.equality.EngineEqualityComparator.positionCountWhite");
 		whiteListFields.add("chess.engine.test.equality.EngineEqualityComparator.positionCountBlack");
+		whiteListFields.add("chess.engine.test.equality.EngineEqualityComparator.mapTimeConsumeds");
 		whiteListFields.add("chess.engine.test.tournament.TournamentManagerEngineBasedThreaded.positionCountDraw");
 		whiteListFields.add("chess.engine.test.tournament.TournamentManagerEngineBasedThreaded.positionCountWhite");
 		whiteListFields.add("chess.engine.test.tournament.TournamentManagerEngineBasedThreaded.positionCountBlack");
@@ -168,6 +169,10 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.fhv2.SearchEngineFifty10.newInstances");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty9.instance");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty9.newInstances");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty11.instance");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty11.newInstances");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty12.instance");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty12.newInstances");
 	}
 
 }

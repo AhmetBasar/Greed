@@ -34,6 +34,8 @@ public interface IBoard {
 	int[] getMoveList(int depth);
 	
 	long getZobristKey(int depth);
+	
+	long getPawnZobristKey(int depth);
 
 	void deepDive(int depth);
 	

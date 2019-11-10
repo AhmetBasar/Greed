@@ -17,8 +17,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Greed.  If not, see <https://www.gnu.org/licenses/>.
  **********************************************/
- - If there is no pawn then do not probe. pawnZobrist == 0 or pawnBitboard == 0 ?
- - Update pawnZobrist when pawn move(single push, double push, capture, enpassant capture, promotion) or pawn capture.
- - Update simple capture move when captured move is pawn.
- - No need to think about side to move, enpassant, castling rights vs. vs. (if the pawn evaluation function is independent from side to move.)
- - There might be initialization for pawn zobrist key.
+package chess.engine;
+
+public class PawnTranspositionElement {
+	public long zobristKey;
+	public int score;
+}

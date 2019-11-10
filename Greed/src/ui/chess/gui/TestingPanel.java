@@ -180,6 +180,7 @@ public class TestingPanel extends JPanel{
 			public void actionPerformed(ActionEvent e) {
 				try {
 					gamePlay.setZobristKey(TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), gamePlay.getEpTarget(), gamePlay.getCastlingRights(), gamePlay.getSide()));
+					gamePlay.setPawnZobristKey(TranspositionTable.getPawnZobristKey(Transformer.getBitboardStyl(base.getBoard())));
 					resume();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block

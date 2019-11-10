@@ -50,6 +50,7 @@ public class GamePlay {
 	private byte[] kingPositions = { 4, 60 };
 	private byte[][] rookPositions = { { 0, 7 }, { 56, 63 } };
 	private long zobristKey;
+	private long pawnZobristKey;
 	private int fiftyMoveCounter = 0;
 	private Storage dbManager;
 	private HashMap<String, String> preferences = new HashMap<String, String>();
@@ -59,7 +60,7 @@ public class GamePlay {
 	
 	private Map<Long, Integer> boardStateHistory = new HashMap<Long, Integer>();
 	
-	private boolean noAnimation = true;
+	private boolean noAnimation = false;
 	
 	private boolean isImplementMove = true;
 	
@@ -234,6 +235,7 @@ public class GamePlay {
 		initDatabase();
 		base = new BaseGui(this);
 		zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), getEpTarget(), getCastlingRights(), getSide());
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(Transformer.getBitboardStyl(base.getBoard()));
 		
 		//
 		new KeyListenerGeneric(null);
@@ -308,6 +310,7 @@ public class GamePlay {
 			params.setCastlingRights(getCastlingRights());
 			params.setSide(getSide());
 			params.setUiZobristKey(zobristKey);
+			params.setUiPawnZobristKey(pawnZobristKey);
 			params.setTimeLimit(Utility.generateStrongRandomNumber(10, 400));
 			params.setFiftyMoveCounter(fiftyMoveCounter);
 			params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
@@ -329,7 +332,7 @@ public class GamePlay {
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
-//					engine.resetTT();
+					engine.resetTT();
 					//
 					engine.setBoardStateHistory(getBoardStateHistory());
 					
@@ -342,6 +345,7 @@ public class GamePlay {
 					params.setCastlingRights(getCastlingRights());
 					params.setSide(getSide());
 					params.setUiZobristKey(zobristKey);
+					params.setUiPawnZobristKey(pawnZobristKey);
 					params.setTimeLimit(1000);
 					params.setFiftyMoveCounter(fiftyMoveCounter);
 					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
@@ -361,7 +365,7 @@ public class GamePlay {
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
-//					engine.resetTT();
+					engine.resetTT();
 					//
 					engine.setBoardStateHistory(getBoardStateHistory());
 					
@@ -374,6 +378,7 @@ public class GamePlay {
 					params.setCastlingRights(getCastlingRights());
 					params.setSide(getSide());
 					params.setUiZobristKey(zobristKey);
+					params.setUiPawnZobristKey(pawnZobristKey);
 					params.setTimeLimit(1000);
 					params.setFiftyMoveCounter(fiftyMoveCounter);
 					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
@@ -398,6 +403,7 @@ public class GamePlay {
 		
 		castlingRights = new byte[][] { { 1, 1 }, { 1, 1 } };
 		zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), getEpTarget(), getCastlingRights(), getSide());
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(Transformer.getBitboardStyl(base.getBoard()));
 		
 		boardStateHistory.clear();
 		
@@ -549,8 +555,13 @@ public class GamePlay {
 		zobristKey = zobristKey ^ val;
 	}
 	
+	public void updatePawnZobristKey(long val) {
+		pawnZobristKey = pawnZobristKey ^ val;
+	}
+	
 	public void recalculateZobristKey() {
 		zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), getEpTarget(), castlingRights, side);
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(Transformer.getBitboardStyl(base.getBoard()));
 	}
 
 	public ArrayList<GamePlayMove> getMoveHistory() {
@@ -563,6 +574,14 @@ public class GamePlay {
 
 	public boolean isNoAnimation() {
 		return noAnimation;
+	}
+
+	public long getPawnZobristKey() {
+		return pawnZobristKey;
+	}
+
+	public void setPawnZobristKey(long pawnZobristKey) {
+		this.pawnZobristKey = pawnZobristKey;
 	}
 
 }
