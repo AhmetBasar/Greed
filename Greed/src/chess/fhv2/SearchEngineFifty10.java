@@ -23,6 +23,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 import chess.engine.BoardFactory;
+import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.ISearchableV2;
@@ -51,8 +52,6 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	private static final int HASH_EXACT = 1;
 	private static final int HASH_ALPHA = 2;
 	private static final int HASH_BETA = 3;
-	
-	private static final boolean NULL_MOVE_PRUNING = true;
 	
 	private Map<Long, Integer> boardStateHistory;
 	
@@ -311,7 +310,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		boolean existsLegalMove = false;
 		boolean foundPv = false;
 		
-		if (NULL_MOVE_PRUNING) {
+		if (CompileTimeConstants.NULL_MOVE_PRUNING) {
 			//=>> NullMove Begin
 			if (!isKingInCheck && allowNullMove && depth > 2) {
 				

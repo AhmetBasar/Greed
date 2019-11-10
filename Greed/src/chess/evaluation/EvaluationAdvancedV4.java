@@ -19,6 +19,7 @@
  **********************************************/
 package chess.evaluation;
 
+import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
 import chess.engine.PawnHashTable;
 import chess.engine.PawnTranspositionElement;
@@ -42,12 +43,10 @@ public class EvaluationAdvancedV4 {
 	
 	public static int evaluate(long[] bitboard, byte[][] castlingRights, int side, long pawnZobristKey, PawnHashTable pawnHashTable){
 		
-		// TODO COMMENT OUT HERE.
-		// TODO COMMENT OUT HERE.
-		// TODO COMMENT OUT HERE.
-		// TODO COMMENT OUT HERE.
-		if (pawnZobristKey != TranspositionTable.getPawnZobristKey(bitboard)) {
-			throw new RuntimeException("PATLADI");
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			if (pawnZobristKey != TranspositionTable.getPawnZobristKey(bitboard)) {
+				throw new RuntimeException("PATLADI");
+			}
 		}
 		
 		int eval = 0;

@@ -167,12 +167,9 @@ public class CodeReviewTest {
 		
 		whiteListFields.add("chess.fhv2.SearchEngineFifty10.instance");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty10.newInstances");
-		whiteListFields.add("chess.fhv2.SearchEngineFifty9.instance");
-		whiteListFields.add("chess.fhv2.SearchEngineFifty9.newInstances");
-		whiteListFields.add("chess.fhv2.SearchEngineFifty11.instance");
-		whiteListFields.add("chess.fhv2.SearchEngineFifty11.newInstances");
-		whiteListFields.add("chess.fhv2.SearchEngineFifty12.instance");
-		whiteListFields.add("chess.fhv2.SearchEngineFifty12.newInstances");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty_PREMOVEFINDER.instance");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty_PREMOVEFINDER.newInstances");
+		
 	}
 
 }
