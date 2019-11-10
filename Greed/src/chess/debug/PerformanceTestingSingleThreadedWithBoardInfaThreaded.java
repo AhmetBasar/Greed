@@ -88,7 +88,12 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 	
 	private Thread th = new Thread() {
 		public void run() {
-			incrementMoveCount(traverseMoveList(depth, board, side, moveList));
+			try {
+				incrementMoveCount(traverseMoveList(depth, board, side, moveList));
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}
 	};
 

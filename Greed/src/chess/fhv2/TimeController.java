@@ -22,7 +22,7 @@ public class TimeController implements Runnable {
 	
 	private volatile boolean suspended = true;
 	private ICallBackTimeout callBack;
-	private int checkPeriod = 10;
+	private int checkPeriod = 1;
 	
 	public TimeController(ICallBackTimeout callBack) {
 		this.callBack = callBack;
@@ -30,18 +30,23 @@ public class TimeController implements Runnable {
 	
 	@Override
 	public void run() {
-		waitIfSuspended();
-		while (true) {
-			try {
-				Thread.sleep(checkPeriod);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+		try {
+			waitIfSuspended();
+			while (true) {
+				try {
+					Thread.sleep(checkPeriod);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				if (callBack.evaluateTimeoutCondition()) {
+					callBack.onTimeout();
+					suspend();
+					waitIfSuspended();
+				}
 			}
-			if (callBack.evaluateTimeoutCondition()) {
-				callBack.onTimeout();
-				suspend();
-				waitIfSuspended();
-			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
 		}
 	}
 	

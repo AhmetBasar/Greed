@@ -46,31 +46,35 @@ public class PerftTest {
 
 				@Override
 				public void run() {
-					
-					PerformanceTestingSingleThreadedWithBoardInfrastructureV2 engine = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
-					
-					for (int k = 1; k < datas.length; k++) {
-						String result = datas[k].trim();
-						int depth = Character.getNumericValue(result.split(" ")[0].charAt(1));
-						int expectedCount = Integer.parseInt(result.split(" ")[1]);
-						FenOperations fenOperations = new FenOperations();
-						fenOperations.setFenString(fenData);
-
-						IBoard board = BoardFactory.getInstance(Transformer.getBitboardStyl(fenOperations.getBoard()),
-								Transformer.getByteArrayStyl(Transformer.getBitboardStyl(fenOperations.getBoard())),
-								fenOperations.getEpTarget(), fenOperations.getEpSquare(), depth,
-								fenOperations.getCastlingRights(), 0L, 0);
-
-						engine.getPerftResult().resetCounters();
-						engine.perft(depth, board, fenOperations.getSide() ^ 1);
-						long resultMoveCount = engine.getPerftResult().getNodeCount();
-						if (expectedCount != resultMoveCount) {
-							System.out.println("fenData = " + fenData);
-							System.out.println("depth = " + depth);
-							System.out.println("expectedCount = " + expectedCount);
-							System.out.println("resultMoveCount = " + resultMoveCount);
-							throw new RuntimeException("Failed.");
+					try {
+						PerformanceTestingSingleThreadedWithBoardInfrastructureV2 engine = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
+						
+						for (int k = 1; k < datas.length; k++) {
+							String result = datas[k].trim();
+							int depth = Character.getNumericValue(result.split(" ")[0].charAt(1));
+							int expectedCount = Integer.parseInt(result.split(" ")[1]);
+							FenOperations fenOperations = new FenOperations();
+							fenOperations.setFenString(fenData);
+							
+							IBoard board = BoardFactory.getInstance(Transformer.getBitboardStyl(fenOperations.getBoard()),
+									Transformer.getByteArrayStyl(Transformer.getBitboardStyl(fenOperations.getBoard())),
+									fenOperations.getEpTarget(), fenOperations.getEpSquare(), depth,
+									fenOperations.getCastlingRights(), 0L, 0, 0L);
+							
+							engine.getPerftResult().resetCounters();
+							engine.perft(depth, board, fenOperations.getSide() ^ 1);
+							long resultMoveCount = engine.getPerftResult().getNodeCount();
+							if (expectedCount != resultMoveCount) {
+								System.out.println("fenData = " + fenData);
+								System.out.println("depth = " + depth);
+								System.out.println("expectedCount = " + expectedCount);
+								System.out.println("resultMoveCount = " + resultMoveCount);
+								throw new RuntimeException("Failed.");
+							}
 						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
 					}
 				}
 			};

@@ -91,7 +91,12 @@ public class PerformanceTestingSimple {
 
 	private Thread th = new Thread() {
 		public void run() {
-			incrementMoveCount(traverseMoveList(depth, epT, epS, bitboard, pieces, moveList, castlingRights, side));
+			try {
+				incrementMoveCount(traverseMoveList(depth, epT, epS, bitboard, pieces, moveList, castlingRights, side));
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.exit(1);
+			}
 		}
 	};
 

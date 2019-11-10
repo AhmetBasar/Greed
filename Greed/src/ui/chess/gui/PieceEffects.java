@@ -108,7 +108,12 @@ public class PieceEffects implements ActionListener {
 			SwingUtilities.invokeLater(new Runnable() {
 				@Override
 				public void run() {
-					base.triggerTimerFinishEvent();
+					try {
+						base.triggerTimerFinishEvent();
+					} catch (Exception e) {
+						e.printStackTrace();
+						System.exit(1);
+					}
 				}
 			});
 

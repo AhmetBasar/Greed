@@ -61,7 +61,7 @@ public class SanGenerator {
 
 		String pieceSymbol = PIECES[fromPiece];
 
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, epSquare, 1, castlingRights, 0L, 0);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, epSquare, 1, castlingRights, 0L, 0, 0L);
 		Map<String, Map<String, List<String>>> ambiguities = getAmbiguities(1, board, side ^ 1, move);
 
 		switch (moveType) {

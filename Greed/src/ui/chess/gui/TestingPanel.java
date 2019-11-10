@@ -120,7 +120,12 @@ public class TestingPanel extends JPanel{
 								SwingUtilities.invokeAndWait(new Runnable() {
 									@Override
 									public void run() {
-										gamePlay.doMove(searchResult1.getBestMove());
+										try {
+											gamePlay.doMove(searchResult1.getBestMove());
+										} catch (Exception e) {
+											e.printStackTrace();
+											System.exit(1);
+										}
 									}
 								});
 							}
@@ -179,8 +184,9 @@ public class TestingPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					gamePlay.setZobristKey(TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), gamePlay.getEpTarget(), gamePlay.getCastlingRights(), gamePlay.getSide()));
-					gamePlay.setPawnZobristKey(TranspositionTable.getPawnZobristKey(Transformer.getBitboardStyl(base.getBoard())));
+					long[] bb = Transformer.getBitboardStyl(base.getBoard());
+					gamePlay.setZobristKey(TranspositionTable.getZobristKey(bb, gamePlay.getEpTarget(), gamePlay.getCastlingRights(), gamePlay.getSide()));
+					gamePlay.setPawnZobristKey(TranspositionTable.getPawnZobristKey(bb));
 					resume();
 				} catch (Exception e1) {
 					// TODO Auto-generated catch block
@@ -290,6 +296,7 @@ public class TestingPanel extends JPanel{
 			params.setCastlingRights(gamePlay.getCastlingRights());
 			params.setSide(gamePlay.getSide());
 			params.setUiZobristKey(gamePlay.getZobristKey());
+			params.setUiPawnZobristKey(gamePlay.getPawnZobristKey());
 			params.setTimeLimit(1L);
 			params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
 			params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
