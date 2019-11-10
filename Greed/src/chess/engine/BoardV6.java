@@ -22,7 +22,7 @@ package chess.engine;
 import chess.engine.EngineConstants;
 import chess.engine.TranspositionTable;
 
-public class BoardV5 implements IBoard {
+public class BoardV6 implements IBoard {
 	
 	private long[] bitboard;
 	private byte[] pieces;
@@ -46,6 +46,7 @@ public class BoardV5 implements IBoard {
 	private int[] epSs = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!.
 	private byte[][][] castlingRightss = new byte[TEMP_BOARD_SIZE][2][2]; // 25 ply? wtf!...
 	private long[] zobristKeys = new long[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
+	private long[] pawnZobristKeys = new long[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[] fiftyMoveCounters = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[] nullMoveCounters = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[][] moveList = new int[TEMP_BOARD_SIZE][EngineConstants.MOVE_LIST_SIZE];
@@ -75,7 +76,7 @@ public class BoardV5 implements IBoard {
 		return moveList[depth];
 	}
 	
-	public BoardV5(long[] bitboard, byte[] pieces, int epT, int epS, int depth, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter){
+	public BoardV6(long[] bitboard, byte[] pieces, int epT, int epS, int depth, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey) {
 		depth = convertToInternalDepth(depth);
 		int depthPlusOne = depth + 1;
 		this.bitboard = bitboard;
@@ -88,6 +89,7 @@ public class BoardV5 implements IBoard {
 		castlingRightss[depthPlusOne][1][0] = castlingRights[1][0];
 		castlingRightss[depthPlusOne][1][1] = castlingRights[1][1];
 		zobristKeys[depthPlusOne] = zobristKey;
+		pawnZobristKeys[depthPlusOne] = pawnZobristKey;
 		fiftyMoveCounters[depthPlusOne] = fiftyMoveCounter;
 		nullMoveCounters[depthPlusOne] = fiftyMoveCounter; // Initially equals.
 	}
@@ -104,6 +106,11 @@ public class BoardV5 implements IBoard {
 			zz = zz ^ TranspositionTable.zobristEnPassantArray[ept];
 		}
 		zobristKeys[depth] = zz;
+
+		//
+		// TODO: is it necessary?
+		pawnZobristKeys[depth] = pawnZobristKeys[depthPlusOne];
+		//
 		
 		int fiftyMoveCounter = fiftyMoveCounters[depthPlusOne];
 		fiftyMoveCounter++;
@@ -115,6 +122,12 @@ public class BoardV5 implements IBoard {
 		depth = convertToInternalDepth(depth);
 		int depthPlusOne = depth + 1;
 		zobristKeys[depth] = zobristKeys[depthPlusOne];
+		
+		//
+		// TODO: is it necessary?
+		pawnZobristKeys[depth] = pawnZobristKeys[depthPlusOne];
+		//
+		
 		fiftyMoveCounters[depth] = fiftyMoveCounters[depthPlusOne];
 		nullMoveCounters[depth] = nullMoveCounters[depthPlusOne];
 	}
@@ -135,11 +148,14 @@ public class BoardV5 implements IBoard {
 		byte fromPiece = pieces[from];
 		byte capturedPiece = 0;
 		
+		
 		boolean isRookOrKingMove = (fromPiece == (side | EngineConstants.KING) || (fromPiece == (side | EngineConstants.ROOK))) 
 				  || (pieces[to] == ((opSide) | EngineConstants.ROOK)) || (pieces[to] == ((opSide) | EngineConstants.KING));
 		
 		int epTarget = epTs[depthPlusOne];
 		int epSquare = epSs[depthPlusOne];
+		
+		long pawnZobristKey = pawnZobristKeys[depthPlusOne];
 		
 		//Transposition Table//
 		long zobristKey = zobristKeys[depthPlusOne];
@@ -164,6 +180,17 @@ public class BoardV5 implements IBoard {
 			}
 			//
 			
+			byte fromPieceWc = (byte)(fromPiece & 0XFE);
+			if (fromPieceWc == EngineConstants.PAWN) {
+				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
+				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
+			}
+			
+			byte capturedPieceWc = (byte)(capturedPiece & 0XFE);
+			if (capturedPieceWc == EngineConstants.PAWN) {
+				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+			}
+			
 			pieces[from] = 0;
 			pieces[to] = fromPiece;
 			bitboard[fromPiece] &= ~(1L << from);
@@ -182,6 +209,9 @@ public class BoardV5 implements IBoard {
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
 			//
 			
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
+			
 			pieces[from] = 0;
 			pieces[to] = fromPiece;
 			bitboard[fromPiece] &= ~(1L << from);
@@ -196,6 +226,10 @@ public class BoardV5 implements IBoard {
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
 			//
+			
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][epSquare];
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
 			
 			pieces[epSquare] = 0;
 			pieces[from] = 0;
@@ -220,6 +254,8 @@ public class BoardV5 implements IBoard {
 				zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
 			}
 			//
+			
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 			
 			pieces[from] = 0;
 			pieces[to] = promotedPiece;
@@ -314,6 +350,8 @@ public class BoardV5 implements IBoard {
 		
 		zobristKeys[depth] = zobristKey;
 		
+		pawnZobristKeys[depth] = pawnZobristKey;
+		
 		int fiftyMoveCounter = fiftyMoveCounters[depthPlusOne];
 		if (capturedPiece != 0 || fromPiece == (side | EngineConstants.PAWN)) {
 			fiftyMoveCounter = 0;
@@ -345,6 +383,8 @@ public class BoardV5 implements IBoard {
 		zobristKeys[depth] = zobristKeys[depthPlusOne];
 		fiftyMoveCounters[depth] = fiftyMoveCounters[depthPlusOne];
 		nullMoveCounters[depth] = nullMoveCounters[depthPlusOne];
+		
+		pawnZobristKeys[depth] = pawnZobristKeys[depthPlusOne];
 		
 		boolean isRookOrKingMove = (fromPiece == (side | EngineConstants.KING) || (fromPiece == (side | EngineConstants.ROOK))) 
 				  || (capturedPiece == ((opSide) | EngineConstants.ROOK)) || (capturedPiece == ((opSide) | EngineConstants.KING));
@@ -434,11 +474,14 @@ public class BoardV5 implements IBoard {
 		byte fromPiece = pieces[from];
 		byte capturedPiece = 0;
 		
+		
 		boolean isRookOrKingMove = (fromPiece == (side | EngineConstants.KING) || (fromPiece == (side | EngineConstants.ROOK))) 
 				  || (pieces[to] == ((opSide) | EngineConstants.ROOK)) || (pieces[to] == ((opSide) | EngineConstants.KING));
 		
 		int epTarget = epTs[depthPlusOne];
 		int epSquare = epSs[depthPlusOne];
+		
+		long pawnZobristKey = pawnZobristKeys[depthPlusOne];
 		
 		switch (moveType) {
 		case 0:
@@ -446,6 +489,17 @@ public class BoardV5 implements IBoard {
 			epTarget = 64;
 			epSquare = -1;
 			capturedPiece = pieces[to];
+			
+			byte fromPieceWc = (byte)(fromPiece & 0XFE);
+			if (fromPieceWc == EngineConstants.PAWN) {
+				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
+				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
+			}
+			
+			byte capturedPieceWc = (byte)(capturedPiece & 0XFE);
+			if (capturedPieceWc == EngineConstants.PAWN) {
+				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+			}
 			
 			pieces[from] = 0;
 			pieces[to] = fromPiece;
@@ -457,6 +511,9 @@ public class BoardV5 implements IBoard {
 			epTarget = Long.numberOfTrailingZeros(((1L << to) >>> diff) | ((1L << to) << (64 - diff)));
 			epSquare = to;
 			
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
+			
 			pieces[from] = 0;
 			pieces[to] = fromPiece;
 			bitboard[fromPiece] &= ~(1L << from);
@@ -465,6 +522,10 @@ public class BoardV5 implements IBoard {
 		case EngineConstants.EP_CAPTURE_SHIFTED:
 			
 			capturedPiece = pieces[epSquare];
+			
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][epSquare];
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
 			
 			pieces[epSquare] = 0;
 			pieces[from] = 0;
@@ -481,6 +542,8 @@ public class BoardV5 implements IBoard {
 			epSquare = -1;
 			capturedPiece = pieces[to];
 			promotedPiece = (byte)((move & 0x00f00000) >>> 20);
+			
+			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 			
 			pieces[from] = 0;
 			pieces[to] = promotedPiece;
@@ -517,6 +580,7 @@ public class BoardV5 implements IBoard {
 		sideToRooks[depth] = sideToRook;
 		epTs[depth] = epTarget;
 		epSs[depth] = epSquare;
+		pawnZobristKeys[depth] = pawnZobristKey;
 		
 		
 		if (isRookOrKingMove) {
@@ -560,6 +624,8 @@ public class BoardV5 implements IBoard {
 		int castlingRookTo = castlingRookTos[depth];
 		byte sideToRook = sideToRooks[depth];
 		int previousEpSquare = epSs[depthPlusOne];
+		
+		pawnZobristKeys[depth] = pawnZobristKeys[depthPlusOne];
 		
 		boolean isRookOrKingMove = (fromPiece == (side | EngineConstants.KING) || (fromPiece == (side | EngineConstants.ROOK))) 
 				  || (capturedPiece == ((opSide) | EngineConstants.ROOK)) || (capturedPiece == ((opSide) | EngineConstants.KING));
@@ -639,6 +705,7 @@ public class BoardV5 implements IBoard {
 		castlingRightss[depth][1][0] = castlingRightss[depthPlusOne][1][0];
 		castlingRightss[depth][1][1] = castlingRightss[depthPlusOne][1][1];
 		zobristKeys[depth] = zobristKeys[depthPlusOne];
+		pawnZobristKeys[depth] = pawnZobristKeys[depthPlusOne];
 		fiftyMoveCounters[depth] = fiftyMoveCounters[depthPlusOne];
 		nullMoveCounters[depth] = nullMoveCounters[depthPlusOne];
 	}
@@ -651,6 +718,7 @@ public class BoardV5 implements IBoard {
 		castlingRightss[depth][1][0] = castlingRightss[depthPlusOne][1][0];
 		castlingRightss[depth][1][1] = castlingRightss[depthPlusOne][1][1];
 		zobristKeys[depth] = zobristKeys[depthPlusOne];
+		pawnZobristKeys[depth] = pawnZobristKeys[depthPlusOne];
 		fiftyMoveCounters[depth] = fiftyMoveCounters[depthPlusOne];
 		nullMoveCounters[depth] = nullMoveCounters[depthPlusOne];
 		
@@ -683,6 +751,11 @@ public class BoardV5 implements IBoard {
 	public long getZobristKey(int depth) {
 		depth = convertToInternalDepth(depth);
 		return zobristKeys[depth];
+	}
+	
+	public long getPawnZobristKey(int depth) {
+		depth = convertToInternalDepth(depth);
+		return pawnZobristKeys[depth];
 	}
 	
 	public int getFiftyMoveCounter(int depth) {
@@ -721,11 +794,5 @@ public class BoardV5 implements IBoard {
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public long getPawnZobristKey(int depth) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }
