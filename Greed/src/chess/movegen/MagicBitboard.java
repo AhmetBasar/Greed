@@ -224,4 +224,17 @@ public class MagicBitboard {
 		}
 	}
 	
+	public static long generateRookMoves(int from, long occ) {
+		return rookMoves[from][(int) ((occ & rookMasks[from]) * rookMagicNumbers[from] >>> rookShifts[from])];
+	}
+	
+	public static long generateBishopMoves(int from, long occ) {
+		return bishopMoves[from][(int) ((occ & bishopMasks[from]) * bishopMagicNumbers[from] >>> bishopShifts[from])];
+	}
+	
+	public static long generateQueenMoves(int from, long occ) {
+		return rookMoves[from][(int) ((occ & rookMasks[from]) * rookMagicNumbers[from] >>> rookShifts[from])]
+				| bishopMoves[from][(int) ((occ & bishopMasks[from]) * bishopMagicNumbers[from] >>> bishopShifts[from])];
+	}
+	
 }
