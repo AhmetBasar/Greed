@@ -136,8 +136,8 @@ public class MagicBitboard {
 					if ((Utility.SINGLE_BIT[i] & varIndex) != 0) {
 						occVariations[s][varIndex] |= Long.lowestOneBit(curMask);
 					}
+					curMask &= (curMask - 1);
 				}
-				curMask &= (curMask - 1);
 			}
 		}
 		
@@ -149,7 +149,7 @@ public class MagicBitboard {
 			rookMoves[s] = new long[rookOccVariations[s].length];
 			for (int varIndex = 0 ; varIndex < rookOccVariations[s].length ; varIndex++) {
 				long moves = 0;
-				int magicIndex = (int)(rookOccVariations[s][varIndex] * rookMagicNumbers[s]) >>> rookShifts[s];
+				int magicIndex = (int)((rookOccVariations[s][varIndex] * rookMagicNumbers[s]) >>> rookShifts[s]);
 				
 				for (int up = s + 8 ; up <= 63 ; up += 8) {
 					moves |= Utility.SINGLE_BIT[up];
@@ -189,7 +189,7 @@ public class MagicBitboard {
 			bishopMoves[s] = new long[bishopVariations[s].length];
 			for (int varIndex = 0 ; varIndex < bishopVariations[s].length ; varIndex++) {
 				long moves = 0;
-				int magicIndex = (int)(bishopVariations[s][varIndex] * bishopMagicNumbers[s]) >>> bishopShifts[s];
+				int magicIndex = (int)((bishopVariations[s][varIndex] * bishopMagicNumbers[s]) >>> bishopShifts[s]);
 				
 				for (int northEast = s + 9 ; northEast % 8 != 0 && northEast <= 63; northEast += 9) {
 					moves |= Utility.SINGLE_BIT[northEast];
