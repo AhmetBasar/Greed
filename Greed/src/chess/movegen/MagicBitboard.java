@@ -19,7 +19,6 @@
  **********************************************/
 package chess.movegen;
 
-import chess.debug.DebugUtility;
 import chess.util.Utility;
 
 //https://github.com/sandermvdb/chess22k
@@ -29,12 +28,14 @@ public class MagicBitboard {
 	}
 	
 	private static long[] rookMasks = new long[64];
+	private static long[] bishopMasks = new long[64];
 	
 	static {
-		generateRookMask();
+		generateRookMasks();
+		generateBishopMasks();
 	}
 	
-	private static void generateRookMask() {
+	private static void generateRookMasks() {
 		
 		for (int s = 0 ; s < 64 ; s++) {
 			long rookMask = 0L;
@@ -57,4 +58,30 @@ public class MagicBitboard {
 			rookMasks[s] = rookMask;
 		}
 	}
+	
+	private static void generateBishopMasks() {
+		for (int s = 0 ; s < 64 ; s++) {
+			long bishopMask = 0L;
+			
+			for (int northEast = s + 9 ; northEast <= 55 && Utility.getFile(northEast) <= 6 && Utility.getFile(s) <= 6 ; northEast += 9) {
+				bishopMask |= Utility.SINGLE_BIT[northEast];
+			}
+			
+			for (int northWest = s + 7 ; northWest <= 55 && Utility.getFile(northWest) >= 1 && Utility.getFile(s) >= 1 ; northWest += 7) {
+				bishopMask |= Utility.SINGLE_BIT[northWest];
+			}
+			
+			for (int southWest = s - 9 ; southWest >= 8 && Utility.getFile(southWest) >= 1 && Utility.getFile(s) >= 1 ; southWest -= 9) {
+				bishopMask |= Utility.SINGLE_BIT[southWest];
+			}
+			
+			for (int southEast = s - 7 ; southEast >= 8 && Utility.getFile(southEast) <= 6 && Utility.getFile(s) <= 6 ; southEast -= 7) {
+				bishopMask |= Utility.SINGLE_BIT[southEast];
+			}
+			
+			bishopMasks[s] = bishopMask;
+			
+		}
+	}
+	
 }
