@@ -29,8 +29,15 @@ public class MagicBitboard {
 	
 	private static long[] rookMasks = new long[64];
 	private static long[] bishopMasks = new long[64];
+	
 	private static long[] rookShifts = new long[64];
 	private static long[] bishopShifts = new long[64];
+	
+	private static long[][] rookMoves = new long[64][];
+	private static long[][] bishopMoves = new long[64][];
+	
+	private static long[] rookMagicNumbers = new long[64];
+	private static long[] bishopMagicNumbers = new long[64];
 	
 	static {
 		generateRookMasks();
@@ -38,6 +45,7 @@ public class MagicBitboard {
 		generateShifts();
 		long[][] bishopOccVariations = generateOccupancyVariations(bishopMasks);
 		long[][] rookOccVariations = generateOccupancyVariations(rookMasks);
+		generateRookMoves(rookOccVariations);
 	}
 	
 	private static void generateRookMasks() {
@@ -115,6 +123,46 @@ public class MagicBitboard {
 		}
 		
 		return occVariations;
+	}
+	
+	private static void generateRookMoves(long[][] rookOccVariations) {
+		for (int s = 0 ; s < 64 ; s++) {
+			rookMoves[s] = new long[rookOccVariations[s].length];
+			for (int varIndex = 0 ; varIndex < rookOccVariations[s].length ; varIndex++) {
+				long moves = 0;
+				int magicIndex = (int)(rookOccVariations[s][varIndex] * rookMagicNumbers[s]) >>> rookShifts[s];
+				
+				for (int up = s + 8 ; up <= 63 ; up += 8) {
+					moves |= Utility.SINGLE_BIT[up];
+					if ((rookOccVariations[s][varIndex] & Utility.SINGLE_BIT[up]) != 0) {
+						break;
+					}
+				}
+				
+				for (int down = s - 8 ; down >= 0 ; down -= 8) {
+					moves |= Utility.SINGLE_BIT[down];
+					if ((rookOccVariations[s][varIndex] & Utility.SINGLE_BIT[down]) != 0) {
+						break;
+					}
+				}
+				
+				for (int right = s + 1 ; right % 8 != 0 ; right++) {
+					moves |= Utility.SINGLE_BIT[right];
+					if ((rookOccVariations[s][varIndex] & Utility.SINGLE_BIT[right]) != 0) {
+						break;
+					}
+				}
+				
+				for (int left = s - 1 ; left % 8 != 7 && left >= 0 ; left--) {
+					moves |= Utility.SINGLE_BIT[left];
+					if ((rookOccVariations[s][varIndex] & Utility.SINGLE_BIT[left]) != 0) {
+						break;
+					}
+				}
+				
+				rookMoves[s][magicIndex] = moves;
+			}
+		}
 	}
 	
 }
