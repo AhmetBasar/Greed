@@ -43,9 +43,10 @@ public class MagicBitboard {
 		generateRookMasks();
 		generateBishopMasks();
 		generateShifts();
-		long[][] bishopOccVariations = generateOccupancyVariations(bishopMasks);
 		long[][] rookOccVariations = generateOccupancyVariations(rookMasks);
+		long[][] bishopOccVariations = generateOccupancyVariations(bishopMasks);
 		generateRookMoves(rookOccVariations);
+		generateBishopMoves(bishopOccVariations);
 	}
 	
 	private static void generateRookMasks() {
@@ -161,6 +162,46 @@ public class MagicBitboard {
 				}
 				
 				rookMoves[s][magicIndex] = moves;
+			}
+		}
+	}
+	
+	private static void generateBishopMoves(long[][] bishopVariations) {
+		for (int s = 0 ; s < 64 ; s++) {
+			bishopMoves[s] = new long[bishopVariations[s].length];
+			for (int varIndex = 0 ; varIndex < bishopVariations[s].length ; varIndex++) {
+				long moves = 0;
+				int magicIndex = (int)(bishopVariations[s][varIndex] * bishopMagicNumbers[s]) >>> bishopShifts[s];
+				
+				for (int northEast = s + 9 ; northEast % 8 != 0 && northEast <= 63; northEast += 9) {
+					moves |= Utility.SINGLE_BIT[northEast];
+					if ((bishopVariations[s][varIndex] & Utility.SINGLE_BIT[northEast]) != 0) {
+						break;
+					}
+				}
+				
+				for (int northWest = s + 7 ; northWest % 8 != 7 && northWest <= 63; northWest += 7) {
+					moves |= Utility.SINGLE_BIT[northWest];
+					if ((bishopVariations[s][varIndex] & Utility.SINGLE_BIT[northWest]) != 0) {
+						break;
+					}
+				}
+				
+				for (int southWest = s - 9 ; southWest % 8 != 7 && southWest >= 0; southWest -= 9) {
+					moves |= Utility.SINGLE_BIT[southWest];
+					if ((bishopVariations[s][varIndex] & Utility.SINGLE_BIT[southWest]) != 0) {
+						break;
+					}
+				}
+				
+				for (int southEast = s - 7 ; southEast % 8 != 0 && southEast >= 0 ; southEast -= 7) {
+					moves |= Utility.SINGLE_BIT[southEast];
+					if ((bishopVariations[s][varIndex] & Utility.SINGLE_BIT[southEast]) != 0) {
+						break;
+					}
+				}
+				
+				bishopMoves[s][magicIndex] = moves;
 			}
 		}
 	}
