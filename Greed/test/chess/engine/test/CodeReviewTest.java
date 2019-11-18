@@ -169,6 +169,20 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.fhv2.SearchEngineFifty10.newInstances");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty_PREMOVEFINDER.instance");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty_PREMOVEFINDER.newInstances");
+
+		whiteListFields.add("chess.fhv2.SearchEngineFifty11.instance");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty11.newInstances");
+		
+		whiteListFields.add("chess.movegen.MagicBitboard.rookMasks");
+		whiteListFields.add("chess.movegen.MagicBitboard.bishopMasks");
+		whiteListFields.add("chess.movegen.MagicBitboard.rookShifts");
+		whiteListFields.add("chess.movegen.MagicBitboard.bishopShifts");
+		whiteListFields.add("chess.movegen.MagicBitboard.rookMoves");
+		whiteListFields.add("chess.movegen.MagicBitboard.bishopMoves");
+		whiteListFields.add("chess.movegen.MagicBitboard.rookOccVariations");
+		whiteListFields.add("chess.movegen.MagicBitboard.bishopOccVariations");
+		whiteListFields.add("chess.movegen.MagicBitboard.rookMagicNumbers");
+		whiteListFields.add("chess.movegen.MagicBitboard.bishopMagicNumbers");
 		
 	}
 

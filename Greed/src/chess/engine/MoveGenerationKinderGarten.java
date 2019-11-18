@@ -181,6 +181,15 @@ public class MoveGenerationKinderGarten implements MoveGenerationConstants {
 
 		while ((from = Long.numberOfTrailingZeros(fromBitboard)) != 64) {
 
+			
+			/**
+			 * File Attacks are hard to understand compared to rank and diagonal attacks.
+			 * first of all occupancy of the corresponding file is shifted to FILE_A and mask with FILE_A to set other bits to zero.
+			 * then multiply with c2h7 file. this multiplication has a special meaning. it is shifted one bit to right (it is not C3 H8 DIAG watch out!), so rightmost bit is ignored. and it is not b1h7 so leftmost bit
+			 * is ignored. and normal operation shift right 58 bit to obtain occupancy index. FILE_ATTACKS is PreCalculated file AttackSet of A file. it is
+			 * indexed by rank index and occupancy value. Finally, attack set is left shift file index times. because FILE_ATTACKS is for A_FILE only.
+			 * */
+			
 			//
 			file = from & 7;
 			occ = EngineConstants.FILE_A & (occupiedSquares >>> file);
@@ -209,6 +218,15 @@ public class MoveGenerationKinderGarten implements MoveGenerationConstants {
 
 			file = from & 7;
 			//
+			/**
+			 * from is 0-63 square index. A1 = 0, H8 = 63
+			 * DIAG_MASK[from] corresponding diagonal mask for particular square index(from)
+			 * OCC * FILE_B is a NortFill multiplication. But not FILE_A because we don't need rightmost occupancy bit.
+			 * >>> 58 is final operation. But not 57 because we don't need left most occupancy bit.
+			 * RANK_ATTACKS is PreCalculated rank attack set. it is indexed by file index and occupancy value.
+			 * Furthermore, it is 8x duplicated for per rank.
+			 * Final operation is to AND with DIAG_MASK again to obtain diagonal attack set of particular bishop.
+			 * */
 			occ = occupiedSquares & EngineConstants.DIAG_MASK[from];
 			occ = (occ * EngineConstants.FILE_B) >>> 58;
 			diagAttacks = EngineConstants.DIAG_MASK[from] & PrecalculatedAttackTables.RANK_ATTACKS[file][(int)occ];

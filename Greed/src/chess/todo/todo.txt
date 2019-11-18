@@ -231,7 +231,12 @@ Chess Bot Programming.
   - do Exclusive Or operation for incremental update of BitBoards. it will be much more efficient.
   - rewrite resetTT method with smarter way, maybe Arrays.fill
   - Change pawn HashTable size.
-  - Change pawn HashTable implementation to 4 buckets.
-  - rewrite PREMOVEFINDER with modern implementations.
+  [OKEY] - rewrite PREMOVEFINDER with modern implementations.
   - Use switch case statement when checking the piece is WhitePawn or BlackPawn in PawnZobristkey calculation.
- 
+  - Implement insufficient material evaluation on both engine side and gui side.
+  - Implement smart time handling for chess bot. evaluate iterative deepening time consumed per iteration.
+  - enable jvm inline log parameter.
+  - try to minimize method code line number to help jvm method inlining.
+  - Write full functionality for MagicBitboardTest class. Not only testing magic numbers, but also occupancy variations etc.
+  - use JITWATCH and -XX:+PrintCompilation -XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining
+  - divide long methods for JIT method InlineIng.

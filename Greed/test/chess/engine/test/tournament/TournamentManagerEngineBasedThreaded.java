@@ -151,7 +151,7 @@ public class TournamentManagerEngineBasedThreaded implements Runnable {
 					sb.append("engine1Percentage = " + engine1Percentage + "\n");
 					sb.append("engine2Percentage = " + engine2Percentage + "\n");
 					
-//				print(sb.toString());
+				print(sb.toString());
 					
 					ISearchableV2 tempEngine = engineWhite;
 					engineWhite = engineBlack;
