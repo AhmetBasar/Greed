@@ -38,7 +38,6 @@ public class BoardV5 implements IBoard {
 	private static final int TEMP_BOARD_SIZE = 100;
 	private static final int HALF_OF_TEMP_BOARD_SIZE = 50;
 	private byte[] capturedPieces = new byte[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
-	private byte[] promotedPieces = new byte[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[] castlingRookFroms = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[] castlingRookTos = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private byte[] sideToRooks = new byte[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
@@ -126,7 +125,6 @@ public class BoardV5 implements IBoard {
 		depth = convertToInternalDepth(depth);
 		int depthPlusOne = depth + 1;
 		int diff = pushDiffs[side];
-		byte promotedPiece = 0;
 		int castlingSide = 0;
 		int castlingRookFrom = 0;
 		int castlingRookTo = 0;
@@ -235,7 +233,7 @@ public class BoardV5 implements IBoard {
 			epTarget = 64;
 			epSquare = -1;
 			capturedPiece = pieces[to];
-			promotedPiece = (byte)((move & 0x00f00000) >>> 20);
+			byte promotedPiece = Move.getPromotedPiece(move);
 			
 			//Transposition Table//
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
@@ -283,7 +281,6 @@ public class BoardV5 implements IBoard {
 		}
 
 		capturedPieces[depth] = capturedPiece;
-		promotedPieces[depth] = promotedPiece;
 		castlingRookFroms[depth] = castlingRookFrom;
 		castlingRookTos[depth] = castlingRookTo;
 		sideToRooks[depth] = sideToRook;
@@ -364,7 +361,6 @@ public class BoardV5 implements IBoard {
 		int from = move & 0x000000ff;
 		byte fromPiece = pieces[to];
 		byte capturedPiece = capturedPieces[depth];
-		byte promotedPiece = promotedPieces[depth];
 		int castlingRookFrom = castlingRookFroms[depth];
 		int castlingRookTo = castlingRookTos[depth];
 		byte sideToRook = sideToRooks[depth];
@@ -429,7 +425,7 @@ public class BoardV5 implements IBoard {
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
-			bitboard[promotedPiece] &= ~(1L << to);
+			bitboard[Move.getPromotedPiece(move)] &= ~(1L << to);
 			bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here. 
 			break;
 		default:
@@ -452,7 +448,6 @@ public class BoardV5 implements IBoard {
 		depth = convertToInternalDepth(depth);
 		int depthPlusOne = depth + 1;
 		int diff = pushDiffs[side];
-		byte promotedPiece = 0;
 		int castlingSide = 0;
 		int castlingRookFrom = 0;
 		int castlingRookTo = 0;
@@ -531,7 +526,7 @@ public class BoardV5 implements IBoard {
 			epTarget = 64;
 			epSquare = -1;
 			capturedPiece = pieces[to];
-			promotedPiece = (byte)((move & 0x00f00000) >>> 20);
+			byte promotedPiece = Move.getPromotedPiece(move);
 			
 			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 			
@@ -564,7 +559,6 @@ public class BoardV5 implements IBoard {
 		}
 
 		capturedPieces[depth] = capturedPiece;
-		promotedPieces[depth] = promotedPiece;
 		castlingRookFroms[depth] = castlingRookFrom;
 		castlingRookTos[depth] = castlingRookTo;
 		sideToRooks[depth] = sideToRook;
@@ -609,7 +603,6 @@ public class BoardV5 implements IBoard {
 		int from = move & 0x000000ff;
 		byte fromPiece = pieces[to];
 		byte capturedPiece = capturedPieces[depth];
-		byte promotedPiece = promotedPieces[depth];
 		int castlingRookFrom = castlingRookFroms[depth];
 		int castlingRookTo = castlingRookTos[depth];
 		byte sideToRook = sideToRooks[depth];
@@ -664,7 +657,7 @@ public class BoardV5 implements IBoard {
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
-			bitboard[promotedPiece] &= ~(1L << to);
+			bitboard[Move.getPromotedPiece(move)] &= ~(1L << to);
 			bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here. 
 			break;
 		default:
