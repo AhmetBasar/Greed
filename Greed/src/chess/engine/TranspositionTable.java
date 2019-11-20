@@ -116,5 +116,9 @@ public class TranspositionTable {
 		}
 		return zobristKey;
 	}
+	
+	public static void initialize() {
+		
+	}
 
 }

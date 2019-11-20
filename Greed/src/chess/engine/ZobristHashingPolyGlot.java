@@ -95,5 +95,9 @@ public class ZobristHashingPolyGlot {
 
 		return zobristKey;
 	}
+	
+	public static void initialize() {
+		
+	}
 
 }

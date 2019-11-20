@@ -25,6 +25,7 @@ public interface CompileTimeConstants {
 	public static final boolean ENABLE_ASSERTION = true;
 	
 	// Search Algorithm
-	public static final boolean NULL_MOVE_PRUNING = true;
+	public static final boolean ENABLE_NULL_MOVE_PRUNING = true;
+	public static final boolean ENABLE_QUIESCENCE_FUTILITY_PRUNING = true;
 
 }

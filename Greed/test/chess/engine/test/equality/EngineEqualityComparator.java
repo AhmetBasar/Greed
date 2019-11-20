@@ -30,10 +30,13 @@ import chess.engine.EngineConstants;
 import chess.engine.ISearchableV2;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
+import chess.engine.TranspositionTable;
+import chess.engine.ZobristHashingPolyGlot;
 import chess.engine.test.ThreadPool;
 import chess.engine.test.tournament.ChessBoard;
 import chess.engine.test.tournament.ChessBoard.GameState;
 import chess.fhv2.SearchEngineFifty10;
+import chess.movegen.MagicBitboard;
 
 public class EngineEqualityComparator implements Runnable {
 	
@@ -167,6 +170,8 @@ public class EngineEqualityComparator implements Runnable {
 	private static final Map<Class<?>, Long> mapTimeConsumeds = Collections.synchronizedMap(new HashMap<>());
 	
 	public static void main(String[] args) {
+		initializeClasses();
+		
 		List<Runnable> runnables = new ArrayList<>();
 		for (int i = 0; i < ThreadPool.POOL_SIZE; i++) {
 			runnables.add(new EngineEqualityComparator());
@@ -175,5 +180,11 @@ public class EngineEqualityComparator implements Runnable {
 	}
 	
 	public EngineEqualityComparator() {
+	}
+	
+	private static void initializeClasses() {
+		MagicBitboard.initialize();
+		TranspositionTable.initialize();
+		ZobristHashingPolyGlot.initialize();
 	}
 }

@@ -28,6 +28,7 @@ import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.ISearchableV2;
 import chess.engine.LegalityV4;
+import chess.engine.Move;
 import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;
 import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.engine.OpeningBook;
@@ -120,6 +121,8 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	
 	private TT tt = new TT();
 	private PawnHashTable pawnHashTable = new PawnHashTable();
+	
+	private static final int FUTILITY_MARGIN = 200;
 	
 	public SearchResult search(SearchParameters searchParameters) {
 		
@@ -310,7 +313,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		boolean existsLegalMove = false;
 		boolean foundPv = false;
 		
-		if (CompileTimeConstants.NULL_MOVE_PRUNING) {
+		if (CompileTimeConstants.ENABLE_NULL_MOVE_PRUNING) {
 			//=>> NullMove Begin
 			if (!isKingInCheck && allowNullMove && depth > 2) {
 				
@@ -429,6 +432,25 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		int tempValue;
 		int move;
 		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
+			
+			// https://github.com/sandermvdb/chess22k
+			if (CompileTimeConstants.ENABLE_QUIESCENCE_FUTILITY_PRUNING) {
+				switch (Move.getMoveType(move)) {
+				case EngineConstants.PROMOTION_SHIFTED:
+					break;
+				case EngineConstants.EP_CAPTURE_SHIFTED:
+					if (standPatScore + FUTILITY_MARGIN + EngineConstants.WHITE_PAWN_V < alpha) {
+						continue;
+					}
+					break;
+				default:
+					if (standPatScore + FUTILITY_MARGIN + EngineConstants.PIECE_VALUES_POSITIVE[board.getPieces()[Move.getTo(move)]] < alpha) {
+						continue;
+					}
+					break;					
+				}
+			}
+			
 			board.doMoveWithoutZobrist(move, side, opSide, depth);
 			if (!legality.isKingInCheck(board.getBitboard(), side)) {
 				if (foundPv) {

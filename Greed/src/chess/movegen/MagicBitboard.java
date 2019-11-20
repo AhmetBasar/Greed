@@ -240,4 +240,8 @@ public class MagicBitboard {
 				| bishopMoves[from][(int) ((occ & bishopMasks[from]) * bishopMagicNumbers[from] >>> bishopShifts[from])];
 	}
 	
+	public static void initialize() {
+		
+	}
+	
 }

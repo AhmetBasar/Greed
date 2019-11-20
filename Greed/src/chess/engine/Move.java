@@ -24,5 +24,16 @@ public class Move {
 	public static byte getPromotedPiece(int move) {
 		return (byte)((move & 0x00f00000) >>> 20);		
 	}
-
+	
+	public static boolean isPromotion(int move) {
+		return (move & 0x00070000) == EngineConstants.PROMOTION_SHIFTED;
+	}
+	
+	public static int getTo(int move) {
+		return (move & 0x0000ff00) >>> 8;
+	}
+	
+	public static int getMoveType(int move) {
+		return move & 0x00070000;
+	}
 }

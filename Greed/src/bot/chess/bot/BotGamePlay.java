@@ -25,6 +25,7 @@ import java.util.Map;
 
 import chess.bot.interpreting.BotMove;
 import chess.debug.DebugUtility;
+import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
 import chess.engine.MoveGenerationOnlyQueenPromotions;
 import chess.engine.Transformer;
@@ -58,6 +59,9 @@ public class BotGamePlay implements IGameController {
 	private Map<Long, Integer> boardStateHistory = new HashMap<Long, Integer>();
 	
 	public static void main(String[] args) throws Exception{
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			throw new RuntimeException("ENABLE_ASSERTION");
+		}
 		new BotGamePlay();
 	}
 	

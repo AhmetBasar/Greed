@@ -84,7 +84,7 @@ Chess Bot Programming.
   - Implement game phase. Opening, Middle, End.
   - Store only quiet moves in the killer move array. quiet move means no captures, no promotions. and maybe no checks.
   - Search captures with see first. Then killer and history moves.
-  - Implement pawn hash table!
+ [OKEY] - Implement pawn hash table!
   - There is a bug in pre move :) Vezirle almasý mecburi deðildi. piyonla alsa bizim pre move boþa çýkacak.
   - Implement mate and draw score in quiescence search
   - Implement generateCheckEvasions Method!
@@ -101,7 +101,7 @@ Chess Bot Programming.
   - Implement mate detetion with more elegant way. not simply return 0 as move.
   - Review existing code. for example there should be more condition in nullmove pruning. like in pvs do not do null move pruning.
   - Implement SSE.
-  - Implement magic bitboard.
+ [OKEY] - Implement magic bitboard.
   - Implement automated-Testing Framework that is capable of running thousands of games concurrently.
   - Implement aspirationWindows
  [OKEY] - Implement basic opening book or maybe advanced.
@@ -137,17 +137,17 @@ Chess Bot Programming.
   - Do not recalculate occupancy bitboard every cycle, use incrementaly updated bitboard instead.
   - Implement IID!
   - Implement lazy evaluation.
-  - Implement pawn hash table.
+ [OKEY] - Implement pawn hash table.
   - Embedded database might be useful for opening book.
-  - Implement Passed Pawn Evaluation.
+ [OKEY] - Implement Passed Pawn Evaluation.
   - We calculate isolated paws as if we use quare centric board representation. But we can calculate all pawns with one run, thanks to bitboards.
   - Implement candidate pawn evaluation.
   - Implement weak pawn evaluation.
   - Rewrite the evaluation function based on set-wise. Not Square centric.
   - Remove King value evalution from the evaluation function.
-  - Implement Passed Pawn Evaluation.
+ [OKEY] - Implement Passed Pawn Evaluation.
   - In queen move generation there is one redundant & operator!!
-  - Implement Magic Bitboards.
+ [OKEY] - Implement Magic Bitboards.
   - Implement double hashing to resolve collision.
   - Implement Eval Hash.
   - Use bucket in TT to use effectively.
@@ -240,3 +240,5 @@ Chess Bot Programming.
   - Write full functionality for MagicBitboardTest class. Not only testing magic numbers, but also occupancy variations etc.
   - use JITWATCH and -XX:+PrintCompilation -XX:+UnlockDiagnosticVMOptions -XX:+PrintInlining
   - divide long methods for JIT method InlineIng.
+  - Implement Counter Moves.
+  - change move representation that contains captured piece type. Than change, QuiescenceFutilityPruning how to get captured piece code block. if EpCapture than captured piece is pawn etc.
