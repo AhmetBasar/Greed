@@ -44,7 +44,7 @@ public class OpeningBook {
 		return instance;
 	}
 
-	public int findBookMove(IBoard board, int depth, int side, int opSide, String bookName) {
+	public int findBookMove(BoardV7 board, int depth, int side, int opSide, String bookName) {
 		//TODO Rewrite this method with binary search algorithm.
 		List<Integer> moveList = new ArrayList<Integer>();
 		List<Short> scoreList = new ArrayList<Short>();
@@ -63,10 +63,10 @@ public class OpeningBook {
 
 			// TODO Change it. Use already calculated one.
 			// long zobristKey = board.getZobristKey(depth);
-			long zobristKey = ZobristHashingPolyGlot.getZobristKey(board.getBitboard(), board.getEpTarget(depth),
-					board.getCastlingRights(depth), side);
+			long zobristKey = ZobristHashingPolyGlot.getZobristKey(board.getBitboard(), board.getEpTarget(),
+					board.getCastlingRights(), side);
 			
-			if (zobristKey != board.getZobristKey(depth)) {
+			if (zobristKey != board.getZobristKey()) {
 				throw new RuntimeException("ZOBRIST KEY DIFFERENCE");
 			}
 
@@ -108,7 +108,7 @@ public class OpeningBook {
 		return 0;
 	}
 
-	private int encodeMove(IBoard board, int depth, int side, int opSide, int rawMove) {
+	private int encodeMove(BoardV7 board, int depth, int side, int opSide, int rawMove) {
 		int toFile = rawMove & 0b111;
 		int toRow = rawMove >>> 3 & 0b111;
 		int fromFile = rawMove >>> 6 & 0b111;
@@ -119,12 +119,12 @@ public class OpeningBook {
 		return getValidMove(from, to, board, depth, side, opSide);
 	}
 
-	public int getValidMove(int source, int target, IBoard board, int depth, int side, int opSide) {
+	public int getValidMove(int source, int target, BoardV7 board, int depth, int side, int opSide) {
 		ArrayList<Integer> validMoveList = new ArrayList<Integer>();
 		int validMove = 0;
 		int move = source | (target << 8);
-		int[] validMoves = moveGeneration.generateMoves(board.getBitboard(), side, board.getEpTarget(depth),
-				board.getCastlingRights(depth));
+		int[] validMoves = moveGeneration.generateMoves(board.getBitboard(), side, board.getEpTarget(),
+				board.getCastlingRights());
 		for (int i = 0; i < EngineConstants.MOVE_LIST_SIZE; i++) {
 			if (move == (validMoves[i] & 0x0000FFFF)) {
 				validMoveList.add(validMoves[i]);
@@ -134,11 +134,11 @@ public class OpeningBook {
 		int validMoveListSize = validMoveList.size();
 		for (int i = 0; i < validMoveListSize; i++) {
 			validMove = validMoveList.get(i);
-			board.doMove(validMove, side, opSide, depth - 1);
+			board.doMove(validMove, side, opSide);
 			if (legality.isKingInCheck(board.getBitboard(), side)) {
 				return 0;
 			}
-			board.undoMove(validMove, side, opSide, depth - 1);
+			board.undoMove(validMove, side, opSide);
 		}
 
 		// choose item to be promoted

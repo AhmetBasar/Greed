@@ -28,9 +28,9 @@ import chess.engine.EngineConstants;
 import chess.engine.ISearchableV2;
 import chess.engine.LegalityV4;
 import chess.engine.Move;
-import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV3;
-import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV3;
-import chess.engine.OpeningBook2;
+import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;
+import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
+import chess.engine.OpeningBook;
 import chess.engine.PawnHashTable;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
@@ -42,8 +42,8 @@ import chess.gui.GuiConstants;
 
 //http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm
 public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
-	private MoveGenerationOrderedOnlyQueenPromotions_SBIV3 moveGenerationOrdered = new MoveGenerationOrderedOnlyQueenPromotions_SBIV3();
-	private MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV3 moveGenerationCaptures = new MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV3();
+	private MoveGenerationOrderedOnlyQueenPromotions_SBIV2 moveGenerationOrdered = new MoveGenerationOrderedOnlyQueenPromotions_SBIV2();
+	private MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 moveGenerationCaptures = new MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2();
 	private LegalityV4 legality = new LegalityV4();
 	
 	private final int MINUS_INFINITY = -99999;
@@ -157,7 +157,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			
 			if (i == 1 && searchParameters.getBookName() != null) {
 //				long s = System.currentTimeMillis();
-				int bookMove = OpeningBook2.getInstance().findBookMove(board, i + 1, searchParameters.getSide(), searchParameters.getSide() ^ 1, searchParameters.getBookName());
+				int bookMove = OpeningBook.getInstance().findBookMove(board, i + 1, searchParameters.getSide(), searchParameters.getSide() ^ 1, searchParameters.getBookName());
 //				long e = System.currentTimeMillis();
 //				System.out.println("Opening Book Time Consumed = " + (e - s));
 				if (bookMove != 0) {

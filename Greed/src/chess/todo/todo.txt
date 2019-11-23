@@ -242,3 +242,22 @@ Chess Bot Programming.
   - divide long methods for JIT method InlineIng.
   - Implement Counter Moves.
   - change move representation that contains captured piece type. Than change, QuiescenceFutilityPruning how to get captured piece code block. if EpCapture than captured piece is pawn etc.
+  - Change null move pruning conditions. e.g. only for non PV nodes.
+  - do not invoke search method with EDT.
+  - Test and debug Quiescence futility pruning.
+  - Try incremental piece square tables implementation aka psqt..
+  - Do not use byte. Use integer instead.
+  - Write lots of runtime assertions. For each methods.
+  - change castling right to single integer mask.
+  - change castling ZobristKey update in doMove method. It is very inefficient.
+  - Implement Eval Cache.
+  - Delete doMoveWithoutZobrist and undoMoveWithoutZobrist method.
+  - Do not use interface for high frequency usages.
+  - do not sort move array if no move is available.
+  - iskingincheck method aka superpiece implementation. is it good to terminate early or do all or operations and single check whether the king is in check or not
+  - never leave empty catch blocks. Never Ever!
+  - never leave empty catch blocks. Never Ever!
+  - Test iterative deepening speed. try directly maxdepth. and try iterative deepening and compare times consumed.
+  - remove nullmovecounter in threefoldrepetition and compare results.
+  - do not do any operations in for-while loop's conditional statement.
+  - change isLeadsToDraw method. Do not use HashMap history. Initialize board object by copying UiZobristKey history to board ZobristKey history instead.
