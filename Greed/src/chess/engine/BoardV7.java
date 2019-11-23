@@ -22,7 +22,7 @@ package chess.engine;
 import chess.engine.EngineConstants;
 import chess.engine.TranspositionTable;
 
-public class BoardV7 implements IBoard {
+public class BoardV7 {
 	
 	private long[] bitboard;
 	private byte[] pieces;
@@ -37,7 +37,6 @@ public class BoardV7 implements IBoard {
 	
 	//
 	private static final int TEMP_BOARD_SIZE = 100;
-	private static final int HALF_OF_TEMP_BOARD_SIZE = 50;
 	
 	private byte[] capturedPieces = new byte[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[] epTs = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!.
@@ -58,17 +57,17 @@ public class BoardV7 implements IBoard {
 	public int nullMoveCounter;
 	public int[] moveList;
 	
-	public int depth = 0;
+	public int moveIndex = 0;
 	
-	public int getEpTarget(int depth) {
+	public int getEpTarget() {
 		return epT;
 	}
 	
-	public int[] getMoveList(int depth) {
-		return moveLists[this.depth];
+	public int[] getMoveList() {
+		return moveLists[this.moveIndex];
 	}
 	
-	public BoardV7(long[] bitboard, byte[] pieces, int epT, int depth, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey) {
+	public BoardV7(long[] bitboard, byte[] pieces, int epT, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey) {
 		this.bitboard = bitboard;
 		this.pieces = pieces;
 		this.epT = epT;
@@ -82,7 +81,7 @@ public class BoardV7 implements IBoard {
 		this.nullMoveCounter = fiftyMoveCounter; // Initially equals.
 	}
 	
-	public void doNullMove(int depth, int side, int R) {
+	public void doNullMove(int side) {
 		
 		storeCurrentValues();
 		
@@ -99,39 +98,39 @@ public class BoardV7 implements IBoard {
 		epT = 64;
 	}
 	
-	public void undoNullMove(int depth, int R) {
+	public void undoNullMove() {
 		fetchPreviousValues();
 	}
 	
 	private void storeCurrentValues() {
-		capturedPieces[depth] = capturedPiece;
-		epTs[depth] = epT;
-		castlingRightss[depth][0][0] = castlingRights[0][0];
-		castlingRightss[depth][0][1] = castlingRights[0][1];
-		castlingRightss[depth][1][0] = castlingRights[1][0];
-		castlingRightss[depth][1][1] = castlingRights[1][1];
-		zobristKeys[depth] = zobristKey;
-		pawnZobristKeys[depth] = pawnZobristKey;
-		fiftyMoveCounters[depth] = fiftyMoveCounter;
-		nullMoveCounters[depth] = nullMoveCounter;
-		depth++;
+		capturedPieces[moveIndex] = capturedPiece;
+		epTs[moveIndex] = epT;
+		castlingRightss[moveIndex][0][0] = castlingRights[0][0];
+		castlingRightss[moveIndex][0][1] = castlingRights[0][1];
+		castlingRightss[moveIndex][1][0] = castlingRights[1][0];
+		castlingRightss[moveIndex][1][1] = castlingRights[1][1];
+		zobristKeys[moveIndex] = zobristKey;
+		pawnZobristKeys[moveIndex] = pawnZobristKey;
+		fiftyMoveCounters[moveIndex] = fiftyMoveCounter;
+		nullMoveCounters[moveIndex] = nullMoveCounter;
+		moveIndex++;
 	}
 	
 	private void fetchPreviousValues() {
-		depth--;
-		capturedPiece = capturedPieces[depth];
-		epT = epTs[depth];
-		castlingRights[0][0] = castlingRightss[depth][0][0];
-		castlingRights[0][1] = castlingRightss[depth][0][1];
-		castlingRights[1][0] = castlingRightss[depth][1][0];
-		castlingRights[1][1] = castlingRightss[depth][1][1];
-		zobristKey = zobristKeys[depth];
-		pawnZobristKey = pawnZobristKeys[depth];
-		fiftyMoveCounter = fiftyMoveCounters[depth];
-		nullMoveCounter = nullMoveCounters[depth];
+		moveIndex--;
+		capturedPiece = capturedPieces[moveIndex];
+		epT = epTs[moveIndex];
+		castlingRights[0][0] = castlingRightss[moveIndex][0][0];
+		castlingRights[0][1] = castlingRightss[moveIndex][0][1];
+		castlingRights[1][0] = castlingRightss[moveIndex][1][0];
+		castlingRights[1][1] = castlingRightss[moveIndex][1][1];
+		zobristKey = zobristKeys[moveIndex];
+		pawnZobristKey = pawnZobristKeys[moveIndex];
+		fiftyMoveCounter = fiftyMoveCounters[moveIndex];
+		nullMoveCounter = nullMoveCounters[moveIndex];
 	}
 	
-	public void doMove(int move, int side, int opSide, int depth) {
+	public void doMove(int move, int side, int opSide) {
 		
 		storeCurrentValues();
 		
@@ -335,7 +334,7 @@ public class BoardV7 implements IBoard {
 		nullMoveCounter ++;
 	}
 	
-	public void undoMove(int move, int side, int opSide, int depth) {
+	public void undoMove(int move, int side, int opSide) {
 		
 		int moveType = move & 0x00070000;
 		int to = (move & 0x0000ff00) >>> 8;
@@ -400,7 +399,7 @@ public class BoardV7 implements IBoard {
 		fetchPreviousValues();
 	}
 	
-	public void doMoveWithoutZobrist(int move, int side, int opSide, int depth) {
+	public void doMoveWithoutZobrist(int move, int side, int opSide) {
 		
 		storeCurrentValues();
 		
@@ -525,7 +524,7 @@ public class BoardV7 implements IBoard {
 		/****/
 	}
 	
-	public void undoMoveWithoutZobrist(int move, int side, int opSide, int depth) {
+	public void undoMoveWithoutZobrist(int move, int side, int opSide) {
 		
 		
 		int moveType = move & 0x00070000;
@@ -597,11 +596,11 @@ public class BoardV7 implements IBoard {
 	}
 	
 
-	public byte[][] getCastlingRights(int depth) {
+	public byte[][] getCastlingRights() {
 		return castlingRights;
 	}
 	
-	public byte getCapturedPiece(int depth) {
+	public byte getCapturedPiece() {
 		return capturedPiece;
 	}
 
@@ -613,23 +612,23 @@ public class BoardV7 implements IBoard {
 		return pieces;
 	}
 	
-	public long getZobristKey(int depth) {
+	public long getZobristKey() {
 		return zobristKey;
 	}
 	
-	public long getPawnZobristKey(int depth) {
+	public long getPawnZobristKey() {
 		return pawnZobristKey;
 	}
 	
-	public int getFiftyMoveCounter(int depth) {
+	public int getFiftyMoveCounter() {
 		return fiftyMoveCounter;
 	}
 	
-	public int getNullMoveCounter(int depth) {
+	public int getNullMoveCounter() {
 		return nullMoveCounter;
 	}
 	
-	public boolean hasRepeated(long zobristKey, int d) {
+	public boolean hasRepeated(long zobristKey) {
 		// TODO Check (as well as fiftyMoveCounter > 99) whether the king is in check or not because of the FIDE rules.
 		if (fiftyMoveCounter > 99) {
 			return true;
@@ -640,31 +639,13 @@ public class BoardV7 implements IBoard {
 			return false;
 		}
 		
-		final int lowerBound = Math.max(0, depth - upperBound);
+		final int lowerBound = Math.max(0, moveIndex - upperBound);
 		
-		for (int i = depth - 4; i >= lowerBound; i = i - 2) {
+		for (int i = moveIndex - 4; i >= lowerBound; i = i - 2) {
 			if (zobristKeys[i] == zobristKey) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	@Override
-	public void deepDive(int depth) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void deeperDive(int depth) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public int getEpSquare(int depth) {
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }

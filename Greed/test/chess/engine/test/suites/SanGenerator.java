@@ -24,9 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import chess.engine.BoardFactory;
+import chess.engine.BoardV7;
 import chess.engine.EngineConstants;
-import chess.engine.IBoard;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.util.Utility;
@@ -61,7 +60,7 @@ public class SanGenerator {
 
 		String pieceSymbol = PIECES[fromPiece];
 
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, epSquare, 1, castlingRights, 0L, 0, 0L);
+		BoardV7 board = new BoardV7(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L);
 		Map<String, Map<String, List<String>>> ambiguities = getAmbiguities(1, board, side ^ 1, move);
 
 		switch (moveType) {
@@ -162,11 +161,10 @@ public class SanGenerator {
 		return sanMove;
 	}
 
-	private static Map<String, Map<String, List<String>>> getAmbiguities(int depth, IBoard board, int side,
+	private static Map<String, Map<String, List<String>>> getAmbiguities(int depth, BoardV7 board, int side,
 			int bestMove) {
 		Map<String, Map<String, List<String>>> ambiguities = new HashMap<>();
 
-		board.deepDive(depth);
 		int depthPlusOne = depth + 1;
 		int opSide = side;
 		side = side ^ 1;
@@ -176,7 +174,7 @@ public class SanGenerator {
 		LegalityV4 legality = new LegalityV4();
 		MoveGenerationOrderedOnlyQueenPromotions_SBIV2 moveGeneration = new MoveGenerationOrderedOnlyQueenPromotions_SBIV2();
 		moveGeneration.generateMoves(board, side, depthPlusOne, depth);
-		int[] moveList = board.getMoveList(depth);
+		int[] moveList = board.getMoveList();
 		
 		while (moveList[i] != 0) {
 			move = moveList[i];
@@ -186,7 +184,7 @@ public class SanGenerator {
 			int moveType = move & 0x00070000;
 			String fromPiece = String.valueOf(board.getPieces()[from]);
 
-			board.doMove(move, side, opSide, depth);
+			board.doMove(move, side, opSide);
 
 			if (!legality.isKingInCheck(board.getBitboard(), side)) {
 
@@ -212,7 +210,7 @@ public class SanGenerator {
 				ambiguities.put("isKingInCheck", null);
 			}
 
-			board.undoMove(move, side, opSide, depth);
+			board.undoMove(move, side, opSide);
 
 			i++;
 		}

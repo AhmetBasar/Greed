@@ -19,9 +19,8 @@
  **********************************************/
 package chess.debug;
 
-import chess.engine.BoardFactory;
+import chess.engine.BoardV7;
 import chess.engine.EngineConstants;
-import chess.engine.IBoard;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGeneration;
 import chess.engine.Transformer;
@@ -39,7 +38,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 5;
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, -1, depth, castlingRights, 0L, 0, 0L);
+		BoardV7 board = new BoardV7(bitboard, pieces, 64, castlingRights, 0L, 0, 0L);
 		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
 		obj.perft(depth, board, 1);
 		System.out.println(obj.perftResult);
@@ -50,7 +49,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		long startTime = System.currentTimeMillis();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, epSquare, depth, castlingRights, 0L, 0, 0L);
+		BoardV7 board = new BoardV7(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L);
 		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
 		obj.perft(depth, board, 1);
 		obj.perftResult.setTimeConsumed(System.currentTimeMillis() - startTime);
@@ -58,14 +57,13 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		baseGui.getDebugPanel().setEnableAll(true);
 	}
 
-	public void perft(int depth, IBoard board, int side) {
+	public void perft(int depth, BoardV7 board, int side) {
 
 		if (depth == 0) {
 			perftResult.incrementNodeCount();
 			return;
 		}
 
-		board.deepDive(depth);
 		int depthMinusOne = depth - 1;
 		int depthPlusOne = depth + 1;
 		int opSide = side;
@@ -78,14 +76,14 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		while (moveList[i] != 0) {
 			move = moveList[i];
 			
-			board.doMove(move, side, opSide, depth);
+			board.doMove(move, side, opSide);
 
 			if (!legality.isKingInCheck(board.getBitboard(), side)) {
 				existsLegalMove = true;
 				if (depth == 1) {
 					//
 					int moveType = move & 0x00070000;
-					byte capturedPiece = board.getCapturedPiece(depth);
+					byte capturedPiece = board.getCapturedPiece();
 					switch (moveType) {
 					case 0:
 						break;
@@ -115,7 +113,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 				perft(depthMinusOne, board, side);
 			}
 
-			board.undoMove(move, side, opSide, depth);
+			board.undoMove(move, side, opSide);
 
 			i++;
 		}
