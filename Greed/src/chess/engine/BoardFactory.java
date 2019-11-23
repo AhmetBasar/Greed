@@ -24,5 +24,9 @@ public class BoardFactory {
 	public static IBoard getInstance(long[] bitboard, byte[] pieces, int epT, int epS, int depth, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey) {
 		return new BoardV5(bitboard, pieces, epT, epS, depth, castlingRights, zobristKey, fiftyMoveCounter, pawnZobristKey);
 	}
+	
+	public static IBoard getInstance6(long[] bitboard, byte[] pieces, int epT, int epS, int depth, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey) {
+		return new BoardV6(bitboard, pieces, epT, depth, castlingRights, zobristKey, fiftyMoveCounter, pawnZobristKey);
+	}
 
 }

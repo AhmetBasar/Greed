@@ -36,4 +36,9 @@ public class Move {
 	public static int getMoveType(int move) {
 		return move & 0x00070000;
 	}
+	
+	public static int getCastlingSide(int move) {
+		return (move & 0x00010000) >>> 16;
+	}
+	
 }

@@ -21,6 +21,7 @@ package chess.engine;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.security.SecureRandom;
@@ -64,6 +65,10 @@ public class OpeningBook {
 			// long zobristKey = board.getZobristKey(depth);
 			long zobristKey = ZobristHashingPolyGlot.getZobristKey(board.getBitboard(), board.getEpTarget(depth),
 					board.getCastlingRights(depth), side);
+			
+			if (zobristKey != board.getZobristKey(depth)) {
+				throw new RuntimeException("ZOBRIST KEY DIFFERENCE");
+			}
 
 			for (;;) {
 				bookKey = dis.readLong();
@@ -84,12 +89,15 @@ public class OpeningBook {
 					scoreList.add(score);
 				}
 			}
-		} catch (Exception e) {
+		} catch (EOFException e) {
 			// Just be quiet.
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.exit(1);
 		} finally {
 			Utility.closeQuietly(fis, bis, dis);
 		}
-
+		
 		double random = rgn.nextDouble() * sumOfScores;
 		for (int k = 0; k < moveList.size(); k++) {
 			random = random - scoreList.get(k);
@@ -126,11 +134,11 @@ public class OpeningBook {
 		int validMoveListSize = validMoveList.size();
 		for (int i = 0; i < validMoveListSize; i++) {
 			validMove = validMoveList.get(i);
-			board.doMove(validMove, side, opSide, depth);
+			board.doMove(validMove, side, opSide, depth - 1);
 			if (legality.isKingInCheck(board.getBitboard(), side)) {
 				return 0;
 			}
-			board.undoMove(validMove, side, opSide, depth);
+			board.undoMove(validMove, side, opSide, depth - 1);
 		}
 
 		// choose item to be promoted

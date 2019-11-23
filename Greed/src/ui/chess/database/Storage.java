@@ -19,6 +19,7 @@
  **********************************************/
 package chess.database;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,7 +35,7 @@ public class Storage {
 	public Storage() {
 		InputStream is = null;
 		try {
-			is = getClass().getClassLoader().getResourceAsStream("Storage.properties");
+			is = new FileInputStream("D:\\storage\\Storage.properties");
 			properties.load(is);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -46,7 +47,7 @@ public class Storage {
 	private void store() {
 		FileOutputStream fis = null;
 		try {
-			fis = new FileOutputStream("src/resources/Storage.properties");
+			fis = new FileOutputStream("D:\\storage\\Storage.properties");
 			properties.store(fis, null);
 			fis.flush();
 		} catch (IOException e) {

@@ -93,7 +93,7 @@ public class BoardV5 implements IBoard {
 		nullMoveCounters[depthPlusOne] = fiftyMoveCounter; // Initially equals.
 	}
 	
-	public void doNullMove(int depth, int side) {
+	public void doNullMove(int depth, int side, int R) {
 		depth = convertToInternalDepth(depth);
 		int depthPlusOne = depth + 1;
 		//Transposition Table//
@@ -112,7 +112,7 @@ public class BoardV5 implements IBoard {
 		nullMoveCounters[depth] = 0;
 	}
 	
-	public void undoNullMove(int depth) {
+	public void undoNullMove(int depth, int R) {
 		depth = convertToInternalDepth(depth);
 		int depthPlusOne = depth + 1;
 		zobristKeys[depth] = zobristKeys[depthPlusOne];

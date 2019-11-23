@@ -51,9 +51,9 @@ public interface IBoard {
 	
 	void undoMoveWithoutZobrist(int move, int side, int opSide, int depth);
 	
-	void doNullMove(int depth, int side);
+	void doNullMove(int depth, int side, int R);
 	
-	void undoNullMove(int depth);
+	void undoNullMove(int depth, int R);
 	
 	byte getCapturedPiece(int depth);
 	

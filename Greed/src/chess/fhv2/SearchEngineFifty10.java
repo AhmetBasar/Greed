@@ -317,14 +317,14 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			//=>> NullMove Begin
 			if (!isKingInCheck && allowNullMove && depth > 2) {
 				
-				board.doNullMove(depth, side);
+				board.doNullMove(depth, side, R);
 				
 				board.deeperDive(depth - 1);
 				board.deeperDive(depth - 2);
 				
 				tempValue = -negamax(depth - 1 - R, board, side, -color, -beta, -beta + 1, ttBestMove, firstMove, false, distance + 1);
 				
-				board.undoNullMove(depth);
+				board.undoNullMove(depth, R);
 				
 				
 				if (tempValue >= beta) {
