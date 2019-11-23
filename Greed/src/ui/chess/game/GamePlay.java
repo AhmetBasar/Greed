@@ -333,7 +333,7 @@ public class GamePlay {
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
-					engine.resetTT();
+//					engine.resetTT();
 					//
 					engine.setBoardStateHistory(getBoardStateHistory());
 					
@@ -366,7 +366,7 @@ public class GamePlay {
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
 					//TODO UNCOMMENT HERE.
-					engine.resetTT();
+//					engine.resetTT();
 					//
 					engine.setBoardStateHistory(getBoardStateHistory());
 					
