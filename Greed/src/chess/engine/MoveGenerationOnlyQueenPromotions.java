@@ -24,10 +24,6 @@ public class MoveGenerationOnlyQueenPromotions implements MoveGenerationConstant
 	private LegalityV4 legality = new LegalityV4();
 
 	
-	public int[] generateMoves(IBoard board, int side, int depthPlusOne) {
-		return generateMoves(board.getBitboard(), side, board.getEpTarget(depthPlusOne), board.getCastlingRights(depthPlusOne));
-	}
-	
 	//TODO : try direct access ep target and side instead of pass parameter. and compare performances..
 	public int[] generateMoves(long[] bitboard, int side, int epTarget, byte[][] castlingRights) {
 		int opSide = side ^ 1;

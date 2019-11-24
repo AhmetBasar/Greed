@@ -202,11 +202,6 @@ public class BoardV7 {
 			bitboard[fromPiece] |= (1L << to);
 			break;
 		case EngineConstants.EP_CAPTURE_SHIFTED:
-			
-			if (epT == 64) {
-				System.out.println("epT = " + epT);
-			}
-			
 			int epS = to + epSquareDiff[side];
 			capturedPiece = pieces[epS];
 			
