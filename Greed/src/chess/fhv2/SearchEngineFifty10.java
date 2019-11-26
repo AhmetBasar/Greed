@@ -153,7 +153,8 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			currentDepth = i;
 //			IBoard board = BoardFactory.getInstance7(searchParameters.getBitboard(), searchParameters.getPieces(), searchParameters.getEpT(), searchParameters.getEpS(), i, searchParameters.getCastlingRights(), searchParameters.getUiZobristKey(), searchParameters.getFiftyMoveCounter(), pawnZobristKey);
 			BoardV7 board = new BoardV7(searchParameters.getBitboard(), searchParameters.getPieces(), searchParameters.getEpT(),
-					searchParameters.getCastlingRights(), searchParameters.getUiZobristKey(), searchParameters.getFiftyMoveCounter(), pawnZobristKey);
+					searchParameters.getCastlingRights(), searchParameters.getUiZobristKey(), searchParameters.getFiftyMoveCounter(), pawnZobristKey,
+					searchParameters.getZobristKeyHistory());
 			
 			if (i == 1 && searchParameters.getBookName() != null) {
 //				long s = System.currentTimeMillis();
@@ -247,17 +248,6 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		return bestMove;
 	}
 	
-	private boolean isLeadsToDraw(long zobristKey, BoardV7 board) {
-		if (board.hasRepeated(zobristKey)) {
-			return true;
-		}
-		Integer boardStateHistoryCount = boardStateHistory.get(zobristKey);
-		if(boardStateHistoryCount != null && boardStateHistoryCount.intValue() >= 1){
-			return true;
-		}
-		return false;
-	}
-	
 	public void addKiller(int move, int depth) {
 		if (primaryKillerss[depth] != move) {
 			secondaryKillerss[depth] = primaryKillerss[depth];
@@ -273,7 +263,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		
 		int hashType = HASH_ALPHA;
 		long zobristKey = board.getZobristKey();
-		if (isLeadsToDraw(zobristKey, board)) {
+		if (board.hasRepeated(zobristKey)) {
 			return 0;
 		}
 		

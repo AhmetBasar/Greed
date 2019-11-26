@@ -266,3 +266,6 @@ Chess Bot Programming.
   - Large arrays are too slow. Maybe there is some hotspot GC parameters to increase performance.
   - Write lots of assertions.
   - Write comprehensive profiler(with gui, e.g. x-y diagram) for testing classes like, Engine tournament or Engine Equality comparator.
+  - remove unused method parameters at both engine and board classes.
+  - remove depth == 30 break; condition.
+  - decrease movelist array size.

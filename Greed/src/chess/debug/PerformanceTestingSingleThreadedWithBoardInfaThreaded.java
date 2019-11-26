@@ -48,7 +48,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 6;
-		BoardV7 board = new BoardV7(bitboard, pieces, 64, castlingRights, 0L, 0, 0L);
+		BoardV7 board = new BoardV7(bitboard, pieces, 64, castlingRights, 0L, 0, 0L, null);
 		System.out.println("move count = " + new PerformanceTestingSingleThreadedWithBoardInfaThreaded().perft(depth, board, 1));
 		System.out.println("time = " + (System.currentTimeMillis() - ilk));
 	}
@@ -60,7 +60,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		resetCounters();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
-		BoardV7 board = new BoardV7(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L);
+		BoardV7 board = new BoardV7(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null);
 		PerformanceTestingSingleThreadedWithBoardInfaThreaded.dispatchThreads(depth, board, castlingRights, side, threadCount);
 	}
 	
@@ -142,7 +142,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 			partialMoveListIndex++;
 			if (partialMoveListIndex == partialMoveListSize) {
 				partialMoveListIndex = 0;
-				BoardV7 b = new BoardV7(board.getBitboard().clone(), Transformer.getByteArrayStyl(board.getBitboard().clone()), board.getEpTarget(), castlingRights, 0L, 0, 0L);
+				BoardV7 b = new BoardV7(board.getBitboard().clone(), Transformer.getByteArrayStyl(board.getBitboard().clone()), board.getEpTarget(), castlingRights, 0L, 0, 0L, null);
 				new PerformanceTestingSingleThreadedWithBoardInfaThreaded(depth, b, side, partialMoveList).start();
 				aliveThreadCount++;
 			}

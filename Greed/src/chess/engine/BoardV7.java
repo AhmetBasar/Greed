@@ -19,8 +19,7 @@
  **********************************************/
 package chess.engine;
 
-import chess.engine.EngineConstants;
-import chess.engine.TranspositionTable;
+import java.util.List;
 
 public class BoardV7 {
 	
@@ -36,7 +35,7 @@ public class BoardV7 {
 	private int[] epSquareDiff = {-8, 8};
 	
 	//
-	private static final int TEMP_BOARD_SIZE = 100;
+	private static final int TEMP_BOARD_SIZE = 150;
 	
 	private byte[] capturedPieces = new byte[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[] epTs = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!.
@@ -67,7 +66,7 @@ public class BoardV7 {
 		return moveLists[this.moveIndex];
 	}
 	
-	public BoardV7(long[] bitboard, byte[] pieces, int epT, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey) {
+	public BoardV7(long[] bitboard, byte[] pieces, int epT, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey, List<Long> zobristKeyHistory) {
 		this.bitboard = bitboard;
 		this.pieces = pieces;
 		this.epT = epT;
@@ -79,6 +78,14 @@ public class BoardV7 {
 		this.pawnZobristKey = pawnZobristKey;
 		this.fiftyMoveCounter = fiftyMoveCounter;
 		this.nullMoveCounter = fiftyMoveCounter; // Initially equals.
+		
+		if (zobristKeyHistory != null) {
+			int k = zobristKeyHistory.size() - fiftyMoveCounter;
+			moveIndex = fiftyMoveCounter;
+			for (int j = 0; j < fiftyMoveCounter; j++, k++) {
+				zobristKeys[j] = zobristKeyHistory.get(k);
+			}
+		}
 	}
 	
 	public void doNullMove(int side) {
@@ -131,6 +138,10 @@ public class BoardV7 {
 	}
 	
 	public void doMove(int move, int side, int opSide) {
+		
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			checkConsistency(move, side);
+		}
 		
 		storeCurrentValues();
 		
@@ -642,5 +653,21 @@ public class BoardV7 {
 			}
 		}
 		return false;
+	}
+	
+	private void checkConsistency(int move, int side) {
+		
+		// The king can not be captured.
+//		Assertion.assertTrue((capturedPiece & 0XFE) != EngineConstants.KING);
+		
+		// fifty move counter can not be less than move index. (UI related issues.)
+//		Assertion.assertTrue(moveIndex >= fiftyMoveCounter);
+
+		// check zobrist key.
+//		Assertion.assertTrue(zobristKey == TranspositionTable.getZobristKey(bitboard, epT, castlingRights, side));
+		
+		// check pawn zobrist key.
+//		Assertion.assertTrue(pawnZobristKey == TranspositionTable.getPawnZobristKey(bitboard));
+		
 	}
 }

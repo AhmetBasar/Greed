@@ -60,7 +60,7 @@ public class SanGenerator {
 
 		String pieceSymbol = PIECES[fromPiece];
 
-		BoardV7 board = new BoardV7(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L);
+		BoardV7 board = new BoardV7(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null);
 		Map<String, Map<String, List<String>>> ambiguities = getAmbiguities(1, board, side ^ 1, move);
 
 		switch (moveType) {

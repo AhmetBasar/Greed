@@ -38,7 +38,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 5;
-		BoardV7 board = new BoardV7(bitboard, pieces, 64, castlingRights, 0L, 0, 0L);
+		BoardV7 board = new BoardV7(bitboard, pieces, 64, castlingRights, 0L, 0, 0L, null);
 		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
 		obj.perft(depth, board, 1);
 		System.out.println(obj.perftResult);
@@ -49,7 +49,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		long startTime = System.currentTimeMillis();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
-		BoardV7 board = new BoardV7(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L);
+		BoardV7 board = new BoardV7(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null);
 		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
 		obj.perft(depth, board, 1);
 		obj.perftResult.setTimeConsumed(System.currentTimeMillis() - startTime);

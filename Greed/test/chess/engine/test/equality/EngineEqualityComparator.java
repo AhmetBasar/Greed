@@ -62,8 +62,10 @@ public class EngineEqualityComparator implements Runnable {
 				SearchResult srw = engineWhite.search(params);
 				SearchResult srb = engineBlack.search(params);
 				
-				increment(mapTimeConsumeds, engineWhite.getClass(), srw.getTimeConsumed());
-				increment(mapTimeConsumeds, engineBlack.getClass(), srb.getTimeConsumed());
+				if (System.currentTimeMillis() - startTime > 10000) {
+					increment(mapTimeConsumeds, engineWhite.getClass(), srw.getTimeConsumed());
+					increment(mapTimeConsumeds, engineBlack.getClass(), srb.getTimeConsumed());
+				}
 				
 				if (srb.isBookMove() != srw.isBookMove()) {
 					throw new RuntimeException("Failed.");
@@ -98,15 +100,17 @@ public class EngineEqualityComparator implements Runnable {
 					sb.append("positionCountBlack = " + convertToCountBasedMap(positionCountBlack) + "\n");
 					sb.append("mapTimeConsumeds = " + mapTimeConsumeds + "\n");
 					
-					long engine1Time = mapTimeConsumeds.get(engine1.getClass());
-					long engine2Time = mapTimeConsumeds.get(engine2.getClass());
-					double totalTime = engine1Time + engine2Time;
-					double engine1TimePercentage = (100 * engine1Time) / totalTime;
-					double engine2TimePercentage = (100 * engine2Time) / totalTime;
-					sb.append("engine1TimePercentage = " + engine1TimePercentage + "\n");
-					sb.append("engine2TimePercentage = " + engine2TimePercentage + "\n");
+					if (mapTimeConsumeds.get(engine1.getClass()) != null) {
+						long engine1Time = mapTimeConsumeds.get(engine1.getClass());
+						long engine2Time = mapTimeConsumeds.get(engine2.getClass());
+						double totalTime = engine1Time + engine2Time;
+						double engine1TimePercentage = (100 * engine1Time) / totalTime;
+						double engine2TimePercentage = (100 * engine2Time) / totalTime;
+						sb.append("engine1TimePercentage = " + engine1TimePercentage + "\n");
+						sb.append("engine2TimePercentage = " + engine2TimePercentage + "\n");
+					}
 					
-				print(sb.toString());
+					print(sb.toString());
 					
 					ISearchableV2 tempEngine = engineWhite;
 					engineWhite = engineBlack;
@@ -136,6 +140,7 @@ public class EngineEqualityComparator implements Runnable {
 		params.setTimeLimit(timeLimit);
 		params.setFiftyMoveCounter(board.getFiftyMoveCounter());
 		params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
+		params.setZobristKeyHistory(board.getZobristKeyHistory());
 		return params;
 	}
 	
@@ -168,6 +173,8 @@ public class EngineEqualityComparator implements Runnable {
 	private static final Map<Long, Long> positionCountWhite = Collections.synchronizedMap(new HashMap<>());
 	private static final Map<Long, Long> positionCountBlack = Collections.synchronizedMap(new HashMap<>());
 	private static final Map<Class<?>, Long> mapTimeConsumeds = Collections.synchronizedMap(new HashMap<>());
+	
+	private static final long startTime = System.currentTimeMillis();
 	
 	public static void main(String[] args) {
 		initializeClasses();

@@ -124,7 +124,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 			int preMoveDepth = depth - 1;
 //			IBoard board = BoardFactory.getInstance(sp.getBitboard(), sp.getPieces(), sp.getEpT(), sp.getEpS(), i, sp.getCastlingRights(), sp.getUiZobristKey(), sp.getFiftyMoveCounter(), sp.getUiPawnZobristKey());
 			BoardV7 board = new BoardV7(sp.getBitboard(), sp.getPieces(), sp.getEpT(),
-					sp.getCastlingRights(), sp.getUiZobristKey(), sp.getFiftyMoveCounter(), pawnZobristKey);
+					sp.getCastlingRights(), sp.getUiZobristKey(), sp.getFiftyMoveCounter(), pawnZobristKey, sp.getZobristKeyHistory());
 			
 			move = getBestMovee(i, board, sp.getSide(), isLastIteration, preMoveDepth, 0, sp.getFirstMove());	
 		}
@@ -215,17 +215,6 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		return bestMove;
 	}
 	
-	private boolean isLeadsToDraw(long zobristKey, BoardV7 board) {
-		if (board.hasRepeated(zobristKey)) {
-			return true;
-		}
-		Integer boardStateHistoryCount = boardStateHistory.get(zobristKey);
-		if(boardStateHistoryCount != null && boardStateHistoryCount.intValue() >= 1){
-			return true;
-		}
-		return false;
-	}
-	
 	public void addKiller(int move, int depth) {
 		if (primaryKillerss[depth] != move) {
 			secondaryKillerss[depth] = primaryKillerss[depth];
@@ -237,7 +226,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		
 		int hashType = HASH_ALPHA;
 		long zobristKey = board.getZobristKey();
-		if (isLeadsToDraw(zobristKey, board)) {
+		if (board.hasRepeated(zobristKey)) {
 			return 0;
 		}
 		
