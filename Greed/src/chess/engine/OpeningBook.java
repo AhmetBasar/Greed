@@ -44,7 +44,7 @@ public class OpeningBook {
 		return instance;
 	}
 
-	public int findBookMove(BoardV7 board, int depth, int side, int opSide, String bookName) {
+	public int findBookMove(IBoard board, int depth, int side, int opSide, String bookName) {
 		//TODO Rewrite this method with binary search algorithm.
 		List<Integer> moveList = new ArrayList<Integer>();
 		List<Short> scoreList = new ArrayList<Short>();
@@ -108,7 +108,7 @@ public class OpeningBook {
 		return 0;
 	}
 
-	private int encodeMove(BoardV7 board, int depth, int side, int opSide, int rawMove) {
+	private int encodeMove(IBoard board, int depth, int side, int opSide, int rawMove) {
 		int toFile = rawMove & 0b111;
 		int toRow = rawMove >>> 3 & 0b111;
 		int fromFile = rawMove >>> 6 & 0b111;
@@ -119,7 +119,7 @@ public class OpeningBook {
 		return getValidMove(from, to, board, depth, side, opSide);
 	}
 
-	public int getValidMove(int source, int target, BoardV7 board, int depth, int side, int opSide) {
+	public int getValidMove(int source, int target, IBoard board, int depth, int side, int opSide) {
 		ArrayList<Integer> validMoveList = new ArrayList<Integer>();
 		int validMove = 0;
 		int move = source | (target << 8);

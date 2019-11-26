@@ -25,12 +25,12 @@ public class MoveGenerationOrderedOnlyQueenPromotions_SBIV2 implements MoveGener
 
 	private LegalityV4 legality = new LegalityV4();
 
-	public void generateMoves(BoardV7 board, int side, int depthPlusOne, int depth) {
+	public void generateMoves(IBoard board, int side, int depthPlusOne, int depth) {
 		generateMoves(board.getBitboard(), board.getPieces(), side, board.getEpTarget(), board.getCastlingRights(), board, depth);
 	}
 	
 	//TODO : try direct access ep target and side instead of pass parameter. and compare performances..
-	public void generateMoves(long[] bitboard, byte[] pieces, int side, int epTarget, byte[][] castlingRights, BoardV7 board, int depth) {
+	public void generateMoves(long[] bitboard, byte[] pieces, int side, int epTarget, byte[][] castlingRights, IBoard board, int depth) {
 		int opSide = side ^ 1;
 		int[] moveList = board.getMoveList();
 		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; moveList[i] != 0 ; i--) {

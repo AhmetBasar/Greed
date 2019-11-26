@@ -26,7 +26,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 	private LegalityV4 legality = new LegalityV4();
 
 	
-	public int[] generateMoves(BoardV7 board, int side, int depthPlusOne) {
+	public int[] generateMoves(IBoard board, int side, int depthPlusOne) {
 		return generateMoves(board.getBitboard(), side, board.getEpTarget(), board.getCastlingRights());
 	}
 	

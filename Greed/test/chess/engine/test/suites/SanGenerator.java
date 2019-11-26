@@ -24,8 +24,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import chess.engine.BoardV7;
+import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
+import chess.engine.IBoard;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.util.Utility;
@@ -60,7 +61,7 @@ public class SanGenerator {
 
 		String pieceSymbol = PIECES[fromPiece];
 
-		BoardV7 board = new BoardV7(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null);
 		Map<String, Map<String, List<String>>> ambiguities = getAmbiguities(1, board, side ^ 1, move);
 
 		switch (moveType) {
@@ -161,7 +162,7 @@ public class SanGenerator {
 		return sanMove;
 	}
 
-	private static Map<String, Map<String, List<String>>> getAmbiguities(int depth, BoardV7 board, int side,
+	private static Map<String, Map<String, List<String>>> getAmbiguities(int depth, IBoard board, int side,
 			int bestMove) {
 		Map<String, Map<String, List<String>>> ambiguities = new HashMap<>();
 

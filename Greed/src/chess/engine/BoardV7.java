@@ -21,7 +21,7 @@ package chess.engine;
 
 import java.util.List;
 
-public class BoardV7 {
+public class BoardV7 implements IBoard {
 	
 	private long[] bitboard;
 	private byte[] pieces;

@@ -25,8 +25,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import chess.engine.BoardV7;
+import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
+import chess.engine.IBoard;
 import chess.engine.ISearchableV2;
 import chess.engine.LegalityV4;
 import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;
@@ -122,10 +123,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		for (int i = 1; i <= depth; i++) {
 			boolean isLastIteration = i == depth;
 			int preMoveDepth = depth - 1;
-//			IBoard board = BoardFactory.getInstance(sp.getBitboard(), sp.getPieces(), sp.getEpT(), sp.getEpS(), i, sp.getCastlingRights(), sp.getUiZobristKey(), sp.getFiftyMoveCounter(), sp.getUiPawnZobristKey());
-			BoardV7 board = new BoardV7(sp.getBitboard(), sp.getPieces(), sp.getEpT(),
-					sp.getCastlingRights(), sp.getUiZobristKey(), sp.getFiftyMoveCounter(), pawnZobristKey, sp.getZobristKeyHistory());
-			
+			IBoard board = BoardFactory.getInstance(sp);
 			move = getBestMovee(i, board, sp.getSide(), isLastIteration, preMoveDepth, 0, sp.getFirstMove());	
 		}
 		
@@ -146,7 +144,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		pawnHashTable.resetTT();
 	}
 	
-	public int getBestMovee(int depth, BoardV7 board, int side, boolean isLastIteration, int preMoveDepth, int distance, int firstMove){
+	public int getBestMovee(int depth, IBoard board, int side, boolean isLastIteration, int preMoveDepth, int distance, int firstMove){
 		
 		int alpha = MINUS_INFINITY;
 		int beta = PLUS_INFINITY;
@@ -222,7 +220,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		}
 	}
 	
-	public int negamax(int depth, BoardV7 board, int side, int color, int alpha, int beta, int previousMove, int firstMove, int preMoveDepth, int distance){
+	public int negamax(int depth, IBoard board, int side, int color, int alpha, int beta, int previousMove, int firstMove, int preMoveDepth, int distance){
 		
 		int hashType = HASH_ALPHA;
 		long zobristKey = board.getZobristKey();
@@ -362,7 +360,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		return alpha;
 	}
 	
-	private int quiescentSearch(BoardV7 board, int side, int color, int alpha, int beta, int depth){
+	private int quiescentSearch(IBoard board, int side, int color, int alpha, int beta, int depth){
 		int standPatScore =  color * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), side ^ 1, board.getPawnZobristKey(), pawnHashTable);
 		
 		if(standPatScore >= beta){

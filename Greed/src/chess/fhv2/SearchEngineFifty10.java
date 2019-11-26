@@ -22,9 +22,10 @@ package chess.fhv2;
 import java.util.Arrays;
 import java.util.Map;
 
-import chess.engine.BoardV7;
+import chess.engine.BoardFactory;
 import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
+import chess.engine.IBoard;
 import chess.engine.ISearchableV2;
 import chess.engine.LegalityV4;
 import chess.engine.Move;
@@ -151,10 +152,8 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		int move = 0;
 		for (int i = 1; isFixedDepth ? (i <= depth) : true; i++) {
 			currentDepth = i;
-//			IBoard board = BoardFactory.getInstance7(searchParameters.getBitboard(), searchParameters.getPieces(), searchParameters.getEpT(), searchParameters.getEpS(), i, searchParameters.getCastlingRights(), searchParameters.getUiZobristKey(), searchParameters.getFiftyMoveCounter(), pawnZobristKey);
-			BoardV7 board = new BoardV7(searchParameters.getBitboard(), searchParameters.getPieces(), searchParameters.getEpT(),
-					searchParameters.getCastlingRights(), searchParameters.getUiZobristKey(), searchParameters.getFiftyMoveCounter(), pawnZobristKey,
-					searchParameters.getZobristKeyHistory());
+			
+			IBoard board = BoardFactory.getInstance(searchParameters);
 			
 			if (i == 1 && searchParameters.getBookName() != null) {
 //				long s = System.currentTimeMillis();
@@ -193,7 +192,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		pawnHashTable.resetTT();
 	}
 	
-	public int getBestMovee(int depth, BoardV7 board, int side, int distance){
+	public int getBestMovee(int depth, IBoard board, int side, int distance){
 		
 		int alpha = MINUS_INFINITY;
 		int beta = PLUS_INFINITY;
@@ -255,7 +254,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		}
 	}
 	
-	public int negamax(int depth, BoardV7 board, int side, int color, int alpha, int beta, int previousMove, int firstMove, boolean allowNullMove, int distance){
+	public int negamax(int depth, IBoard board, int side, int color, int alpha, int beta, int previousMove, int firstMove, boolean allowNullMove, int distance){
 		
 		if (isTimeout) {
 			return 0;
@@ -392,7 +391,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		return alpha;
 	}
 	
-	private int quiescentSearch(BoardV7 board, int side, int color, int alpha, int beta, int depth){
+	private int quiescentSearch(IBoard board, int side, int color, int alpha, int beta, int depth){
 		int standPatScore =  color * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), side ^ 1, board.getPawnZobristKey(), pawnHashTable);
 		
 		if(standPatScore >= beta){
