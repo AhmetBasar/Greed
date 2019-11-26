@@ -21,6 +21,7 @@ package chess.engine.test.tournament;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import chess.debug.DebugUtility;
@@ -53,6 +54,8 @@ public class ChessBoard {
 	
 	private Map<Long, Integer> boardStateHistory = new HashMap<Long, Integer>();
 	
+	private List<Long> zobristKeyHistory = new ArrayList<Long>();
+	
 	public static void main(String[] args) throws Exception{
 		new ChessBoard();
 	}
@@ -62,13 +65,13 @@ public class ChessBoard {
 	}
 
 	public void doMove(int move) {
+		incrementBoardStateCount();
 		ChessMove gamePlayMove = new ChessMove(move, this);
 		incrementOrResetFiftyMoveCounterIfNecessary(gamePlayMove);
 		moveHistory.add(gamePlayMove);
 		gamePlayMove.implement();
 		updateCastlingRights();
 		reverseTurn();
-		incrementBoardStateCount();
 	}
 	
 	private void incrementOrResetFiftyMoveCounterIfNecessary(ChessMove gamePlayMove) {
@@ -89,10 +92,10 @@ public class ChessBoard {
 		if (moveHistory.size() > 0) {
 			ChessMove botGamePlayMove = moveHistory.remove(moveHistory.size() - 1);
 			decrementFiftyMoveCounterIfNecessary(botGamePlayMove);
-			decrementBoardStateCount();
 			botGamePlayMove.unImplement();
 			updateCastlingRights();
 			reverseTurn();
+			decrementBoardStateCount();
 		} else {
 			throw new RuntimeException("There is no move to undo.");
 		}
@@ -105,11 +108,13 @@ public class ChessBoard {
 		} else {
 			boardStateHistory.put(zobristKey, boardStateCount.intValue() + 1);
 		}
+		zobristKeyHistory.add(zobristKey);
 	}
 	
 	private void decrementBoardStateCount() {
 		Integer boardStateCount = boardStateHistory.get(zobristKey);
 		boardStateHistory.put(zobristKey, boardStateCount.intValue() - 1);
+		zobristKeyHistory.remove(zobristKeyHistory.size() - 1);
 	}
 
 	public void setSide(int turn) {
@@ -251,6 +256,7 @@ public class ChessBoard {
 
 		moveHistory.clear();
 		boardStateHistory.clear();
+		zobristKeyHistory.clear();
 	}
 	
 	public int getValidMove(int source, int target) {
@@ -331,7 +337,7 @@ public class ChessBoard {
 				gameState = GameState.DRAW;
 			} else {
 				Integer boardStateHistoryCount = getBoardStateHistory().get(zobristKey);
-				if(boardStateHistoryCount != null && boardStateHistoryCount.intValue() == 3){
+				if(boardStateHistoryCount != null && boardStateHistoryCount.intValue() == 2){
 					System.out.println("DRAW : threefold repetition.");
 					gameState = GameState.DRAW;
 				}
@@ -380,6 +386,10 @@ public class ChessBoard {
 
 	public void setPawnZobristKey(long pawnZobristKey) {
 		this.pawnZobristKey = pawnZobristKey;
+	}
+
+	public List<Long> getZobristKeyHistory() {
+		return zobristKeyHistory;
 	}
 	
 }

@@ -261,3 +261,8 @@ Chess Bot Programming.
   - remove nullmovecounter in threefoldrepetition and compare results.
   - do not do any operations in for-while loop's conditional statement.
   - change isLeadsToDraw method. Do not use HashMap history. Initialize board object by copying UiZobristKey history to board ZobristKey history instead.
+  - Change calculating epTarget algorithm. It seems very inefficient.
+  - Change jvm heap size parameters and compare performances. -Xms -Xmx
+  - Large arrays are too slow. Maybe there is some hotspot GC parameters to increase performance.
+  - Write lots of assertions.
+  - Write comprehensive profiler(with gui, e.g. x-y diagram) for testing classes like, Engine tournament or Engine Equality comparator.

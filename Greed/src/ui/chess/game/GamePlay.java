@@ -21,6 +21,7 @@ package chess.game;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.swing.SwingUtilities;
@@ -59,10 +60,11 @@ public class GamePlay {
 	private MoveGeneration moveGeneration = new MoveGeneration();
 	
 	private Map<Long, Integer> boardStateHistory = new HashMap<Long, Integer>();
+	private List<Long> zobristKeyHistory = new ArrayList<Long>();
 	
 	private boolean noAnimation = false;
 	
-	private boolean isImplementMove = true;
+	private boolean isUnimplementMove = false;
 	
 	private int blackScore = 0;
 	private int whiteScore = 0;
@@ -154,7 +156,8 @@ public class GamePlay {
 
 	public void doMove(int move) {
 		if (!PieceEffects.existsActiveTimer()) {
-			isImplementMove = true;
+			incrementBoardStateCount();
+			isUnimplementMove = false;
 			GamePlayMove gamePlayMove = new GamePlayMove(base, move);
 			incrementOrResetFiftyMoveCounterIfNecessary(gamePlayMove);
 			moveHistory.add(gamePlayMove);
@@ -163,9 +166,7 @@ public class GamePlay {
 
 			if (noAnimation) {
 				updateCastlingRights();
-				incrementBoardStateCount();
 			}
-			
 		}
 	}
 	
@@ -185,16 +186,16 @@ public class GamePlay {
 	
 	public void undoMove() {
 		if ((!PieceEffects.existsActiveTimer() && moveHistory.size() > 0)) {
-			isImplementMove = false;
+			isUnimplementMove = true;
 			GamePlayMove gamePlayMove = moveHistory.get(moveHistory.size() - 1);
 			decrementFiftyMoveCounterIfNecessary(gamePlayMove);
 			moveHistory.remove(moveHistory.size() - 1);
-			decrementBoardStateCount();
 			gamePlayMove.unImplement();
 			reverseTurn();
 			
 			if (noAnimation) {
 				updateCastlingRights();
+				decrementBoardStateCount();
 			}
 		}
 	}
@@ -245,8 +246,8 @@ public class GamePlay {
 	
 	public synchronized void triggerThreadFinishEvent() {
 		updateCastlingRights();
-		if (isImplementMove) {
-			incrementBoardStateCount();
+		if (isUnimplementMove) {
+			decrementBoardStateCount();
 		}
 		
 		zobristKey = TranspositionTable.getZobristKey(Transformer.getBitboardStyl(base.getBoard()), getEpTarget(), castlingRights, side);
@@ -268,7 +269,7 @@ public class GamePlay {
 				isDraw = true;
 			} else {
 				Integer boardStateHistoryCount = getBoardStateHistory().get(zobristKey);
-				if(boardStateHistoryCount != null && boardStateHistoryCount.intValue() == 3){
+				if(boardStateHistoryCount != null && boardStateHistoryCount.intValue() == 2){
 					System.out.println("DRAW : threefold repetition.");
 					isDraw = true;
 				}
@@ -409,8 +410,9 @@ public class GamePlay {
 		pawnZobristKey = TranspositionTable.getPawnZobristKey(bb);
 		
 		boardStateHistory.clear();
+		zobristKeyHistory.clear();
 		
-		isImplementMove = true;
+		isUnimplementMove = false;
 	}
 
 	public void resetGameFlags() {
@@ -532,6 +534,10 @@ public class GamePlay {
 		return boardStateHistory;
 	}
 	
+	public List<Long> getZobristKeyHistory() {
+		return zobristKeyHistory;
+	}
+
 	private void incrementBoardStateCount() {
 		Integer boardStateCount = boardStateHistory.get(zobristKey);
 		if (boardStateCount == null) {
@@ -539,11 +545,13 @@ public class GamePlay {
 		} else {
 			boardStateHistory.put(zobristKey, boardStateCount.intValue() + 1);
 		}
+		zobristKeyHistory.add(zobristKey);
 	}
 	
 	private void decrementBoardStateCount() {
 		Integer boardStateCount = boardStateHistory.get(zobristKey);
 		boardStateHistory.put(zobristKey, boardStateCount.intValue() - 1);
+		zobristKeyHistory.remove(zobristKeyHistory.size() - 1);
 	}
 
 	public long getZobristKey() {

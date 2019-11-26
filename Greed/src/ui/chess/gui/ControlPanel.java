@@ -364,6 +364,7 @@ class SuggestMoveActionListener implements ActionListener {
 				params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
 				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
 				params.setBookName(null);
+				params.setZobristKeyHistory(gamePlay.getZobristKeyHistory());
 				
 				move = (SearchResult) method.invoke(obj, params);
 			} else {

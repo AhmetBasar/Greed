@@ -19,6 +19,8 @@
  **********************************************/
 package chess.engine;
 
+import java.util.List;
+
 import chess.engine.EngineConstants.EngineMode;
 
 public class SearchParameters {
@@ -37,6 +39,7 @@ public class SearchParameters {
 	private EngineMode engineMode;
 	private String bookName = "book_small.bin";
 	private int firstMove; // for PREMOVEFINDER
+	private List<Long> zobristKeyHistory;
 
 	public int getDepth() {
 		return depth;
@@ -148,6 +151,14 @@ public class SearchParameters {
 
 	public void setFirstMove(int firstMove) {
 		this.firstMove = firstMove;
+	}
+
+	public List<Long> getZobristKeyHistory() {
+		return zobristKeyHistory;
+	}
+
+	public void setZobristKeyHistory(List<Long> zobristKeyHistory) {
+		this.zobristKeyHistory = zobristKeyHistory;
 	}
 	
 }

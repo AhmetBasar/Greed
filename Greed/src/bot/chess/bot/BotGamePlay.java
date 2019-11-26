@@ -21,6 +21,7 @@ package chess.bot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import chess.bot.interpreting.BotMove;
@@ -57,6 +58,7 @@ public class BotGamePlay implements IGameController {
 	private Thread engineThread;
 	private Thread engineThreadPreMove;
 	private Map<Long, Integer> boardStateHistory = new HashMap<Long, Integer>();
+	private List<Long> zobristKeyHistory = new ArrayList<Long>();
 	
 	public static void main(String[] args) throws Exception{
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
@@ -139,13 +141,13 @@ public class BotGamePlay implements IGameController {
 	}
 	
 	public void doMove(int move) {
+		incrementBoardStateCount();
 		BotGamePlayMove gamePlayMove = new BotGamePlayMove(move, this);
 		incrementOrResetFiftyMoveCounterIfNecessary(gamePlayMove);
 		moveHistory.add(gamePlayMove);
 		gamePlayMove.implement();
 		updateCastlingRights();
 		reverseTurn();
-		incrementBoardStateCount();
 	}
 	
 	private void incrementOrResetFiftyMoveCounterIfNecessary(BotGamePlayMove gamePlayMove) {
@@ -166,10 +168,10 @@ public class BotGamePlay implements IGameController {
 		if (moveHistory.size() > 0) {
 			BotGamePlayMove botGamePlayMove = moveHistory.remove(moveHistory.size() - 1);
 			decrementFiftyMoveCounterIfNecessary(botGamePlayMove);
-			decrementBoardStateCount();
 			botGamePlayMove.unImplement();
 			updateCastlingRights();
 			reverseTurn();
+			decrementBoardStateCount();
 		} else {
 			throw new RuntimeException("There is no move to undo.");
 		}
@@ -182,11 +184,13 @@ public class BotGamePlay implements IGameController {
 		} else {
 			boardStateHistory.put(zobristKey, boardStateCount.intValue() + 1);
 		}
+		zobristKeyHistory.add(zobristKey);
 	}
 	
 	private void decrementBoardStateCount() {
 		Integer boardStateCount = boardStateHistory.get(zobristKey);
 		boardStateHistory.put(zobristKey, boardStateCount.intValue() - 1);
+		zobristKeyHistory.remove(zobristKeyHistory.size() - 1);
 	}
 
 	public void setSide(int turn) {
@@ -349,6 +353,7 @@ public class BotGamePlay implements IGameController {
 
 		moveHistory.clear();
 		boardStateHistory.clear();
+		zobristKeyHistory.clear();
 	}
 	
 	public void resetBot() {
@@ -404,6 +409,10 @@ public class BotGamePlay implements IGameController {
 	@Override
 	public Map<Long, Integer> getBoardStateHistory() {
 		return boardStateHistory;
+	}
+	
+	public List<Long> getZobristKeyHistory() {
+		return zobristKeyHistory;
 	}
 
 	@Override
