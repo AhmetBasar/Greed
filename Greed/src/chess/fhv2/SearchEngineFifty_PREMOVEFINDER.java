@@ -39,7 +39,6 @@ import chess.engine.TT;
 import chess.engine.TranspositionElement;
 import chess.engine.TranspositionTable;
 import chess.evaluation.EvaluationAdvancedV4;
-import chess.gui.GuiConstants;
 
 // http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm
 public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
@@ -124,7 +123,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 			boolean isLastIteration = i == depth;
 			int preMoveDepth = depth - 1;
 			IBoard board = BoardFactory.getInstance(sp);
-			move = getBestMovee(i, board, sp.getSide(), isLastIteration, preMoveDepth, 0, sp.getFirstMove());	
+			move = getBestMovee(i, board, isLastIteration, preMoveDepth, 0, sp.getFirstMove());	
 		}
 		
 		opponentsBestMove = move;
@@ -144,15 +143,13 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		pawnHashTable.resetTT();
 	}
 	
-	public int getBestMovee(int depth, IBoard board, int side, boolean isLastIteration, int preMoveDepth, int distance, int firstMove){
+	public int getBestMovee(int depth, IBoard board, boolean isLastIteration, int preMoveDepth, int distance, int firstMove){
 		
 		int alpha = MINUS_INFINITY;
 		int beta = PLUS_INFINITY;
 		
 		int bestMove = 0;
 		int tempValue;
-		int color = side == GuiConstants.WHITES_TURN ? 1 : -1 ;
-		int opSide = side ^ 1;
 		
 		int hashType = HASH_ALPHA;
 		
@@ -163,11 +160,11 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		}
 		
 		if(ttBestMove != 0){
-			board.doMove(ttBestMove, side, opSide);
+			board.doMove(ttBestMove);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), side)) {
+			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
 				
-				tempValue = -negamax(depth - 1, board, side, -color, -beta, -alpha, ttBestMove, firstMove, preMoveDepth, distance + 1);
+				tempValue = -negamax(depth - 1, board, -beta, -alpha, ttBestMove, firstMove, preMoveDepth, distance + 1);
 				
 				if (isLastIteration) {
 					searchResult.getPossibleMoves().put(ttBestMove, tempValue);
@@ -180,20 +177,20 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 				}
 			}
 			
-			board.undoMove(ttBestMove, side, opSide);
+			board.undoMove(ttBestMove);
 		}
 		
-		moveGenerationOrdered.generateMoves(board, side, depth + 1, depth);
+		moveGenerationOrdered.generateMoves(board, depth + 1, depth);
 		int[] moveList = board.getMoveList();
 		Arrays.sort(moveList);
 		
 		int move;
 		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
-			board.doMove(move, side, opSide);
+			board.doMove(move);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), side)) {
+			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
 				
-				tempValue = -negamax(depth - 1, board, side, -color, -beta, -alpha, move, firstMove, preMoveDepth, distance + 1);
+				tempValue = -negamax(depth - 1, board, -beta, -alpha, move, firstMove, preMoveDepth, distance + 1);
 				
 				if (isLastIteration) {
 					searchResult.getPossibleMoves().put(move, tempValue);
@@ -205,7 +202,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 					bestMove = move;
 				}
 			}
-			board.undoMove(move, side, opSide);
+			board.undoMove(move);
 		}
 		
 		tt.recordTranspositionTable(board.getZobristKey(), alpha, bestMove, depth, hashType, false);
@@ -220,7 +217,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		}
 	}
 	
-	public int negamax(int depth, IBoard board, int side, int color, int alpha, int beta, int previousMove, int firstMove, int preMoveDepth, int distance){
+	public int negamax(int depth, IBoard board, int alpha, int beta, int previousMove, int firstMove, int preMoveDepth, int distance){
 		
 		int hashType = HASH_ALPHA;
 		long zobristKey = board.getZobristKey();
@@ -259,14 +256,12 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 			ttBestMove = ttElement.bestMove;
 		}
 		
-		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), side ^ 1);
+		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), board.getSide());
 		if(!isKingInCheck && depth <= 0){
 			searchResult.incrementEvaluatedLeafNodeCount();
-			return quiescentSearch(board, side, color, alpha, beta, depth);
+			return quiescentSearch(board, alpha, beta, depth);
 		}
 		
-		int opSide = side;
-		side = side ^ 1;
 		int bestMove = 0;
 		int tempValue;
 		
@@ -274,15 +269,15 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		boolean foundPv = false;
 		
 		if(ttBestMove != 0){
-			board.doMove(ttBestMove, side, opSide);
+			board.doMove(ttBestMove);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), side)) {
+			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
 				existsLegalMove = true;
 				
-				tempValue = -negamax(depth - 1, board, side, -color, -beta, -alpha, ttBestMove, firstMove, preMoveDepth, distance + 1);
+				tempValue = -negamax(depth - 1, board, -beta, -alpha, ttBestMove, firstMove, preMoveDepth, distance + 1);
 
 				if (tempValue >= beta) {
-					board.undoMove(ttBestMove, side, opSide);
+					board.undoMove(ttBestMove);
 					tt.recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA, false);
 					if (depth == preMoveDepth) {
 						decidePreMove(ttBestMove, previousMove, firstMove);
@@ -299,31 +294,31 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 				}
 				
 			}
-			board.undoMove(ttBestMove, side, opSide);
+			board.undoMove(ttBestMove);
 		}
 		
-		moveGenerationOrdered.generateMoves(board, side, depth + 1, depth);
+		moveGenerationOrdered.generateMoves(board, depth + 1, depth);
 		int[] moveList = board.getMoveList();
 		
 		sortMoves(moveList, distance);
 		
 		int move;
 		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
-			board.doMove(move, side, opSide);
+			board.doMove(move);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), side)) {
+			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
 				existsLegalMove = true;
 				if (foundPv) {
-					tempValue = -negamax(depth - 1, board, side, -color, -alpha - 1, -alpha, move, firstMove, preMoveDepth, distance + 1);
+					tempValue = -negamax(depth - 1, board, -alpha - 1, -alpha, move, firstMove, preMoveDepth, distance + 1);
 					if (tempValue > alpha) {
-						tempValue = -negamax(depth - 1, board, side, -color, -beta, -alpha, move, firstMove, preMoveDepth, distance + 1);
+						tempValue = -negamax(depth - 1, board, -beta, -alpha, move, firstMove, preMoveDepth, distance + 1);
 					}
 				} else {
-					tempValue = -negamax(depth - 1, board, side, -color, -beta, -alpha, move, firstMove, preMoveDepth, distance + 1);
+					tempValue = -negamax(depth - 1, board, -beta, -alpha, move, firstMove, preMoveDepth, distance + 1);
 				}
 				
 				if (tempValue >= beta) {
-					board.undoMove(move, side, opSide);
+					board.undoMove(move);
 					tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, false);
 					addKiller(move, distance);
 					if (depth == preMoveDepth) {
@@ -340,11 +335,11 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 				}
 				
 			}
-			board.undoMove(move, side, opSide);
+			board.undoMove(move);
 		}
 		
 		if (!existsLegalMove) {
-			if (legality.isKingInCheck(board.getBitboard(), side)) {
+			if (legality.isKingInCheck(board.getBitboard(), board.getSide())) {
 				return MINUS_INFINITY + distance;
 			} else {
 				return 0;
@@ -360,8 +355,8 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		return alpha;
 	}
 	
-	private int quiescentSearch(IBoard board, int side, int color, int alpha, int beta, int depth){
-		int standPatScore =  color * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), side ^ 1, board.getPawnZobristKey(), pawnHashTable);
+	private int quiescentSearch(IBoard board, int alpha, int beta, int depth){
+		int standPatScore =  EngineConstants.SIDE_COLOR[board.getSide()] * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
 		
 		if(standPatScore >= beta){
 			return beta;
@@ -371,30 +366,28 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 			alpha = standPatScore;
 		}
 		
-		int opSide = side;
-		side = side ^ 1;
 		boolean foundPv = false;
 		
-		moveGenerationCaptures.generateMoves(board, side, depth + 1, depth);
+		moveGenerationCaptures.generateMoves(board, depth + 1, depth);
 		int[] moveList = board.getMoveList();
 		
 		Arrays.sort(moveList);
 		int tempValue;
 		int move;
 		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
-			board.doMoveWithoutZobrist(move, side, opSide);
-			if (!legality.isKingInCheck(board.getBitboard(), side)) {
+			board.doMoveWithoutZobrist(move);
+			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
 				if (foundPv) {
-					tempValue = -quiescentSearch(board, side, -color, -alpha - 1, -alpha, depth - 1);
+					tempValue = -quiescentSearch(board, -alpha - 1, -alpha, depth - 1);
 					if (tempValue > alpha) {
-						tempValue = -quiescentSearch(board, side, -color, -beta, -alpha, depth - 1);
+						tempValue = -quiescentSearch(board, -beta, -alpha, depth - 1);
 					}
 				} else {
-					tempValue = -quiescentSearch(board, side, -color, -beta, -alpha, depth - 1);
+					tempValue = -quiescentSearch(board, -beta, -alpha, depth - 1);
 				}
 				
 				if(tempValue >= beta){
-					board.undoMoveWithoutZobrist(move, side, opSide);
+					board.undoMoveWithoutZobrist(move);
 					return beta;
 				}
 				if(tempValue > alpha){
@@ -402,7 +395,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 					foundPv = true;
 				}
 			}
-			board.undoMoveWithoutZobrist(move, side, opSide);
+			board.undoMoveWithoutZobrist(move);
 		}
 		return alpha;
 	}

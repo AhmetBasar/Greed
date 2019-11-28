@@ -61,8 +61,8 @@ public class SanGenerator {
 
 		String pieceSymbol = PIECES[fromPiece];
 
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null);
-		Map<String, Map<String, List<String>>> ambiguities = getAmbiguities(1, board, side ^ 1, move);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null, side);
+		Map<String, Map<String, List<String>>> ambiguities = getAmbiguities(1, board, move);
 
 		switch (moveType) {
 		case 0:
@@ -162,19 +162,16 @@ public class SanGenerator {
 		return sanMove;
 	}
 
-	private static Map<String, Map<String, List<String>>> getAmbiguities(int depth, IBoard board, int side,
-			int bestMove) {
+	private static Map<String, Map<String, List<String>>> getAmbiguities(int depth, IBoard board, int bestMove) {
 		Map<String, Map<String, List<String>>> ambiguities = new HashMap<>();
 
 		int depthPlusOne = depth + 1;
-		int opSide = side;
-		side = side ^ 1;
 		int i = 0;
 
 		int move;
 		LegalityV4 legality = new LegalityV4();
 		MoveGenerationOrderedOnlyQueenPromotions_SBIV2 moveGeneration = new MoveGenerationOrderedOnlyQueenPromotions_SBIV2();
-		moveGeneration.generateMoves(board, side, depthPlusOne, depth);
+		moveGeneration.generateMoves(board, depthPlusOne, depth);
 		int[] moveList = board.getMoveList();
 		
 		while (moveList[i] != 0) {
@@ -185,9 +182,9 @@ public class SanGenerator {
 			int moveType = move & 0x00070000;
 			String fromPiece = String.valueOf(board.getPieces()[from]);
 
-			board.doMove(move, side, opSide);
+			board.doMove(move);
 
-			if (!legality.isKingInCheck(board.getBitboard(), side)) {
+			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
 
 				if (moveType == 0) {
 
@@ -207,11 +204,11 @@ public class SanGenerator {
 				}
 			}
 
-			if (move == bestMove && legality.isKingInCheck(board.getBitboard(), opSide)) {
+			if (move == bestMove && legality.isKingInCheck(board.getBitboard(), board.getSide())) {
 				ambiguities.put("isKingInCheck", null);
 			}
 
-			board.undoMove(move, side, opSide);
+			board.undoMove(move);
 
 			i++;
 		}

@@ -39,9 +39,9 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 5;
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, castlingRights, 0L, 0, 0L, null);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, castlingRights, 0L, 0, 0L, null, 0);
 		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
-		obj.perft(depth, board, 1);
+		obj.perft(depth, board);
 		System.out.println(obj.perftResult);
 		System.out.println("time = " + (System.currentTimeMillis() - ilk));
 	}
@@ -50,15 +50,15 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		long startTime = System.currentTimeMillis();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null, side);
 		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
-		obj.perft(depth, board, 1);
+		obj.perft(depth, board);
 		obj.perftResult.setTimeConsumed(System.currentTimeMillis() - startTime);
 		baseGui.getDebugPanel().setOutputMessage(obj.perftResult.toString());
 		baseGui.getDebugPanel().setEnableAll(true);
 	}
 
-	public void perft(int depth, IBoard board, int side) {
+	public void perft(int depth, IBoard board) {
 
 		if (depth == 0) {
 			perftResult.incrementNodeCount();
@@ -67,19 +67,17 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 
 		int depthMinusOne = depth - 1;
 		int depthPlusOne = depth + 1;
-		int opSide = side;
-		side = side ^ 1;
 		int i = 0;
 
 		boolean existsLegalMove = false;
 		int move;
-		int[] moveList = moveGeneration.generateMoves(board, side, depthPlusOne);
+		int[] moveList = moveGeneration.generateMoves(board, depthPlusOne);
 		while (moveList[i] != 0) {
 			move = moveList[i];
 			
-			board.doMove(move, side, opSide);
+			board.doMove(move);
 
-			if (!legality.isKingInCheck(board.getBitboard(), side)) {
+			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
 				existsLegalMove = true;
 				if (depth == 1) {
 					//
@@ -105,16 +103,16 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 						perftResult.incrementCaptureCount();
 					}
 
-					if (legality.isKingInCheck(board.getBitboard(), opSide)) {
+					if (legality.isKingInCheck(board.getBitboard(), board.getSide())) {
 						perftResult.incrementCheckCount();
 					}
 					//
 				}
 
-				perft(depthMinusOne, board, side);
+				perft(depthMinusOne, board);
 			}
 
-			board.undoMove(move, side, opSide);
+			board.undoMove(move);
 
 			i++;
 		}

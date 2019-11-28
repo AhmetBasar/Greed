@@ -39,7 +39,6 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 	//
 	private int depth;
 	private IBoard board;
-	private int side;
 	private int[] moveList;
 	//
 	
@@ -49,8 +48,8 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 6;
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, castlingRights, 0L, 0, 0L, null);
-		System.out.println("move count = " + new PerformanceTestingSingleThreadedWithBoardInfaThreaded().perft(depth, board, 1));
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, castlingRights, 0L, 0, 0L, null, 0);
+		System.out.println("move count = " + new PerformanceTestingSingleThreadedWithBoardInfaThreaded().perft(depth, board));
 		System.out.println("time = " + (System.currentTimeMillis() - ilk));
 	}
 	
@@ -61,7 +60,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		resetCounters();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0L, 0, 0L, null, side);
 		PerformanceTestingSingleThreadedWithBoardInfaThreaded.dispatchThreads(depth, board, castlingRights, side, threadCount);
 	}
 	
@@ -89,7 +88,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 	private Thread th = new Thread() {
 		public void run() {
 			try {
-				incrementMoveCount(traverseMoveList(depth, board, side, moveList));
+				incrementMoveCount(traverseMoveList(depth, board, moveList));
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.exit(1);
@@ -100,10 +99,9 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 	public PerformanceTestingSingleThreadedWithBoardInfaThreaded() {
 	}
 	
-	public PerformanceTestingSingleThreadedWithBoardInfaThreaded(int depth, IBoard board, int side, int[] moveList) {
+	public PerformanceTestingSingleThreadedWithBoardInfaThreaded(int depth, IBoard board, int[] moveList) {
 		this.depth = depth;
 		this.board = board;
-		this.side = side;
 		this.moveList = moveList;
 	}
 	
@@ -113,7 +111,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		
 		int i = 0;
 		MoveGeneration moveGeneration = new MoveGeneration();
-		int[] moveList = moveGeneration.generateMoves(board, side, depth + 1);
+		int[] moveList = moveGeneration.generateMoves(board, depth + 1);
 		// concurrency
 		int moveListSize = 0;
 		while (moveList[moveListSize] != 0) {
@@ -143,8 +141,8 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 			partialMoveListIndex++;
 			if (partialMoveListIndex == partialMoveListSize) {
 				partialMoveListIndex = 0;
-				IBoard b = BoardFactory.getInstance(board.getBitboard().clone(), Transformer.getByteArrayStyl(board.getBitboard().clone()), board.getEpTarget(), castlingRights, 0L, 0, 0L, null);
-				new PerformanceTestingSingleThreadedWithBoardInfaThreaded(depth, b, side, partialMoveList).start();
+				IBoard b = BoardFactory.getInstance(board.getBitboard().clone(), Transformer.getByteArrayStyl(board.getBitboard().clone()), board.getEpTarget(), castlingRights, 0L, 0, 0L, null, side);
+				new PerformanceTestingSingleThreadedWithBoardInfaThreaded(depth, b, partialMoveList).start();
 				aliveThreadCount++;
 			}
 			i++;
@@ -155,13 +153,12 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		th.start();
 	}
 	
-	public long traverseMoveList(int depth, IBoard board, int side, int[] moveList) {
+	public long traverseMoveList(int depth, IBoard board, int[] moveList) {
 		
 		if (depth == 0)
 			return 1;
 		
 		int depthMinusOne = depth - 1;
-		int opSide = side ^ 1;
 		long nodes = 0;
 		int i = 0;
 		
@@ -169,13 +166,13 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		while (moveList[i] != 0) {
 			move = moveList[i];
 			
-			board.doMove(move, side, opSide);
+			board.doMove(move);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), side)) {
-				nodes += perft(depthMinusOne, board, side);
+			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
+				nodes += perft(depthMinusOne, board);
 			}
 			
-			board.undoMove(move, side, opSide);
+			board.undoMove(move);
 			
 			i++;
 		}
@@ -183,30 +180,28 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		return nodes;
 	}
 
-	public long perft(int depth, IBoard board, int side) {
+	public long perft(int depth, IBoard board) {
 
 		if (depth == 0)
 			return 1;
 		
 		int depthMinusOne = depth - 1;
 		int depthPlusOne = depth + 1;
-		int opSide = side;
-		side = side ^ 1;
 		long nodes = 0;
 		int i = 0;
 		
 		int move;
-		int[] moveList = moveGeneration.generateMoves(board, side, depthPlusOne);
+		int[] moveList = moveGeneration.generateMoves(board, depthPlusOne);
 		while (moveList[i] != 0) {
 			move = moveList[i];
 			
-			board.doMove(move, side, opSide);
+			board.doMove(move);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), side)) {
-				nodes += perft(depthMinusOne, board, side);
+			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
+				nodes += perft(depthMinusOne, board);
 			}
 			
-			board.undoMove(move, side, opSide);
+			board.undoMove(move);
 
 			i++;
 		}

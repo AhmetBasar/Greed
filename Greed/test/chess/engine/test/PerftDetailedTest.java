@@ -95,10 +95,10 @@ public class PerftDetailedTest {
 							IBoard board = BoardFactory.getInstance(Transformer.getBitboardStyl(fenOperations.getBoard())
 									, Transformer.getByteArrayStyl(Transformer.getBitboardStyl(fenOperations.getBoard()))
 									, fenOperations.getEpTarget()
-									, fenOperations.getCastlingRights(), 0L, 0, 0L, null);
+									, fenOperations.getCastlingRights(), 0L, 0, 0L, null, fenOperations.getSide());
 							PerformanceTestingSingleThreadedWithBoardInfrastructureV2 engine = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
 							engine.getPerftResult().resetCounters();
-							engine.perft(depth, board, fenOperations.getSide() ^ 1);
+							engine.perft(depth, board);
 							
 							if (nodeCount != engine.getPerftResult().getNodeCount()
 									|| (captureCount != -1 && captureCount != engine.getPerftResult().getCaptureCount())

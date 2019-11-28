@@ -59,10 +59,10 @@ public class PerftTest {
 							IBoard board = BoardFactory.getInstance(Transformer.getBitboardStyl(fenOperations.getBoard())
 									, Transformer.getByteArrayStyl(Transformer.getBitboardStyl(fenOperations.getBoard()))
 									, fenOperations.getEpTarget()
-									, fenOperations.getCastlingRights(), 0L, 0, 0L, null);
+									, fenOperations.getCastlingRights(), 0L, 0, 0L, null, fenOperations.getSide());
 							
 							engine.getPerftResult().resetCounters();
-							engine.perft(depth, board, fenOperations.getSide() ^ 1);
+							engine.perft(depth, board);
 							long resultMoveCount = engine.getPerftResult().getNodeCount();
 							if (expectedCount != resultMoveCount) {
 								System.out.println("fenData = " + fenData);

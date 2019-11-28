@@ -26,8 +26,8 @@ public class MoveGeneration implements MoveGenerationConstants {
 	private LegalityV4 legality = new LegalityV4();
 
 	
-	public int[] generateMoves(IBoard board, int side, int depthPlusOne) {
-		return generateMoves(board.getBitboard(), side, board.getEpTarget(), board.getCastlingRights());
+	public int[] generateMoves(IBoard board, int depthPlusOne) {
+		return generateMoves(board.getBitboard(), board.getSide(), board.getEpTarget(), board.getCastlingRights());
 	}
 	
 	//TODO : try direct access ep target and side instead of pass parameter. and compare performances..
