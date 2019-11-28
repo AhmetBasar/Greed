@@ -23,8 +23,8 @@ import chess.movegen.MagicBitboard;
 
 public class MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 implements MoveGenerationConstants {
 
-	public void generateMoves(IBoard board, int side, int depthPlusOne, int depth) {
-		generateMoves(board.getBitboard(), board.getPieces(), side, board.getEpTarget(), board.getCastlingRights(), board, depth);
+	public void generateMoves(IBoard board, int depthPlusOne, int depth) {
+		generateMoves(board.getBitboard(), board.getPieces(), board.getSide(), board.getEpTarget(), board.getCastlingRights(), board, depth);
 	}
 	
 	//TODO : try direct access ep target and side instead of pass parameter. and compare performances..

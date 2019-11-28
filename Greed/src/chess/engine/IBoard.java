@@ -6,17 +6,17 @@ public interface IBoard {
 	
 	int[] getMoveList();
 	
-	void doNullMove(int side);
+	void doNullMove();
 	
 	void undoNullMove();
 	
-	void doMove(int move, int side, int opSide);
+	void doMove(int move);
 	
-	void undoMove(int move, int side, int opSide);
+	void undoMove(int move);
 	
-	void doMoveWithoutZobrist(int move, int side, int opSide);
+	void doMoveWithoutZobrist(int move);
 	
-	void undoMoveWithoutZobrist(int move, int side, int opSide);
+	void undoMoveWithoutZobrist(int move);
 	
 	byte[][] getCastlingRights();
 	
@@ -35,5 +35,9 @@ public interface IBoard {
 	int getNullMoveCounter();
 	
 	boolean hasRepeated(long zobristKey);
+	
+	int getSide();
+	
+	int getOpSide();
 
 }

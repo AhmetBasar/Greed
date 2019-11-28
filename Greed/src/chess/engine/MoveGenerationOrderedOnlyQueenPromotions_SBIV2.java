@@ -25,8 +25,8 @@ public class MoveGenerationOrderedOnlyQueenPromotions_SBIV2 implements MoveGener
 
 	private LegalityV4 legality = new LegalityV4();
 
-	public void generateMoves(IBoard board, int side, int depthPlusOne, int depth) {
-		generateMoves(board.getBitboard(), board.getPieces(), side, board.getEpTarget(), board.getCastlingRights(), board, depth);
+	public void generateMoves(IBoard board, int depthPlusOne, int depth) {
+		generateMoves(board.getBitboard(), board.getPieces(), board.getSide(), board.getEpTarget(), board.getCastlingRights(), board, depth);
 	}
 	
 	//TODO : try direct access ep target and side instead of pass parameter. and compare performances..

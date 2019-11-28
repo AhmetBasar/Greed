@@ -46,6 +46,8 @@ public interface EngineConstants {
 	public static final int[] PIECE_VALUES_POSITIVE = {0, 0, WHITE_PAWN_V, WHITE_PAWN_V, WHITE_KNIGHT_V, WHITE_KNIGHT_V, WHITE_BISHOP_V, WHITE_BISHOP_V, 
             WHITE_ROOK_V, WHITE_ROOK_V, WHITE_QUEEN_V, WHITE_QUEEN_V, WHITE_KING_V, WHITE_KING_V};
 	
+	public static final int[] SIDE_COLOR = new int[]{1, -1};
+	
 	public static final int DOUBLE_PUSH 			= 0b00000001;
 	public static final int EP_CAPTURE 			 	= 0b00000010;
 	public static final int PROMOTION		 		= 0b00000011;

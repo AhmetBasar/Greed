@@ -57,6 +57,8 @@ public class BoardV7 implements IBoard {
 	public int[] moveList;
 	
 	public int moveIndex = 0;
+	private int side;
+	private int opSide;
 	
 	public int getEpTarget() {
 		return epT;
@@ -66,7 +68,7 @@ public class BoardV7 implements IBoard {
 		return moveLists[this.moveIndex];
 	}
 	
-	public BoardV7(long[] bitboard, byte[] pieces, int epT, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey, List<Long> zobristKeyHistory) {
+	public BoardV7(long[] bitboard, byte[] pieces, int epT, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey, List<Long> zobristKeyHistory, int side) {
 		this.bitboard = bitboard;
 		this.pieces = pieces;
 		this.epT = epT;
@@ -78,6 +80,8 @@ public class BoardV7 implements IBoard {
 		this.pawnZobristKey = pawnZobristKey;
 		this.fiftyMoveCounter = fiftyMoveCounter;
 		this.nullMoveCounter = fiftyMoveCounter; // Initially equals.
+		this.side = side;
+		this.opSide = side ^ 1;
 		
 		if (zobristKeyHistory != null) {
 			int k = zobristKeyHistory.size() - fiftyMoveCounter;
@@ -88,7 +92,7 @@ public class BoardV7 implements IBoard {
 		}
 	}
 	
-	public void doNullMove(int side) {
+	public void doNullMove() {
 		
 		storeCurrentValues();
 		
@@ -103,9 +107,12 @@ public class BoardV7 implements IBoard {
 		nullMoveCounter = 0;
 		
 		epT = 64;
+		
+		changeSideToMove();
 	}
 	
 	public void undoNullMove() {
+		changeSideToMove();
 		fetchPreviousValues();
 	}
 	
@@ -137,7 +144,7 @@ public class BoardV7 implements IBoard {
 		nullMoveCounter = nullMoveCounters[moveIndex];
 	}
 	
-	public void doMove(int move, int side, int opSide) {
+	public void doMove(int move) {
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
 			checkConsistency(move, side);
@@ -338,9 +345,13 @@ public class BoardV7 implements IBoard {
 		}
 		
 		nullMoveCounter ++;
+		
+		changeSideToMove();
 	}
 	
-	public void undoMove(int move, int side, int opSide) {
+	public void undoMove(int move) {
+		
+		changeSideToMove();
 		
 		int moveType = move & 0x00070000;
 		int to = (move & 0x0000ff00) >>> 8;
@@ -405,7 +416,7 @@ public class BoardV7 implements IBoard {
 		fetchPreviousValues();
 	}
 	
-	public void doMoveWithoutZobrist(int move, int side, int opSide) {
+	public void doMoveWithoutZobrist(int move) {
 		
 		storeCurrentValues();
 		
@@ -528,10 +539,13 @@ public class BoardV7 implements IBoard {
 		/****/
 		// No need to increment fifty-move-counter here because this method is invoked only from quiescence search. 
 		/****/
+		
+		changeSideToMove();
 	}
 	
-	public void undoMoveWithoutZobrist(int move, int side, int opSide) {
+	public void undoMoveWithoutZobrist(int move) {
 		
+		changeSideToMove();
 		
 		int moveType = move & 0x00070000;
 		int to = (move & 0x0000ff00) >>> 8;
@@ -598,7 +612,6 @@ public class BoardV7 implements IBoard {
 		/****/
 		
 		fetchPreviousValues();
-					
 	}
 	
 
@@ -655,6 +668,19 @@ public class BoardV7 implements IBoard {
 		return false;
 	}
 	
+	public void changeSideToMove() {
+		side = opSide;
+		opSide = side ^ 1;
+	}
+	
+	public int getSide() {
+		return side;
+	}
+	
+	public int getOpSide() {
+		return opSide;
+	}
+
 	private void checkConsistency(int move, int side) {
 		
 		// The king can not be captured.

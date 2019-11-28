@@ -134,11 +134,11 @@ public class OpeningBook {
 		int validMoveListSize = validMoveList.size();
 		for (int i = 0; i < validMoveListSize; i++) {
 			validMove = validMoveList.get(i);
-			board.doMove(validMove, side, opSide);
+			board.doMove(validMove);
 			if (legality.isKingInCheck(board.getBitboard(), side)) {
 				return 0;
 			}
-			board.undoMove(validMove, side, opSide);
+			board.undoMove(validMove);
 		}
 
 		// choose item to be promoted
