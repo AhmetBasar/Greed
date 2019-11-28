@@ -70,7 +70,7 @@ public class BoardV7 implements IBoard {
 		return moveLists[this.moveIndex];
 	}
 	
-	public BoardV7(long[] bitboard, byte[] pieces, int epT, byte[][] castlingRights, long zobristKey, int fiftyMoveCounter, long pawnZobristKey, List<Long> zobristKeyHistory, int side) {
+	public BoardV7(long[] bitboard, byte[] pieces, int epT, byte[][] castlingRights, int fiftyMoveCounter, List<Long> zobristKeyHistory, int side) {
 		this.bitboard = bitboard;
 		this.pieces = pieces;
 		this.epT = epT;
@@ -78,8 +78,6 @@ public class BoardV7 implements IBoard {
 		this.castlingRights[0][1] = castlingRights[0][1];
 		this.castlingRights[1][0] = castlingRights[1][0];
 		this.castlingRights[1][1] = castlingRights[1][1];
-		this.zobristKey = zobristKey;
-		this.pawnZobristKey = pawnZobristKey;
 		this.fiftyMoveCounter = fiftyMoveCounter;
 		this.nullMoveCounter = fiftyMoveCounter; // Initially equals.
 		this.side = side;
@@ -92,6 +90,9 @@ public class BoardV7 implements IBoard {
 				zobristKeys[j] = zobristKeyHistory.get(k);
 			}
 		}
+		
+		zobristKey = TranspositionTable.getZobristKey(bitboard, epT, castlingRights, side);
+		pawnZobristKey = TranspositionTable.getPawnZobristKey(bitboard);
 	}
 	
 	public void doNullMove() {
