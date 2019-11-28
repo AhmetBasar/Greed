@@ -38,7 +38,6 @@ public class EngineControllerPreMove implements Runnable {
 	public EngineControllerPreMove(IGameController gameController) {
 		this.gameController = gameController;
 		engine = SearchEngineFifty_PREMOVEFINDER.getInstance();
-		engine.setBoardStateHistory(gameController.getBoardStateHistory());
 	}
 
 	public void setCallbackPreMove(ICallBackPreMove callbackPreMove) {

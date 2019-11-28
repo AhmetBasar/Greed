@@ -51,9 +51,6 @@ public class EngineEqualityComparator implements Runnable {
 			ISearchableV2 engine1 = SearchEngineFifty10.getNewInstance();
 			ISearchableV2 engine2 = SearchEngineFifty10.getNewInstance();
 			
-			engine1.setBoardStateHistory(board.getBoardStateHistory());
-			engine2.setBoardStateHistory(board.getBoardStateHistory());
-			
 			ISearchableV2 engineWhite = engine1;
 			ISearchableV2 engineBlack = engine2;
 			

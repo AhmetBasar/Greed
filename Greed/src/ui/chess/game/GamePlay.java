@@ -301,7 +301,6 @@ public class GamePlay {
 			
 			long s = System.currentTimeMillis();
 			chess.fhv2.SearchEngineFifty10 engine = chess.fhv2.SearchEngineFifty10.getInstance();
-			engine.setBoardStateHistory(getBoardStateHistory());
 			
 			SearchParameters params = new SearchParameters();
 			params.setDepth(base.getDebugPanel().getSearchDepth());
@@ -336,7 +335,6 @@ public class GamePlay {
 					//TODO UNCOMMENT HERE.
 //					engine.resetTT();
 					//
-					engine.setBoardStateHistory(getBoardStateHistory());
 					
 					SearchParameters params = new SearchParameters();
 					params.setDepth(base.getDebugPanel().getSearchDepth());
@@ -369,7 +367,6 @@ public class GamePlay {
 					//TODO UNCOMMENT HERE.
 //					engine.resetTT();
 					//
-					engine.setBoardStateHistory(getBoardStateHistory());
 					
 					SearchParameters params = new SearchParameters();
 					params.setDepth(base.getDebugPanel().getSearchDepth());

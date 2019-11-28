@@ -41,7 +41,6 @@ public class EngineController implements Runnable {
 	public EngineController(IGameController gameController) {
 		this.gameController = gameController;
 		engine = SearchEngineFifty10.getInstance();
-		engine.setBoardStateHistory(gameController.getBoardStateHistory());
 	}
 
 	public void setCallback(ICallBack callback) {

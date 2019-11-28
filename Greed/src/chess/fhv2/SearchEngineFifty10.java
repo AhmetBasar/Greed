@@ -20,7 +20,6 @@
 package chess.fhv2;
 
 import java.util.Arrays;
-import java.util.Map;
 
 import chess.engine.BoardFactory;
 import chess.engine.CompileTimeConstants;
@@ -52,8 +51,6 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	private static final int HASH_EXACT = 1;
 	private static final int HASH_ALPHA = 2;
 	private static final int HASH_BETA = 3;
-	
-	private Map<Long, Integer> boardStateHistory;
 	
 	private int[] primaryKillerss = new int[128]; // The index corresponds to the ply the killer move is located in
 	private int[] secondaryKillerss = new int[128];
@@ -448,10 +445,6 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			board.undoMoveWithoutZobrist(move);
 		}
 		return alpha;
-	}
-	
-	public void setBoardStateHistory(Map<Long, Integer> boardStateHistory) {
-		this.boardStateHistory = boardStateHistory;
 	}
 	
 	public void sortMoves(int[] moveList, int distance) {

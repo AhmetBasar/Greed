@@ -36,7 +36,7 @@ public class EvaluationAdvancedV4 {
 	private static final int BONUS_PASSED_PAWN = 20;
 	private static final int BONUS_ROOK_ON_SEMI_OPEN_FILE = 10;
 //	private static final int BONUS_ROOK_ON_OPEN_FILE = 10;
-	private static final int BONUS_ROOK_BATTERY = 10;
+//	private static final int BONUS_ROOK_BATTERY = 10;
 	
 	private static final boolean usePsqt = true;
 	private static final boolean useBishopPair = true;

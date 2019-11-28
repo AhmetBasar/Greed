@@ -34,7 +34,7 @@ public class SearchResult {
 	@Override
 	public boolean equals(Object obj) {
 		SearchResult toBeComparedObj = (SearchResult) obj;
-		return 1 ==1 
+		return true
 				&& possibleMoves.equals(toBeComparedObj.possibleMoves)
 				&& bestMove == toBeComparedObj.bestMove
 				&& evaluatedLeafNodeCount == toBeComparedObj.evaluatedLeafNodeCount

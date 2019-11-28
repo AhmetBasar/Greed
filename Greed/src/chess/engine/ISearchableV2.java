@@ -19,13 +19,9 @@
  **********************************************/
 package chess.engine;
 
-import java.util.Map;
-
 public interface ISearchableV2 {
 	
 	public SearchResult search(SearchParameters searchParameters);
-	
-	void setBoardStateHistory(Map<Long, Integer> boardStateHistory);
 	
 	void resetTT();
 

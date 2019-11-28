@@ -67,7 +67,7 @@ public class DebugPanel extends JPanel{
 	private JButton jbSearchSimpleKinderGarten;
 	private JButton jbSearchCopyMake;
 	private JCheckBox jcbUseActualGameParameters;
-	private JButton jbSearchBoard;
+//	private JButton jbSearchBoard;
 	private JButton jbSearchBoardThreaded;
 	private JButton jbChangeTurn;
 	private JButton jbSetFEN;

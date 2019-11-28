@@ -21,7 +21,6 @@ package chess.engine.test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 import chess.engine.EngineConstants;
@@ -63,7 +62,6 @@ public class TestSuitesTest {
 				public void run() {
 					try {
 						chess.fhv2.SearchEngineFifty10 engine = chess.fhv2.SearchEngineFifty10.getNewInstance();
-						engine.setBoardStateHistory(new HashMap<Long, Integer>());
 						
 						for (String epdString : part) {
 							if (epdString.startsWith(TestConstants.COMMENT_INDICATOR)) {

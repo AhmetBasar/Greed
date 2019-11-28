@@ -57,7 +57,6 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 	private Map<Integer, Map<Integer, Set<Integer>>> premoveMap = new HashMap<>();
 	private Map<Integer, Map<Integer, Integer>> blackListMap = new HashMap<>();
 	private int opponentsBestMove;
-	private Map<Long, Integer> boardStateHistory;
 	
 	private TT tt = new TT();
 	private PawnHashTable pawnHashTable = new PawnHashTable();
@@ -471,10 +470,6 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 		}
 	}
 
-	public void setBoardStateHistory(Map<Long, Integer> boardStateHistory) {
-		this.boardStateHistory = boardStateHistory;
-	}
-	
 	public void sortMoves(int[] moveList, int distance) {
 		Arrays.sort(moveList);
 		int primaryKiller = primaryKillerss[distance];

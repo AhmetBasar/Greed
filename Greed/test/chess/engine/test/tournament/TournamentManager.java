@@ -69,7 +69,6 @@ public class TournamentManager implements Runnable {
 			
 			while (true) {
 				if (board.getSide() == GuiConstants.WHITES_TURN) {
-					engineW.setBoardStateHistory(board.getBoardStateHistory());
 					
 					SearchParameters params = new SearchParameters();
 					params.setDepth(5);
@@ -89,8 +88,6 @@ public class TournamentManager implements Runnable {
 					board.doMove(searchResult.getBestMove());
 					
 				} else {
-					engineB.setBoardStateHistory(board.getBoardStateHistory());
-					
 					SearchParameters params = new SearchParameters();
 					params.setDepth(5);
 					params.setEpT(board.getEpTarget());

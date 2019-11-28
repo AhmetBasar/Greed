@@ -27,7 +27,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import chess.engine.EngineConstants;
-import chess.game.GamePlay;
 
 public class PieceEffects implements ActionListener {
 	byte movingItem;
