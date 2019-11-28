@@ -21,6 +21,8 @@ package chess.engine;
 
 import java.util.List;
 
+import chess.engine.test.Assertion;
+
 public class BoardV7 implements IBoard {
 	
 	private long[] bitboard;
@@ -109,11 +111,19 @@ public class BoardV7 implements IBoard {
 		epT = 64;
 		
 		changeSideToMove();
+		
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			checkConsistency();
+		}
 	}
 	
 	public void undoNullMove() {
 		changeSideToMove();
 		fetchPreviousValues();
+		
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			checkConsistency();
+		}
 	}
 	
 	private void storeCurrentValues() {
@@ -145,10 +155,6 @@ public class BoardV7 implements IBoard {
 	}
 	
 	public void doMove(int move) {
-		
-		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			checkConsistency(move, side);
-		}
 		
 		storeCurrentValues();
 		
@@ -347,6 +353,10 @@ public class BoardV7 implements IBoard {
 		nullMoveCounter ++;
 		
 		changeSideToMove();
+		
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			checkConsistency();
+		}
 	}
 	
 	public void undoMove(int move) {
@@ -414,6 +424,10 @@ public class BoardV7 implements IBoard {
 		}
 		
 		fetchPreviousValues();
+		
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			checkConsistency();
+		}
 	}
 	
 	public void doMoveWithoutZobrist(int move) {
@@ -681,19 +695,19 @@ public class BoardV7 implements IBoard {
 		return opSide;
 	}
 
-	private void checkConsistency(int move, int side) {
+	private void checkConsistency() {
 		
 		// The king can not be captured.
-//		Assertion.assertTrue((capturedPiece & 0XFE) != EngineConstants.KING);
+		Assertion.assertTrue((capturedPiece & 0XFE) != EngineConstants.KING);
 		
 		// fifty move counter can not be less than move index. (UI related issues.)
-//		Assertion.assertTrue(moveIndex >= fiftyMoveCounter);
+		Assertion.assertTrue(moveIndex >= fiftyMoveCounter);
 
 		// check zobrist key.
-//		Assertion.assertTrue(zobristKey == TranspositionTable.getZobristKey(bitboard, epT, castlingRights, side));
+		Assertion.assertTrue(zobristKey == TranspositionTable.getZobristKey(bitboard, epT, castlingRights, side));
 		
 		// check pawn zobrist key.
-//		Assertion.assertTrue(pawnZobristKey == TranspositionTable.getPawnZobristKey(bitboard));
+		Assertion.assertTrue(pawnZobristKey == TranspositionTable.getPawnZobristKey(bitboard));
 		
 	}
 }
