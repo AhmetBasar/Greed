@@ -709,6 +709,12 @@ public class BoardV7 implements IBoard {
 		
 		// check pawn zobrist key.
 		Assertion.assertTrue(pawnZobristKey == TranspositionTable.getPawnZobristKey(bitboard));
+
+		// There must be one king per side.
+		Assertion.assertTrue(1 == Long.bitCount(bitboard[EngineConstants.WHITE_KING]));
+
+		// There must be one king per side.
+		Assertion.assertTrue(1 == Long.bitCount(bitboard[EngineConstants.BLACK_KING]));
 		
 	}
 }
