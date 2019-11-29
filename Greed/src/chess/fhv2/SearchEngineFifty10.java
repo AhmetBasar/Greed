@@ -208,7 +208,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			board.doMove(ttBestMove);
 			
 			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				tempValue = -negamax(depth - 1, board, -beta, -alpha, ttBestMove, ttBestMove, true, distance + 1);
+				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
 				
 				if(tempValue > alpha){
 					hashType = HASH_EXACT;
@@ -228,7 +228,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
 			board.doMove(move);
 			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				tempValue = -negamax(depth - 1, board, -beta, -alpha, move, move, true, distance + 1);
+				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
 				if(tempValue > alpha){
 					hashType = HASH_EXACT;
 					alpha = tempValue;
@@ -248,7 +248,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		}
 	}
 	
-	public int negamax(int depth, IBoard board, int alpha, int beta, int previousMove, int firstMove, boolean allowNullMove, int distance){
+	public int negamax(int depth, IBoard board, int alpha, int beta, boolean allowNullMove, int distance){
 		
 		if (isTimeout) {
 			return 0;
@@ -298,7 +298,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			if (!isKingInCheck && allowNullMove && depth > 2) {
 				
 				board.doNullMove();
-				tempValue = -negamax(depth - 1 - R, board, -beta, -beta + 1, ttBestMove, firstMove, false, distance + 1);
+				tempValue = -negamax(depth - 1 - R, board, -beta, -beta + 1, false, distance + 1);
 				board.undoNullMove();
 				
 				if (tempValue >= beta) {
@@ -314,7 +314,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			
 			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
 				existsLegalMove = true;
-				tempValue = -negamax(depth - 1, board, -beta, -alpha, ttBestMove, firstMove, true, distance + 1);
+				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
 				
 				if (tempValue >= beta) {
 					board.undoMove(ttBestMove);
@@ -346,12 +346,12 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
 				existsLegalMove = true;
 				if (foundPv) {
-					tempValue = -negamax(depth - 1, board, -alpha - 1, -alpha, move, firstMove, true, distance + 1);
+					tempValue = -negamax(depth - 1, board, -alpha - 1, -alpha, true, distance + 1);
 					if (tempValue > alpha) {
-						tempValue = -negamax(depth - 1, board, -beta, -alpha, move, firstMove, true, distance + 1);
+						tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
 					}
 				} else {
-					tempValue = -negamax(depth - 1, board, -beta, -alpha, move, firstMove, true, distance + 1);
+					tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
 				}
 				
 				if (tempValue >= beta) {
