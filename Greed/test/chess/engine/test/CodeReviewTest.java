@@ -167,6 +167,7 @@ public class CodeReviewTest {
 		
 		whiteListFields.add("chess.fhv2.SearchEngineFifty10.instance");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty10.newInstances");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty10.STATIC_NULLMOVE_MARGIN");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty_PREMOVEFINDER.instance");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty_PREMOVEFINDER.newInstances");
 
