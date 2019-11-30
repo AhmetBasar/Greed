@@ -187,22 +187,22 @@ Chess Bot Programming.
   - maintain a material key for draw by material detection! this is very very important issue!!!
   - implement uci protocol to play tournaments with popular engines.
   - implement castling rights as byte or int instead of byte array. (For speed up.)
-  - Remove King material evaluation cause there is always 1 king per side.
+ [OKEY] - Remove King material evaluation cause there is always 1 king per side.
   - There is difference between FEN standart and POLYGLOT standart about enpassant capturing. What is correct way? What are other engines do?
   - There may be easy way to calculate enpassant target. Like PreCalculated table.
  [OKEY] - Correct zobrist hashing when double push occurs if ((EngineConstants.PAWN_ATTACK_LOOKUP[side][epTarget] & bitboard[opSide | EngineConstants.PAWN]) != 0)
-  - Avoid class variables. use method variables amap. (e.g. in Legality.java class there are redundant class variables called rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup)
-  - remove unnecessary method parameters in negamax framework. like previousmove, firstmove.
+ [OKEY] - Avoid class variables. use method variables amap. (e.g. in Legality.java class there are redundant class variables called rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup)
+ [OKEY] - remove unnecessary method parameters in negamax framework. like previousmove, firstmove.
   - Rewrite opening book utility with Binary Search algorithm. It will be much faster IMHO.
   - Rewrite openingbook with Random insteadof SecureRandom.
   - Prepare large opening book. (ENORMOUS)
   - increase max heap size. and compare performances. (-Xms512m -Xmx4g)
   - Increase TT size.
-  - Adjust timecontroller thread frequency.
+ [OKEY] - Adjust timecontroller thread frequency.
   - Change evaluation function as setwise calculations.
   - Implement buffered stream in Storage class for speed up.
   - implement contempt factor for DRAW scoring.
-  - Assert there always exists one King per side.
+ [OKEY] - Assert there always exists one King per side.
   - Do not use interface because of performance overhead. but it may be negligible as compared to clean code.
   - Code review for using >>> instead of >> (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)  regex1 = (?<!>)>>(?!>)  regex2 = [^>]>>[^>]
   - Code review for using != 0 instead of > 0 (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)
@@ -211,7 +211,7 @@ Chess Bot Programming.
   - Implement all pawn evaluations. such as weak and backward pawns.
   - Use precalculated singlebit lookup for all 1 << n operations.
   - Java performance optimizations. (such as static final methods.)
-  - do not use shared objects. Review code. do not use static variables. but static method is permitted.
+ [OKEY] - do not use shared objects. Review code. do not use static variables. but static method is permitted.
   - if there is no castling rights, call move generator that doesn't search castling moves.
   - ttBestMove is tried first. but then, all possible moves are tried. do we need to try ttBestMove again?
   - capture moves should be handled by see, not killer heuristic.
@@ -230,7 +230,6 @@ Chess Bot Programming.
   - prefer eager initialization instead of lazy one.
   - do Exclusive Or operation for incremental update of BitBoards. it will be much more efficient.
   - rewrite resetTT method with smarter way, maybe Arrays.fill
-  - Change pawn HashTable size.
   [OKEY] - rewrite PREMOVEFINDER with modern implementations.
   - Use switch case statement when checking the piece is WhitePawn or BlackPawn in PawnZobristkey calculation.
   - Implement insufficient material evaluation on both engine side and gui side.
@@ -260,12 +259,11 @@ Chess Bot Programming.
   - Test iterative deepening speed. try directly maxdepth. and try iterative deepening and compare times consumed.
   - remove nullmovecounter in threefoldrepetition and compare results.
   - do not do any operations in for-while loop's conditional statement.
-  - change isLeadsToDraw method. Do not use HashMap history. Initialize board object by copying UiZobristKey history to board ZobristKey history instead.
+  [OKEY]- change isLeadsToDraw method. Do not use HashMap history. Initialize board object by copying UiZobristKey history to board ZobristKey history instead.
   - Change calculating epTarget algorithm. It seems very inefficient.
   - Change jvm heap size parameters and compare performances. -Xms -Xmx
   - Large arrays are too slow. Maybe there is some hotspot GC parameters to increase performance.
   - Write lots of assertions.
   - Write comprehensive profiler(with gui, e.g. x-y diagram) for testing classes like, Engine tournament or Engine Equality comparator.
-  - remove unused method parameters at both engine and board classes.
+  [OKEY]- remove unused method parameters at both engine and board classes.
   - remove depth == 30 break; condition.
-  - decrease movelist array size.

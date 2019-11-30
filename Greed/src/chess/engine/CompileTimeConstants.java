@@ -26,6 +26,7 @@ public interface CompileTimeConstants {
 	
 	// Search Algorithm
 	public static final boolean ENABLE_NULL_MOVE_PRUNING = true;
+	public static final boolean ENABLE_STATIC_NULL_MOVE_PRUNING = true;
 	public static final boolean ENABLE_QUIESCENCE_FUTILITY_PRUNING = true;
 
 }

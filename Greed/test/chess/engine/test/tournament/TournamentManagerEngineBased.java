@@ -84,6 +84,7 @@ public class TournamentManagerEngineBased implements Runnable {
 					params.setTimeLimit(3);
 					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
 					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+					params.setZobristKeyHistory(board.getZobristKeyHistory());
 
 					SearchResult searchResult = engineWhite.search(params);
 					board.doMove(searchResult.getBestMove());
@@ -102,6 +103,7 @@ public class TournamentManagerEngineBased implements Runnable {
 					params.setTimeLimit(3);
 					params.setFiftyMoveCounter(board.getFiftyMoveCounter());
 					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+					params.setZobristKeyHistory(board.getZobristKeyHistory());
 
 					SearchResult searchResult = engineBlack.search(params);
 					board.doMove(searchResult.getBestMove());

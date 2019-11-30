@@ -65,6 +65,7 @@ public class EngineControllerPreMove implements Runnable {
 				params.setFiftyMoveCounter(gameController.getFiftyMoveCounter());
 				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
 				params.setFirstMove(gameController.getLastMove());
+				params.setZobristKeyHistory(gameController.getZobristKeyHistory());
 				
 				SearchResult searchResult = engine.search(params);
 				

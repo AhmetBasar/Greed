@@ -20,6 +20,7 @@
 package chess.bot;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import chess.bot.interpreting.BotMove;
@@ -73,5 +74,7 @@ public interface IGameController {
 	int getFiftyMoveCounter();
 	
 	int getMoveCount();
+	
+	List<Long> getZobristKeyHistory();
 	
 }

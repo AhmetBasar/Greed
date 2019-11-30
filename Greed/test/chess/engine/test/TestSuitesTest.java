@@ -85,6 +85,7 @@ public class TestSuitesTest {
 							params.setFiftyMoveCounter(0);
 							params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
 							params.setBookName(null);
+							params.setZobristKeyHistory(new ArrayList<>());
 							
 							SearchResult searchResult = engine.search(params);
 							

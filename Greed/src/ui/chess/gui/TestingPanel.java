@@ -301,6 +301,7 @@ public class TestingPanel extends JPanel{
 			params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
 			params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
 			params.setBookName(null);
+			params.setZobristKeyHistory(gamePlay.getZobristKeyHistory());
 			
 			searchResult = (SearchResult) method.invoke(obj, params);
 		} else {

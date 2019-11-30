@@ -120,6 +120,9 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	
 	private static final int FUTILITY_MARGIN = 200;
 	
+	// Margins shamelessly stolen from chess22k
+	private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
+	
 	public SearchResult search(SearchParameters searchParameters) {
 		
 		this.timeLimit = searchParameters.getTimeLimit();
@@ -293,20 +296,36 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		boolean existsLegalMove = false;
 		boolean foundPv = false;
 		
-		if (CompileTimeConstants.ENABLE_NULL_MOVE_PRUNING) {
-			//=>> NullMove Begin
-			if (!isKingInCheck && allowNullMove && depth > 2) {
-				
-				board.doNullMove();
-				tempValue = -negamax(depth - 1 - R, board, -beta, -beta + 1, false, distance + 1);
-				board.undoNullMove();
-				
-				if (tempValue >= beta) {
+		
+		// TODO: && !isPvNode
+		if (!isKingInCheck) {
+			
+			
+			// https://github.com/sandermvdb/chess22k
+			if (CompileTimeConstants.ENABLE_STATIC_NULL_MOVE_PRUNING && depth < STATIC_NULLMOVE_MARGIN.length) {
+				int eval =  EngineConstants.SIDE_COLOR[board.getSide()]
+						* EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
+				if (eval - STATIC_NULLMOVE_MARGIN[depth] >= beta) {
 					return beta;
 				}
 			}
-			//=>> NullMove End
+			
+			if (CompileTimeConstants.ENABLE_NULL_MOVE_PRUNING) {
+				//=>> NullMove Begin
+				if (allowNullMove && depth > 2) {
+					
+					board.doNullMove();
+					tempValue = -negamax(depth - 1 - R, board, -beta, -beta + 1, false, distance + 1);
+					board.undoNullMove();
+					
+					if (tempValue >= beta) {
+						return beta;
+					}
+				}
+				//=>> NullMove End
+			}
 		}
+		
 		
 		//
 		if(ttBestMove != 0){

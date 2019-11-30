@@ -334,11 +334,6 @@ class SuggestMoveActionListener implements ActionListener {
 			Object obj = m1.invoke(null);
 			
 			//
-			Method m2 = cls.getDeclaredMethod("setBoardStateHistory", new Class[] {Map.class});
-			m2.invoke(obj, gamePlay.getBoardStateHistory());
-			//
-			
-			//
 				Method m3 = cls.getDeclaredMethod("resetTT", new Class[] {});
 				m3.invoke(obj);
 			//

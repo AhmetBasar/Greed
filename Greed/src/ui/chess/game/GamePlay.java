@@ -315,6 +315,7 @@ public class GamePlay {
 			params.setTimeLimit(Utility.generateStrongRandomNumber(10, 400));
 			params.setFiftyMoveCounter(fiftyMoveCounter);
 			params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
+			params.setZobristKeyHistory(zobristKeyHistory);
 			
 			SearchResult searchResult = engine.search(params);
 			doMove(searchResult.getBestMove());
@@ -349,6 +350,7 @@ public class GamePlay {
 					params.setTimeLimit(1000);
 					params.setFiftyMoveCounter(fiftyMoveCounter);
 					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+					params.setZobristKeyHistory(zobristKeyHistory);
 					
 					SearchResult searchResult = engine.search(params);
 					doMove(searchResult.getBestMove());
@@ -381,6 +383,7 @@ public class GamePlay {
 					params.setTimeLimit(1000);
 					params.setFiftyMoveCounter(fiftyMoveCounter);
 					params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+					params.setZobristKeyHistory(zobristKeyHistory);
 					
 					SearchResult searchResult = engine.search(params);
 					doMove(searchResult.getBestMove());

@@ -83,12 +83,10 @@ public class BoardV7 implements IBoard {
 		this.side = side;
 		this.opSide = side ^ 1;
 		
-		if (zobristKeyHistory != null) {
-			int k = zobristKeyHistory.size() - fiftyMoveCounter;
-			moveIndex = fiftyMoveCounter;
-			for (int j = 0; j < fiftyMoveCounter; j++, k++) {
-				zobristKeys[j] = zobristKeyHistory.get(k);
-			}
+		int k = zobristKeyHistory.size() - fiftyMoveCounter;
+		moveIndex = fiftyMoveCounter;
+		for (int j = 0; j < fiftyMoveCounter; j++, k++) {
+			zobristKeys[j] = zobristKeyHistory.get(k);
 		}
 		
 		zobristKey = TranspositionTable.getZobristKey(bitboard, epT, castlingRights, side);

@@ -105,6 +105,7 @@ public class EngineController implements Runnable {
 				params.setTimeLimit(tl);
 				params.setFiftyMoveCounter(gameController.getFiftyMoveCounter());
 				params.setEngineMode(EngineConstants.EngineMode.NON_FIXED_DEPTH);
+				params.setZobristKeyHistory(gameController.getZobristKeyHistory());
 				
 				SearchResult searchResult = engine.search(params);
 				
