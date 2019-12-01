@@ -62,6 +62,8 @@ public class BoardV7 implements IBoard {
 	private int side;
 	private int opSide;
 	
+	public int materialKey;
+	
 	public int getEpTarget() {
 		return epT;
 	}
@@ -91,6 +93,7 @@ public class BoardV7 implements IBoard {
 		
 		zobristKey = TranspositionTable.getZobristKey(bitboard, epT, castlingRights, side);
 		pawnZobristKey = TranspositionTable.getPawnZobristKey(bitboard);
+		materialKey = Material.getMaterialKey(bitboard);
 	}
 	
 	public void doNullMove() {
@@ -183,6 +186,7 @@ public class BoardV7 implements IBoard {
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
 			if(capturedPiece > 0){
 				zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				materialKey -= Material.PIECE_VALUES[capturedPiece];
 			}
 			//
 			
@@ -228,6 +232,8 @@ public class BoardV7 implements IBoard {
 			int epS = to + epSquareDiff[side];
 			capturedPiece = pieces[epS];
 			
+			materialKey -= Material.PIECE_VALUES[capturedPiece];
+			
 			//Transposition Table//
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][epS];
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
@@ -252,11 +258,14 @@ public class BoardV7 implements IBoard {
 			capturedPiece = pieces[to];
 			byte promotedPiece = Move.getPromotedPiece(move);
 			
+			materialKey += Material.PIECE_VALUES[promotedPiece] - Material.PIECE_VALUES[fromPiece];
+			
 			//Transposition Table//
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[promotedPiece][to];
 			if(capturedPiece > 0) {
 				zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
+				materialKey -= Material.PIECE_VALUES[capturedPiece];
 			}
 			//
 			
@@ -370,6 +379,10 @@ public class BoardV7 implements IBoard {
 		switch (moveType) {
 		case 0:
 			
+			if (capturedPiece > 0) {
+				materialKey += Material.PIECE_VALUES[capturedPiece];
+			}
+			
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
@@ -387,6 +400,8 @@ public class BoardV7 implements IBoard {
 			
 			int epS = to + epSquareDiff[side];
 			
+			materialKey += Material.PIECE_VALUES[capturedPiece];
+			
 			pieces[epS] = capturedPiece;
 			pieces[from] = fromPiece;
 			pieces[to] = 0;
@@ -397,10 +412,15 @@ public class BoardV7 implements IBoard {
 		case EngineConstants.PROMOTION_SHIFTED:
 			
 			fromPiece = (byte)(side | EngineConstants.PAWN);
+			byte promotedPiece = Move.getPromotedPiece(move);
+			materialKey += Material.PIECE_VALUES[fromPiece] - Material.PIECE_VALUES[promotedPiece];
+			if (capturedPiece > 0) {
+				materialKey += Material.PIECE_VALUES[capturedPiece];	
+			}
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
-			bitboard[Move.getPromotedPiece(move)] &= ~(1L << to);
+			bitboard[promotedPiece] &= ~(1L << to);
 			bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here. 
 			break;
 		default:
@@ -448,6 +468,10 @@ public class BoardV7 implements IBoard {
 			epT = 64;
 			capturedPiece = pieces[to];
 			
+			if (capturedPiece > 0) {
+				materialKey -= Material.PIECE_VALUES[capturedPiece];
+			}
+			
 			byte fromPieceWc = (byte)(fromPiece & 0XFE);
 			if (fromPieceWc == EngineConstants.PAWN) {
 				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
@@ -483,6 +507,8 @@ public class BoardV7 implements IBoard {
 			int epS = to + epSquareDiff[side];
 			capturedPiece = pieces[epS];
 			
+			materialKey -= Material.PIECE_VALUES[capturedPiece];
+			
 			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][epS];
 			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
@@ -500,6 +526,11 @@ public class BoardV7 implements IBoard {
 			epT = 64;
 			capturedPiece = pieces[to];
 			byte promotedPiece = Move.getPromotedPiece(move);
+			
+			materialKey += Material.PIECE_VALUES[promotedPiece] - Material.PIECE_VALUES[fromPiece];
+			if(capturedPiece > 0) {
+				materialKey -= Material.PIECE_VALUES[capturedPiece];
+			}
 			
 			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 			
@@ -568,6 +599,10 @@ public class BoardV7 implements IBoard {
 		switch (moveType) {
 		case 0:
 			
+			if (capturedPiece > 0) {
+				materialKey += Material.PIECE_VALUES[capturedPiece];
+			}
+			
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
@@ -583,6 +618,8 @@ public class BoardV7 implements IBoard {
 			break;
 		case EngineConstants.EP_CAPTURE_SHIFTED:
 			
+			materialKey += Material.PIECE_VALUES[capturedPiece];
+			
 			int epS = to + epSquareDiff[side];
 			
 			pieces[epS] = capturedPiece;
@@ -593,12 +630,18 @@ public class BoardV7 implements IBoard {
 			bitboard[capturedPiece] |= (1L << epS);
 			break;
 		case EngineConstants.PROMOTION_SHIFTED:
-			
+			byte promotedPiece = Move.getPromotedPiece(move);
 			fromPiece = (byte)(side | EngineConstants.PAWN);
+			
+			materialKey += Material.PIECE_VALUES[fromPiece] - Material.PIECE_VALUES[promotedPiece];
+			if (capturedPiece > 0) {
+				materialKey += Material.PIECE_VALUES[capturedPiece];	
+			}
+			
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
-			bitboard[Move.getPromotedPiece(move)] &= ~(1L << to);
+			bitboard[promotedPiece] &= ~(1L << to);
 			bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here. 
 			break;
 		default:
@@ -707,6 +750,9 @@ public class BoardV7 implements IBoard {
 		
 		// check pawn zobrist key.
 		Assertion.assertTrue(pawnZobristKey == TranspositionTable.getPawnZobristKey(bitboard));
+		
+		// check material key.
+		Assertion.assertTrue(materialKey == Material.getMaterialKey(bitboard));
 
 		// There must be one king per side.
 		Assertion.assertTrue(1 == Long.bitCount(bitboard[EngineConstants.WHITE_KING]));

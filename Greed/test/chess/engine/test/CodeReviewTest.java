@@ -185,6 +185,10 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.movegen.MagicBitboard.rookMagicNumbers");
 		whiteListFields.add("chess.movegen.MagicBitboard.bishopMagicNumbers");
 		
+		whiteListFields.add("chess.engine.Material.PIECE_VALUES");
+		whiteListFields.add("chess.engine.Material.PIECE_MASKS");
+		whiteListFields.add("chess.engine.Material.PIECE_SHIFTS");
+		
 	}
 
 }

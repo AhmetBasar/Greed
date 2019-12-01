@@ -259,6 +259,53 @@ public class DebugUtility {
 		return board;
 	}
 	
+	public static byte[][] generateRealisticRandomBoard() {
+		
+		int[] counters = new int[14];
+		int[] limits = new int[]{4, 3, 3, 3, 3, 1, 4, 3, 3, 3, 3, 1, 99};
+		
+		byte[][] board = new byte[8][8];
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				byte[] possibleValues = new byte[] {
+						/***/
+						EngineConstants.WHITE_PAWN,
+						/***/
+						EngineConstants.WHITE_KNIGHT,
+						/***/
+						EngineConstants.WHITE_BISHOP,
+						/***/
+						EngineConstants.WHITE_ROOK,
+						/***/
+						EngineConstants.WHITE_QUEEN,
+						/***/
+						EngineConstants.WHITE_KING,
+						/***/
+						EngineConstants.BLACK_PAWN,
+						/***/
+						EngineConstants.BLACK_KNIGHT,
+						/***/
+						EngineConstants.BLACK_BISHOP,
+						/***/
+						EngineConstants.BLACK_ROOK,
+						/***/
+						EngineConstants.BLACK_QUEEN,
+						/***/
+						EngineConstants.BLACK_KING,
+						/***/
+						EngineConstants.BLANK,
+						/***/
+				};
+				int randomIndex = ThreadLocalRandom.current().nextInt(0, 13);
+				counters[randomIndex] = counters[randomIndex] + 1;
+				if (counters[randomIndex] <= limits[randomIndex]) {
+					board[i][j] = possibleValues[randomIndex];
+				}
+			}
+		}
+		return board;
+	}
+	
 	public static void throwBoardAsWhitePawn(long whitePawns) {
 		long[] emptyBb = Transformer.getBitboardStyl(getEmptyBoard());
 		emptyBb[EngineConstants.WHITE_PAWN] = whitePawns;
