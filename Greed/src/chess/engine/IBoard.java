@@ -39,5 +39,11 @@ public interface IBoard {
 	int getSide();
 	
 	int getOpSide();
+	
+	long getOccupiedSquares();
+
+	long getEmptySquares();
+
+	long[] getOccupiedSquaresBySide();
 
 }

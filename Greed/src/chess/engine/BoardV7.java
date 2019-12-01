@@ -23,7 +23,7 @@ import java.util.List;
 
 import chess.engine.test.Assertion;
 
-public class BoardV7 implements IBoard {
+public class BoardV7 implements IBoard, EngineConstants {
 	
 	private long[] bitboard;
 	private byte[] pieces;
@@ -63,6 +63,9 @@ public class BoardV7 implements IBoard {
 	private int opSide;
 	
 	public int materialKey;
+	public long occupiedSquares;
+	public long emptySquares;
+	public long[] occupiedSquaresBySide = new long[2];
 	
 	public int getEpTarget() {
 		return epT;
@@ -94,6 +97,11 @@ public class BoardV7 implements IBoard {
 		zobristKey = TranspositionTable.getZobristKey(bitboard, epT, castlingRights, side);
 		pawnZobristKey = TranspositionTable.getPawnZobristKey(bitboard);
 		materialKey = Material.getMaterialKey(bitboard);
+		
+		occupiedSquaresBySide[WHITE] = bitboard[WHITE_PAWN] | bitboard[WHITE_KNIGHT] | bitboard[WHITE_BISHOP] | bitboard[WHITE_ROOK] | bitboard[WHITE_QUEEN] | bitboard[WHITE_KING];
+		occupiedSquaresBySide[BLACK] = bitboard[BLACK_PAWN] | bitboard[BLACK_KNIGHT] | bitboard[BLACK_BISHOP] | bitboard[BLACK_ROOK] | bitboard[BLACK_QUEEN] | bitboard[BLACK_KING];
+		occupiedSquares = occupiedSquaresBySide[WHITE] | occupiedSquaresBySide[BLACK];
+		emptySquares = ~occupiedSquares;
 	}
 	
 	public void doNullMove() {
@@ -187,6 +195,9 @@ public class BoardV7 implements IBoard {
 			if(capturedPiece > 0){
 				zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
 				materialKey -= Material.PIECE_VALUES[capturedPiece];
+				
+				bitboard[capturedPiece] &= ~(1L << to);
+				occupiedSquaresBySide[opSide] &= ~(1L << to);
 			}
 			//
 			
@@ -205,7 +216,12 @@ public class BoardV7 implements IBoard {
 			pieces[to] = fromPiece;
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[fromPiece] |= (1L << to);
-			bitboard[capturedPiece] &= ~(1L << to);
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			//
+			
 			break;
 		case EngineConstants.DOUBLE_PUSH_SHIFTED:
 			capturedPiece = 0;
@@ -227,6 +243,11 @@ public class BoardV7 implements IBoard {
 			pieces[to] = fromPiece;
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[fromPiece] |= (1L << to);
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			//
 			break;
 		case EngineConstants.EP_CAPTURE_SHIFTED:
 			int epS = to + epSquareDiff[side];
@@ -251,6 +272,12 @@ public class BoardV7 implements IBoard {
 			bitboard[fromPiece] |= (1L << to);
 			bitboard[capturedPiece] &= ~(1L << epS);
 			epT = 64;
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			occupiedSquaresBySide[opSide] &= ~(1L << epS);
+			//
 			break;
 		case EngineConstants.PROMOTION_SHIFTED:
 			
@@ -266,6 +293,9 @@ public class BoardV7 implements IBoard {
 			if(capturedPiece > 0) {
 				zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[capturedPiece][to];
 				materialKey -= Material.PIECE_VALUES[capturedPiece];
+				
+				bitboard[capturedPiece] &= ~(1L << to);
+				occupiedSquaresBySide[opSide] &= ~(1L << to);
 			}
 			//
 			
@@ -275,7 +305,11 @@ public class BoardV7 implements IBoard {
 			pieces[to] = promotedPiece;
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[promotedPiece] |= (1L << to);
-			bitboard[capturedPiece] &= ~(1L << to);
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			//
 			break;
 		default:
 			capturedPiece = 0;
@@ -302,6 +336,13 @@ public class BoardV7 implements IBoard {
 			pieces[castlingRookTo] = sideToRook;
 			bitboard[sideToRook] &= ~(1L << castlingRookFrom);
 			bitboard[sideToRook] |= (1L << castlingRookTo);
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			occupiedSquaresBySide[side] &= ~(1L << castlingRookFrom);
+			occupiedSquaresBySide[side] |= (1L << castlingRookTo);
+			//
 			break;
 		
 		}
@@ -362,6 +403,9 @@ public class BoardV7 implements IBoard {
 		
 		changeSideToMove();
 		
+		occupiedSquares = occupiedSquaresBySide[WHITE] | occupiedSquaresBySide[BLACK];
+		emptySquares = ~occupiedSquares;
+		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
 			checkConsistency();
 		}
@@ -381,13 +425,21 @@ public class BoardV7 implements IBoard {
 			
 			if (capturedPiece > 0) {
 				materialKey += Material.PIECE_VALUES[capturedPiece];
+				
+				bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here.
+				occupiedSquaresBySide[opSide] |= (1L << to); // capturedPiece may be zero here.
 			}
 			
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
 			bitboard[fromPiece] &= ~(1L << to);
-			bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here.
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			//
+			
 			break;
 		case EngineConstants.DOUBLE_PUSH_SHIFTED:
 			
@@ -395,6 +447,11 @@ public class BoardV7 implements IBoard {
 			pieces[to] = 0;
 			bitboard[fromPiece] |= (1L << from);
 			bitboard[fromPiece] &= ~(1L << to);
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			//
 			break;
 		case EngineConstants.EP_CAPTURE_SHIFTED:
 			
@@ -408,6 +465,12 @@ public class BoardV7 implements IBoard {
 			bitboard[fromPiece] |= (1L << from);
 			bitboard[fromPiece] &= ~(1L << to);
 			bitboard[capturedPiece] |= (1L << epS);
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			occupiedSquaresBySide[opSide] |= (1L << epS);
+			//
 			break;
 		case EngineConstants.PROMOTION_SHIFTED:
 			
@@ -415,13 +478,20 @@ public class BoardV7 implements IBoard {
 			byte promotedPiece = Move.getPromotedPiece(move);
 			materialKey += Material.PIECE_VALUES[fromPiece] - Material.PIECE_VALUES[promotedPiece];
 			if (capturedPiece > 0) {
-				materialKey += Material.PIECE_VALUES[capturedPiece];	
+				materialKey += Material.PIECE_VALUES[capturedPiece];
+				
+				bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here. 
+				occupiedSquaresBySide[opSide] |= (1L << to); // capturedPiece may be zero here.
 			}
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
 			bitboard[promotedPiece] &= ~(1L << to);
-			bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here. 
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			//
 			break;
 		default:
 			
@@ -439,10 +509,20 @@ public class BoardV7 implements IBoard {
 			pieces[castlingRookTo] = 0;
 			bitboard[sideToRook] |= (1L << castlingRookFrom);
 			bitboard[sideToRook] &= ~(1L << castlingRookTo);
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			occupiedSquaresBySide[side] |= (1L << castlingRookFrom);
+			occupiedSquaresBySide[side] &= ~(1L << castlingRookTo);
+			//
 			break;
 		}
 		
 		fetchPreviousValues();
+		
+		occupiedSquares = occupiedSquaresBySide[WHITE] | occupiedSquaresBySide[BLACK];
+		emptySquares = ~occupiedSquares;
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
 			checkConsistency();
@@ -470,6 +550,9 @@ public class BoardV7 implements IBoard {
 			
 			if (capturedPiece > 0) {
 				materialKey -= Material.PIECE_VALUES[capturedPiece];
+				
+				bitboard[capturedPiece] &= ~(1L << to);
+				occupiedSquaresBySide[opSide] &= ~(1L << to);
 			}
 			
 			byte fromPieceWc = (byte)(fromPiece & 0XFE);
@@ -487,7 +570,11 @@ public class BoardV7 implements IBoard {
 			pieces[to] = fromPiece;
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[fromPiece] |= (1L << to);
-			bitboard[capturedPiece] &= ~(1L << to);
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			//
 			break;
 		case EngineConstants.DOUBLE_PUSH_SHIFTED:
 			capturedPiece = 0;
@@ -501,6 +588,11 @@ public class BoardV7 implements IBoard {
 			pieces[to] = fromPiece;
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[fromPiece] |= (1L << to);
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			//
 			break;
 		case EngineConstants.EP_CAPTURE_SHIFTED:
 			
@@ -520,6 +612,12 @@ public class BoardV7 implements IBoard {
 			bitboard[fromPiece] |= (1L << to);
 			bitboard[capturedPiece] &= ~(1L << epS);
 			epT = 64;
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			occupiedSquaresBySide[opSide] &= ~(1L << epS);
+			//
 			break;
 		case EngineConstants.PROMOTION_SHIFTED:
 			
@@ -530,6 +628,9 @@ public class BoardV7 implements IBoard {
 			materialKey += Material.PIECE_VALUES[promotedPiece] - Material.PIECE_VALUES[fromPiece];
 			if(capturedPiece > 0) {
 				materialKey -= Material.PIECE_VALUES[capturedPiece];
+				
+				bitboard[capturedPiece] &= ~(1L << to);
+				occupiedSquaresBySide[opSide] &= ~(1L << to);
 			}
 			
 			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
@@ -538,7 +639,11 @@ public class BoardV7 implements IBoard {
 			pieces[to] = promotedPiece;
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[promotedPiece] |= (1L << to);
-			bitboard[capturedPiece] &= ~(1L << to);
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			//
 			break;
 		default:
 			capturedPiece = 0;
@@ -558,6 +663,13 @@ public class BoardV7 implements IBoard {
 			pieces[castlingRookTo] = sideToRook;
 			bitboard[sideToRook] &= ~(1L << castlingRookFrom);
 			bitboard[sideToRook] |= (1L << castlingRookTo);
+			
+			//
+			occupiedSquaresBySide[side] &= ~(1L << from);
+			occupiedSquaresBySide[side] |= (1L << to);
+			occupiedSquaresBySide[side] &= ~(1L << castlingRookFrom);
+			occupiedSquaresBySide[side] |= (1L << castlingRookTo);
+			//
 			break;
 		
 		}
@@ -585,6 +697,9 @@ public class BoardV7 implements IBoard {
 		/****/
 		
 		changeSideToMove();
+		
+		occupiedSquares = occupiedSquaresBySide[WHITE] | occupiedSquaresBySide[BLACK];
+		emptySquares = ~occupiedSquares;
 	}
 	
 	public void undoMoveWithoutZobrist(int move) {
@@ -601,13 +716,20 @@ public class BoardV7 implements IBoard {
 			
 			if (capturedPiece > 0) {
 				materialKey += Material.PIECE_VALUES[capturedPiece];
+				
+				bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here.
+				occupiedSquaresBySide[opSide] |= (1L << to); // capturedPiece may be zero here.
 			}
 			
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
 			bitboard[fromPiece] &= ~(1L << to);
-			bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here.
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			//
 			break;
 		case EngineConstants.DOUBLE_PUSH_SHIFTED:
 			
@@ -615,6 +737,11 @@ public class BoardV7 implements IBoard {
 			pieces[to] = 0;
 			bitboard[fromPiece] |= (1L << from);
 			bitboard[fromPiece] &= ~(1L << to);
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			//
 			break;
 		case EngineConstants.EP_CAPTURE_SHIFTED:
 			
@@ -628,6 +755,12 @@ public class BoardV7 implements IBoard {
 			bitboard[fromPiece] |= (1L << from);
 			bitboard[fromPiece] &= ~(1L << to);
 			bitboard[capturedPiece] |= (1L << epS);
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			occupiedSquaresBySide[opSide] |= (1L << epS);
+			//
 			break;
 		case EngineConstants.PROMOTION_SHIFTED:
 			byte promotedPiece = Move.getPromotedPiece(move);
@@ -636,13 +769,19 @@ public class BoardV7 implements IBoard {
 			materialKey += Material.PIECE_VALUES[fromPiece] - Material.PIECE_VALUES[promotedPiece];
 			if (capturedPiece > 0) {
 				materialKey += Material.PIECE_VALUES[capturedPiece];	
+				bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here.
+				occupiedSquaresBySide[opSide] |= (1L << to); // capturedPiece may be zero here.
 			}
 			
 			pieces[from] = fromPiece;
 			pieces[to] = capturedPiece;
 			bitboard[fromPiece] |= (1L << from);
 			bitboard[promotedPiece] &= ~(1L << to);
-			bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here. 
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			//
 			break;
 		default:
 			
@@ -660,6 +799,13 @@ public class BoardV7 implements IBoard {
 			pieces[castlingRookTo] = 0;
 			bitboard[sideToRook] |= (1L << castlingRookFrom);
 			bitboard[sideToRook] &= ~(1L << castlingRookTo);
+			
+			//
+			occupiedSquaresBySide[side] |= (1L << from);
+			occupiedSquaresBySide[side] &= ~(1L << to);
+			occupiedSquaresBySide[side] |= (1L << castlingRookFrom);
+			occupiedSquaresBySide[side] &= ~(1L << castlingRookTo);
+			//
 			break;
 		}
 		
@@ -668,6 +814,9 @@ public class BoardV7 implements IBoard {
 		/****/
 		
 		fetchPreviousValues();
+		
+		occupiedSquares = occupiedSquaresBySide[WHITE] | occupiedSquaresBySide[BLACK];
+		emptySquares = ~occupiedSquares;
 	}
 	
 
@@ -759,6 +908,25 @@ public class BoardV7 implements IBoard {
 
 		// There must be one king per side.
 		Assertion.assertTrue(1 == Long.bitCount(bitboard[EngineConstants.BLACK_KING]));
+
+		// check white occupancy.
+		Assertion.assertTrue(occupiedSquaresBySide[WHITE] == (bitboard[WHITE_PAWN] | bitboard[WHITE_KNIGHT] | bitboard[WHITE_BISHOP] | bitboard[WHITE_ROOK] | bitboard[WHITE_QUEEN] | bitboard[WHITE_KING]));
+		
+		// check black occupancy.
+		Assertion.assertTrue(occupiedSquaresBySide[BLACK] == (bitboard[BLACK_PAWN] | bitboard[BLACK_KNIGHT] | bitboard[BLACK_BISHOP] | bitboard[BLACK_ROOK] | bitboard[BLACK_QUEEN] | bitboard[BLACK_KING]));
 		
 	}
+
+	public long getOccupiedSquares() {
+		return occupiedSquares;
+	}
+
+	public long getEmptySquares() {
+		return emptySquares;
+	}
+
+	public long[] getOccupiedSquaresBySide() {
+		return occupiedSquaresBySide;
+	}
+	
 }
