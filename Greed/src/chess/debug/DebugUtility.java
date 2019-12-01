@@ -262,7 +262,7 @@ public class DebugUtility {
 	public static byte[][] generateRealisticRandomBoard() {
 		
 		int[] counters = new int[14];
-		int[] limits = new int[]{4, 3, 3, 3, 3, 1, 4, 3, 3, 3, 3, 1, 99};
+		int[] limits = new int[]{15, 7, 7, 7, 7, 1, 15, 7, 7, 7, 3, 1, 99};
 		
 		byte[][] board = new byte[8][8];
 		for (int i = 0; i < 8; i++) {
