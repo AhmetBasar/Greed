@@ -267,3 +267,6 @@ Chess Bot Programming.
   - Write comprehensive profiler(with gui, e.g. x-y diagram) for testing classes like, Engine tournament or Engine Equality comparator.
   [OKEY]- remove unused method parameters at both engine and board classes.
   - remove depth == 30 break; condition.
+  - Write testing class for Check.
+  - Change checkers detection implementation. No need to invoke super piece method when it is not discovered move and not promotion, not ep but normal move.
+  - test checkers implementation again with legality.

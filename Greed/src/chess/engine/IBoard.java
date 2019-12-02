@@ -45,5 +45,9 @@ public interface IBoard {
 	long getEmptySquares();
 
 	long[] getOccupiedSquaresBySide();
+	
+	int[] getKingSquares();
+	
+	long getCheckers();
 
 }

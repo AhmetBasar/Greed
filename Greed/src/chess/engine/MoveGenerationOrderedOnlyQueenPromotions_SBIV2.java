@@ -233,7 +233,8 @@ public class MoveGenerationOrderedOnlyQueenPromotions_SBIV2 implements MoveGener
 					                              & (emptySquares >>> castlingShift[side][0][1])
 					                              & (emptySquares >>> castlingShift[side][0][2])) << castlingTarget[side][0];
 			if ((to = Long.numberOfTrailingZeros(toBitboard)) != 64) {
-				if(!legality.isKingInCheck(bitboard, side)){
+//				if(!legality.isKingInCheck(bitboard, side)){
+				if (board.getCheckers() == 0) {
 					byte sideToKing = (byte)(side| EngineConstants.KING);
 					int kingOriginalPos = kingPositions[side];
 					int squareBetweenKingAndRook = betweenKingAndRook[side][0];
@@ -255,7 +256,8 @@ public class MoveGenerationOrderedOnlyQueenPromotions_SBIV2 implements MoveGener
 			toBitboard = (castlingRights[side][1] & (emptySquares >>> castlingShift[side][1][0]) 
 					                              & (emptySquares >>> castlingShift[side][1][1])) << castlingTarget[side][1];
 			if ((to = Long.numberOfTrailingZeros(toBitboard)) != 64) {
-				if(!legality.isKingInCheck(bitboard, side)){
+//				if(!legality.isKingInCheck(bitboard, side)){
+				if (board.getCheckers() == 0) {
 					byte sideToKing = (byte)(side| EngineConstants.KING);
 					int kingOriginalPos = kingPositions[side];
 					int squareBetweenKingAndRook = betweenKingAndRook[side][1];

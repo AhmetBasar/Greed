@@ -285,7 +285,8 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			ttBestMove = ttElement.bestMove;
 		}
 		
-		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), board.getSide());
+		boolean isKingInCheck = board.getCheckers() != 0;
+//		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), board.getSide());
 		if(!isKingInCheck && depth <= 0){
 			searchResult.incrementEvaluatedLeafNodeCount();
 			return quiescentSearch(board, alpha, beta, depth);
@@ -391,7 +392,8 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		}
 		
 		if (!existsLegalMove) {
-			if (legality.isKingInCheck(board.getBitboard(), board.getSide())) {
+			if (isKingInCheck) {
+//			if (legality.isKingInCheck(board.getBitboard(), board.getSide())) {
 				return MINUS_INFINITY + distance;
 			} else {
 				return 0;

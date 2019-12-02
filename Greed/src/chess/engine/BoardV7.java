@@ -47,6 +47,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 	private int[] fiftyMoveCounters = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[] nullMoveCounters = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[][] moveLists = new int[TEMP_BOARD_SIZE][EngineConstants.MOVE_LIST_SIZE];
+	private long[] checkerss = new long[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	//
 	
 	public byte capturedPiece;
@@ -66,6 +67,9 @@ public class BoardV7 implements IBoard, EngineConstants {
 	public long occupiedSquares;
 	public long emptySquares;
 	public long[] occupiedSquaresBySide = new long[2];
+	
+	public int[] kingSquares = new int[2];
+	public long checkers;
 	
 	public int getEpTarget() {
 		return epT;
@@ -102,6 +106,12 @@ public class BoardV7 implements IBoard, EngineConstants {
 		occupiedSquaresBySide[BLACK] = bitboard[BLACK_PAWN] | bitboard[BLACK_KNIGHT] | bitboard[BLACK_BISHOP] | bitboard[BLACK_ROOK] | bitboard[BLACK_QUEEN] | bitboard[BLACK_KING];
 		occupiedSquares = occupiedSquaresBySide[WHITE] | occupiedSquaresBySide[BLACK];
 		emptySquares = ~occupiedSquares;
+		
+		kingSquares[WHITE] = Long.numberOfTrailingZeros(bitboard[WHITE_KING]);
+		kingSquares[BLACK] = Long.numberOfTrailingZeros(bitboard[BLACK_KING]);
+		
+		checkers = Check.getCheckers(this);
+		
 	}
 	
 	public void doNullMove() {
@@ -147,6 +157,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		pawnZobristKeys[moveIndex] = pawnZobristKey;
 		fiftyMoveCounters[moveIndex] = fiftyMoveCounter;
 		nullMoveCounters[moveIndex] = nullMoveCounter;
+		checkerss[moveIndex] = checkers;
 		moveIndex++;
 	}
 	
@@ -162,6 +173,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		pawnZobristKey = pawnZobristKeys[moveIndex];
 		fiftyMoveCounter = fiftyMoveCounters[moveIndex];
 		nullMoveCounter = nullMoveCounters[moveIndex];
+		checkers = checkerss[moveIndex];
 	}
 	
 	public void doMove(int move) {
@@ -202,9 +214,16 @@ public class BoardV7 implements IBoard, EngineConstants {
 			//
 			
 			byte fromPieceWc = (byte)(fromPiece & 0XFE);
-			if (fromPieceWc == EngineConstants.PAWN) {
+			switch (fromPieceWc) {
+			case EngineConstants.PAWN:
 				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
+				break;
+			case EngineConstants.KING:
+				kingSquares[side] = to;
+				break;
+			default:
+				break;
 			}
 			
 			byte capturedPieceWc = (byte)(capturedPiece & 0XFE);
@@ -319,6 +338,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 			
 			int castlingRookFrom = castlingRookSources[side][castlingSide];
 			int castlingRookTo = castlingRookTargets[side][castlingSide];
+			kingSquares[side] = to;
 			
 			//Transposition Table//
 			zobristKey = zobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
@@ -406,6 +426,8 @@ public class BoardV7 implements IBoard, EngineConstants {
 		occupiedSquares = occupiedSquaresBySide[WHITE] | occupiedSquaresBySide[BLACK];
 		emptySquares = ~occupiedSquares;
 		
+		checkers = Check.getCheckers(this);
+		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
 			checkConsistency();
 		}
@@ -428,6 +450,15 @@ public class BoardV7 implements IBoard, EngineConstants {
 				
 				bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here.
 				occupiedSquaresBySide[opSide] |= (1L << to); // capturedPiece may be zero here.
+			}
+			
+			byte fromPieceWc = (byte)(fromPiece & 0XFE);
+			switch (fromPieceWc) {
+			case EngineConstants.KING:
+				kingSquares[side] = from;
+				break;
+			default:
+				break;
 			}
 			
 			pieces[from] = fromPiece;
@@ -504,6 +535,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 			int castlingSide = Move.getCastlingSide(move);
 			int castlingRookFrom = castlingRookSources[side][castlingSide];
 			int castlingRookTo = castlingRookTargets[side][castlingSide];
+			kingSquares[side] = from;
 			
 			pieces[castlingRookFrom] = sideToRook;
 			pieces[castlingRookTo] = 0;
@@ -556,9 +588,16 @@ public class BoardV7 implements IBoard, EngineConstants {
 			}
 			
 			byte fromPieceWc = (byte)(fromPiece & 0XFE);
-			if (fromPieceWc == EngineConstants.PAWN) {
+			switch (fromPieceWc) {
+			case EngineConstants.PAWN:
 				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 				pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
+				break;
+			case EngineConstants.KING:
+				kingSquares[side] = to;
+				break;
+			default:
+				break;
 			}
 			
 			byte capturedPieceWc = (byte)(capturedPiece & 0XFE);
@@ -653,6 +692,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 			
 			int castlingRookFrom = castlingRookSources[side][castlingSide];
 			int castlingRookTo = castlingRookTargets[side][castlingSide];
+			kingSquares[side] = to;
 			
 			pieces[from] = 0;
 			pieces[to] = fromPiece;
@@ -700,6 +740,8 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		occupiedSquares = occupiedSquaresBySide[WHITE] | occupiedSquaresBySide[BLACK];
 		emptySquares = ~occupiedSquares;
+		
+		checkers = Check.getCheckers(this);
 	}
 	
 	public void undoMoveWithoutZobrist(int move) {
@@ -719,6 +761,15 @@ public class BoardV7 implements IBoard, EngineConstants {
 				
 				bitboard[capturedPiece] |= (1L << to); // capturedPiece may be zero here.
 				occupiedSquaresBySide[opSide] |= (1L << to); // capturedPiece may be zero here.
+			}
+			
+			byte fromPieceWc = (byte)(fromPiece & 0XFE);
+			switch (fromPieceWc) {
+			case EngineConstants.KING:
+				kingSquares[side] = from;
+				break;
+			default:
+				break;
 			}
 			
 			pieces[from] = fromPiece;
@@ -794,6 +845,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 			int castlingSide = Move.getCastlingSide(move);
 			int castlingRookFrom = castlingRookSources[side][castlingSide];
 			int castlingRookTo = castlingRookTargets[side][castlingSide];
+			kingSquares[side] = from;
 			
 			pieces[castlingRookFrom] = sideToRook;
 			pieces[castlingRookTo] = 0;
@@ -915,6 +967,12 @@ public class BoardV7 implements IBoard, EngineConstants {
 		// check black occupancy.
 		Assertion.assertTrue(occupiedSquaresBySide[BLACK] == (bitboard[BLACK_PAWN] | bitboard[BLACK_KNIGHT] | bitboard[BLACK_BISHOP] | bitboard[BLACK_ROOK] | bitboard[BLACK_QUEEN] | bitboard[BLACK_KING]));
 		
+		// check white king square
+		Assertion.assertTrue(kingSquares[WHITE] == Long.numberOfTrailingZeros(bitboard[WHITE_KING]));
+		
+		// check black king square
+		Assertion.assertTrue(kingSquares[BLACK] == Long.numberOfTrailingZeros(bitboard[BLACK_KING]));
+		
 	}
 
 	public long getOccupiedSquares() {
@@ -927,6 +985,14 @@ public class BoardV7 implements IBoard, EngineConstants {
 
 	public long[] getOccupiedSquaresBySide() {
 		return occupiedSquaresBySide;
+	}
+
+	public int[] getKingSquares() {
+		return kingSquares;
+	}
+
+	public long getCheckers() {
+		return checkers;
 	}
 	
 }
