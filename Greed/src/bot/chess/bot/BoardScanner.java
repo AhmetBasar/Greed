@@ -134,7 +134,9 @@ public class BoardScanner {
 
 			double a = Utility.compareImage2(subimage, templateImage);
 //			if ((methodName.contains("Checked") && a < 1) || a == 0) {
-			if (a < 500) {
+//			if (a < 500) {
+//			if (a < 600) {
+			if (a < 700) {
 				matchedImageTypes[x][y] = imageType;
 				return imageType.getPieceType();
 			}

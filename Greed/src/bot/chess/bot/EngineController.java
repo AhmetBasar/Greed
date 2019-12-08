@@ -34,9 +34,9 @@ public class EngineController implements Runnable {
 	private IGameController gameController;
 	private ICallBack callback;
 	
-	public static final int DEFAULT_DEPTH_LIMIT = 7;
+	public static final int DEFAULT_DEPTH_LIMIT = 9;
 	private int depthLimit = DEFAULT_DEPTH_LIMIT;
-	private int timeLimit = 2000;
+	private int timeLimit = 8000;
 
 	public EngineController(IGameController gameController) {
 		this.gameController = gameController;
@@ -80,7 +80,7 @@ public class EngineController implements Runnable {
 				if (Utility.doProbability(10)) {
 					// % 10 probablity very slow move. (AKA Reverse - Jackpot.)
 					java.awt.Toolkit.getDefaultToolkit().beep();
-					tl = Utility.generateStrongRandomNumber(15000, 25000);
+					tl = Utility.generateStrongRandomNumber(10000, 15000);
 				}
 				
 				if (gameController.getMoveCount() <= 1) {
@@ -111,6 +111,10 @@ public class EngineController implements Runnable {
 				
 				if (searchResult.getBestMove() == 0) {
 					System.out.println("MOVE SIFIR.");
+				}
+				
+				if (searchResult.isBookMove()) {
+					Thread.sleep(Utility.generateStrongRandomNumber(150, 500));
 				}
 				
 				long e = System.currentTimeMillis();

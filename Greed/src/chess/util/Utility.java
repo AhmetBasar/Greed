@@ -27,9 +27,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import chess.engine.EngineConstants;
+
 public class Utility {
 
 	public static final long[] SINGLE_BIT = new long[64];
+	public static final long[][] LINE = new long[64][64];
 	
 	static {
 		 onClassLoad();
@@ -38,7 +41,40 @@ public class Utility {
 	private static void onClassLoad() {
 		for (int i = 0; i < 64; i++) {
 			SINGLE_BIT[i] = 1L << i;
-		}		
+		}
+		
+		for (int from = 0; from < 64; from++) {
+			for (int to = 0; to < 64; to++) {
+				if (from == to) {
+					continue;
+				}
+				int fromRank = getRank(from);
+				int toRank = getRank(to);
+				int fromFile = getFile(from);
+				int toFile = getFile(to);
+				long toDiag  = EngineConstants.DIAG_MASK[to];
+				long fromDiag = EngineConstants.DIAG_MASK[from];
+				long toADiag  = EngineConstants.ADIAG_MASK[to];
+				long fromADiag = EngineConstants.ADIAG_MASK[from];
+				if (fromRank == toRank) {
+					for (int k = Math.min(from, to) + 1; k < Math.max(from, to); k++) {
+						LINE[from][to] |= SINGLE_BIT[k];
+					}
+				} else if (fromFile == toFile) {
+					for (int k = Math.min(from, to) + 8; k < Math.max(from, to); k += 8) {
+						LINE[from][to] |= SINGLE_BIT[k];
+					}
+				} else if (fromDiag == toDiag) {
+					for (int k = Math.min(from, to) + 9; k < Math.max(from, to); k += 9) {
+						LINE[from][to] |= SINGLE_BIT[k];
+					}
+				} else if (fromADiag == toADiag) {
+					for (int k = Math.min(from, to) + 7; k < Math.max(from, to); k += 7) {
+						LINE[from][to] |= SINGLE_BIT[k];
+					}
+				}
+			}
+		}
 	}
 	
 	public static String toFormattedHexString(long val) {

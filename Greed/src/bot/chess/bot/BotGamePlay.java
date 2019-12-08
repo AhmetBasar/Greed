@@ -19,6 +19,7 @@
  **********************************************/
 package chess.bot;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -61,6 +62,7 @@ public class BotGamePlay implements IGameController {
 	private List<Long> zobristKeyHistory = new ArrayList<Long>();
 	
 	public static void main(String[] args) throws Exception{
+		new SecureRandom().nextInt();
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
 			throw new RuntimeException("ENABLE_ASSERTION");
 		}
