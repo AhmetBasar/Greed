@@ -25,6 +25,7 @@ import chess.engine.EngineConstants;
 import chess.engine.Transformer;
 
 public class DebugUtility {
+	
 	private static final byte [][] DEFAULT_BOARD={
 			   {     9,     5,     7,    11,    13,     7,     5,     9},
 			   {     3,     3,     3,     3,     3,     3,     3,     3},
@@ -56,6 +57,36 @@ public class DebugUtility {
 			   {     0,     0,     4,     0,     0,    10,     0,     3},
 			   {     2,     2,     2,     6,     6,     2,     2,     2},
 			   {     8,     0,     0,     0,    12,     0,     0,     8}
+	};
+	
+	private static final byte[] POSSIBLE_TYPES = new byte[] {
+			/***/
+			EngineConstants.WHITE_PAWN,
+			/***/
+			EngineConstants.WHITE_KNIGHT,
+			/***/
+			EngineConstants.WHITE_BISHOP,
+			/***/
+			EngineConstants.WHITE_ROOK,
+			/***/
+			EngineConstants.WHITE_QUEEN,
+			/***/
+			EngineConstants.WHITE_KING,
+			/***/
+			EngineConstants.BLACK_PAWN,
+			/***/
+			EngineConstants.BLACK_KNIGHT,
+			/***/
+			EngineConstants.BLACK_BISHOP,
+			/***/
+			EngineConstants.BLACK_ROOK,
+			/***/
+			EngineConstants.BLACK_QUEEN,
+			/***/
+			EngineConstants.BLACK_KING,
+			/***/
+			EngineConstants.BLANK,
+			/***/
 	};
 	
 	public static byte[][] getDefaultBoard(){
@@ -223,83 +254,47 @@ public class DebugUtility {
 		byte[][] board = new byte[8][8];
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				byte[] possibleValues = new byte[] {
-						/***/
-						EngineConstants.WHITE_PAWN,
-						/***/
-						EngineConstants.WHITE_KNIGHT,
-						/***/
-						EngineConstants.WHITE_BISHOP,
-						/***/
-						EngineConstants.WHITE_ROOK,
-						/***/
-						EngineConstants.WHITE_QUEEN,
-						/***/
-						EngineConstants.WHITE_KING,
-						/***/
-						EngineConstants.BLACK_PAWN,
-						/***/
-						EngineConstants.BLACK_KNIGHT,
-						/***/
-						EngineConstants.BLACK_BISHOP,
-						/***/
-						EngineConstants.BLACK_ROOK,
-						/***/
-						EngineConstants.BLACK_QUEEN,
-						/***/
-						EngineConstants.BLACK_KING,
-						/***/
-						EngineConstants.BLANK,
-						/***/
-				};
 				int randomIndex = ThreadLocalRandom.current().nextInt(0, 13);
-				board[i][j] = possibleValues[randomIndex];
+				board[i][j] = POSSIBLE_TYPES[randomIndex];
 			}
 		}
 		return board;
 	}
 	
 	public static byte[][] generateRealisticRandomBoard() {
-		
 		int[] counters = new int[14];
 		int[] limits = new int[]{15, 7, 7, 7, 7, 1, 15, 7, 7, 7, 3, 1, 99};
-		
 		byte[][] board = new byte[8][8];
 		for (int i = 0; i < 8; i++) {
 			for (int j = 0; j < 8; j++) {
-				byte[] possibleValues = new byte[] {
-						/***/
-						EngineConstants.WHITE_PAWN,
-						/***/
-						EngineConstants.WHITE_KNIGHT,
-						/***/
-						EngineConstants.WHITE_BISHOP,
-						/***/
-						EngineConstants.WHITE_ROOK,
-						/***/
-						EngineConstants.WHITE_QUEEN,
-						/***/
-						EngineConstants.WHITE_KING,
-						/***/
-						EngineConstants.BLACK_PAWN,
-						/***/
-						EngineConstants.BLACK_KNIGHT,
-						/***/
-						EngineConstants.BLACK_BISHOP,
-						/***/
-						EngineConstants.BLACK_ROOK,
-						/***/
-						EngineConstants.BLACK_QUEEN,
-						/***/
-						EngineConstants.BLACK_KING,
-						/***/
-						EngineConstants.BLANK,
-						/***/
-				};
 				int randomIndex = ThreadLocalRandom.current().nextInt(0, 13);
 				counters[randomIndex] = counters[randomIndex] + 1;
 				if (counters[randomIndex] <= limits[randomIndex]) {
-					board[i][j] = possibleValues[randomIndex];
+					board[i][j] = POSSIBLE_TYPES[randomIndex];
+				}
+			}
+		}
+		return board;
+	}
+	
+	public static byte[][] generateRealisticWeightedRandomBoard() {
+		byte[][] board = new byte[8][8];
+		byte[] weights = new byte[] { 10, 2, 2, 2, 1, 1, 10, 2, 2, 2, 1, 1, 64};
+		int[] counters = new int[14];
+		int[] limits = new int[]{15, 7, 7, 7, 7, 1, 15, 7, 7, 7, 3, 1, 99};
+		
+		for (int i = 0; i < 8; i++) {
+			for (int j = 0; j < 8; j++) {
+				double random = ThreadLocalRandom.current().nextDouble() * 100;
+				for (int k = 0; k < weights.length; k++) {
+					random = random - weights[k];
+					if (random <= 0d) {
+						counters[k] = counters[k] + 1;
+						if (counters[k] <= limits[k]) {
+							board[i][j] =  POSSIBLE_TYPES[k];
+						}
+						break;
+					}
 				}
 			}
 		}

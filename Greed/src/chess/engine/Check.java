@@ -23,6 +23,14 @@ import chess.movegen.MagicBitboard;
 
 public class Check {
 	
+	
+	//TODO check if it is normal move?? may be much more efficient.
+	//TODO check if it is normal move?? may be much more efficient.
+	//TODO check if it is normal move?? may be much more efficient.
+	//TODO check if it is normal move?? may be much more efficient.
+	//TODO check if it is normal move?? may be much more efficient.
+	//TODO check if it is normal move?? may be much more efficient.
+	//TODO check if it is normal move?? may be much more efficient.
 	public static long getCheckers(IBoard board) {
 		int side = board.getSide();
 		int opSide = board.getOpSide();

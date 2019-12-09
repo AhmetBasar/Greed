@@ -24,7 +24,7 @@ import chess.engine.EngineConstants;
 import chess.engine.Material;
 import chess.engine.Transformer;
 
-public class MaterialTest {
+public class MaterialTest implements EngineConstants {
 	
 	public static void main(String[] args) {
 		testAll();
@@ -32,6 +32,7 @@ public class MaterialTest {
 	
 	public static void testAll() {
 		testGetMaterialKey();
+		testHasSlidingPiece();
 	}
 	
 	private static void testGetMaterialKey() {
@@ -46,4 +47,19 @@ public class MaterialTest {
 			}			
 		}
 	}
+	
+	private static void testHasSlidingPiece() {
+		for (int i = 0; i < 1000000; i++) {
+			long[] bb = Transformer.getBitboardStyl(DebugUtility.generateRealisticWeightedRandomBoard());
+			int materialKey = Material.getMaterialKey(bb);
+			for (int side = EngineConstants.WHITE ; side <= EngineConstants.BLACK ; side++) {
+				boolean hasSlidingPiece = Material.hasSlidingPiece(materialKey, side);
+				if (hasSlidingPiece != ((bb[side | BISHOP] | bb[side | ROOK] | bb[side | QUEEN]) != 0)) {
+					DebugUtility.throwBoard(bb);
+					throw new RuntimeException("Failed.");
+				}
+			}			
+		}
+	}
+	
 }

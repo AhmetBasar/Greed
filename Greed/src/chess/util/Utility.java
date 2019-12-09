@@ -33,6 +33,7 @@ public class Utility {
 
 	public static final long[] SINGLE_BIT = new long[64];
 	public static final long[][] LINE = new long[64][64];
+	public static final long[][] PINNED_MOVEMENT = new long[64][64];
 	
 	static {
 		 onClassLoad();
@@ -60,17 +61,53 @@ public class Utility {
 					for (int k = Math.min(from, to) + 1; k < Math.max(from, to); k++) {
 						LINE[from][to] |= SINGLE_BIT[k];
 					}
+					if (from > to) {
+						for (int k = to + 1; (k % 8) != 0 && k <= 63; k++) {
+							PINNED_MOVEMENT[from][to] |= SINGLE_BIT[k];
+						}
+					} else {
+						for (int k = to - 1; (k % 8) != 7 && k >= 0; k--) {
+							PINNED_MOVEMENT[from][to] |= SINGLE_BIT[k];
+						}
+					}
 				} else if (fromFile == toFile) {
 					for (int k = Math.min(from, to) + 8; k < Math.max(from, to); k += 8) {
 						LINE[from][to] |= SINGLE_BIT[k];
+					}
+					if (from > to) {
+						for (int k = to + 8; k <= 63; k += 8) {
+							PINNED_MOVEMENT[from][to] |= SINGLE_BIT[k];
+						}
+					} else {
+						for (int k = to - 8; k >= 0; k -=8) {
+							PINNED_MOVEMENT[from][to] |= SINGLE_BIT[k];
+						}
 					}
 				} else if (fromDiag == toDiag) {
 					for (int k = Math.min(from, to) + 9; k < Math.max(from, to); k += 9) {
 						LINE[from][to] |= SINGLE_BIT[k];
 					}
+					if (from > to) {
+						for (int k = to + 9; (k % 8) != 0 && k <= 63; k += 9) {
+							PINNED_MOVEMENT[from][to] |= SINGLE_BIT[k];
+						}
+					} else {
+						for (int k = to - 9; (k % 8) != 7 && k >=0; k -=9) {
+							PINNED_MOVEMENT[from][to] |= SINGLE_BIT[k];
+						}
+					}
 				} else if (fromADiag == toADiag) {
 					for (int k = Math.min(from, to) + 7; k < Math.max(from, to); k += 7) {
 						LINE[from][to] |= SINGLE_BIT[k];
+					}
+					if (from > to) {
+						for (int k = to + 7; (k % 8) != 7 && k <= 63; k += 7) {
+							PINNED_MOVEMENT[from][to] |= SINGLE_BIT[k];
+						}
+					} else {
+						for (int k = to - 7; (k % 8) != 0 && k >=0; k -=7) {
+							PINNED_MOVEMENT[from][to] |= SINGLE_BIT[k];
+						}
 					}
 				}
 			}

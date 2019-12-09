@@ -240,6 +240,14 @@ public class MagicBitboard {
 				| bishopMoves[from][(int) ((occ & bishopMasks[from]) * bishopMagicNumbers[from] >>> bishopShifts[from])];
 	}
 	
+	public static long getBishopMovesWithoutBlocker(int from) {
+		return bishopMoves[from][0];
+	}
+	
+	public static long getRookMovesWithoutBlocker(int from) {
+		return rookMoves[from][0];
+	}
+	
 	public static void initialize() {
 		
 	}
