@@ -12,4 +12,6 @@ public interface MoveGenerationConstants {
 	int[][] betweenKingAndRook = {{3, 5}, {59, 61}};
 	byte[] kingPositions = { 4, 60 };
 	
+	public static final int MAX_PLIES = 64;
+	
 }
