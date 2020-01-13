@@ -17,7 +17,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 	
 	public void startPly() {
 		nextToGenerate[currentPly + 1] = nextToGenerate[currentPly];
-		nextToMove[currentPly + 1] = nextToMove[currentPly];
+		nextToMove[currentPly + 1] = nextToGenerate[currentPly];
 		currentPly++;
 	}
 	
@@ -55,14 +55,13 @@ public class MoveGeneration implements MoveGenerationConstants {
 	
 	private LegalityV4 legality = new LegalityV4();
 	
-	public int[] generateMoves(IBoard board, int depthPlusOne) {
-		return generateMoves(board.getBitboard(), board.getSide(), board.getEpTarget(), board.getCastlingRights());
+	public void generateMoves(IBoard board, int depthPlusOne) {
+		generateMoves(board.getBitboard(), board.getSide(), board.getEpTarget(), board.getCastlingRights());
 	}
 	
 	//TODO : try direct access ep target and side instead of pass parameter. and compare performances..
-	public int[] generateMoves(long[] bitboard, int side, int epTarget, byte[][] castlingRights) {
+	public void generateMoves(long[] bitboard, int side, int epTarget, byte[][] castlingRights) {
 		int opSide = side ^ 1;
-		int[] moveList = new int[EngineConstants.MOVE_LIST_SIZE];
 		int diff;
 		long toBitboard;
 		long fromBitboard;
@@ -97,7 +96,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			to = Long.numberOfTrailingZeros(toBitboard);
 			from = (((to - diff) % 64) + 64) % 64;
 			move = from | (to << 8);
-			moveList[++idx] = move;
+			addMove(move);
 			toBitboard = toBitboard & ~(1L << to);
 		}
 
@@ -108,7 +107,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			to = Long.numberOfTrailingZeros(toBitboard);
 			from = (((to - diff - diff) % 64) + 64) % 64;
 			move = from | (to << 8) | (EngineConstants.DOUBLE_PUSH << 16);
-			moveList[++idx] = move;
+			addMove(move);
 			toBitboard = toBitboard & ~(1L << to);
 		}
 		
@@ -121,17 +120,17 @@ public class MoveGeneration implements MoveGenerationConstants {
 
 			//Queen Promotions
 			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.QUEEN) 	<< 20);
-			moveList[++idx] = move;
+			addMove(move);
 			//Rook Promotions
 			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.ROOK) 	<< 20);
-			moveList[++idx] = move;
+			addMove(move);
 			//Bishop Promotions
 			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.BISHOP) 	<< 20);
-			moveList[++idx] = move;
+			addMove(move);
 			//Knight Promotions
 			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.KNIGHT) 	<< 20);
-			moveList[++idx] = move;
-
+			addMove(move);
+			
 			toBitboard=toBitboard & ~(1L << to);
 		}
 
@@ -145,7 +144,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 				to = Long.numberOfTrailingZeros(toBitboard);
 				from = (((to - diff) % 64) + 64) % 64;
 				move = from | (to << 8);
-				moveList[++idx] = move;
+				addMove(move);
 				toBitboard = toBitboard & ~(1L << to);
 			}
 			
@@ -156,7 +155,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 					to=Long.numberOfTrailingZeros(toBitboard);
 					from=(((to-diff)%64)+64)%64;
 					move = from | (to << 8) | (EngineConstants.EP_CAPTURE << 16);
-					moveList[++idx] = move;
+					addMove(move);
 					toBitboard=toBitboard & ~(1L << to);
 				}
 			}
@@ -169,16 +168,16 @@ public class MoveGeneration implements MoveGenerationConstants {
 				
 				//Queen Promotions
 				move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.QUEEN) 	<< 20);
-				moveList[++idx] = move;
+				addMove(move);
 				//Rook Promotions
 				move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.ROOK) 	<< 20);
-				moveList[++idx] = move;
+				addMove(move);
 				//Bishop Promotions
 				move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.BISHOP) 	<< 20);
-				moveList[++idx] = move;
+				addMove(move);
 				//Knight Promotions
 				move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.KNIGHT) 	<< 20);
-				moveList[++idx] = move;
+				addMove(move);
 				
 				toBitboard=toBitboard & ~(1L << to);
 			}
@@ -192,7 +191,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			while (toBitboard != 0) {
 				to = Long.numberOfTrailingZeros(toBitboard);
 				move = from | (to << 8);
-				moveList[++idx] = move;
+				addMove(move);
 				toBitboard = toBitboard & ~(1L << to);
 			}
 			fromBitboard = fromBitboard & ~(1L << from);
@@ -206,7 +205,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			while (toBitboard != 0) {
 				to = Long.numberOfTrailingZeros(toBitboard);
 				move = from | (to << 8);
-				moveList[++idx] = move;
+				addMove(move);
 				toBitboard = toBitboard & ~(1L << to);
 			}
 			fromBitboard = fromBitboard & ~(1L << from);
@@ -221,7 +220,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			while (toBitboard != 0) {
 				to = Long.numberOfTrailingZeros(toBitboard);
 				move = from | (to << 8);
-				moveList[++idx] = move;
+				addMove(move);
 				toBitboard = toBitboard & ~(1L << to);
 			}
 			fromBitboard = fromBitboard & ~(1L << from);
@@ -236,7 +235,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			while (toBitboard != 0) {
 				to = Long.numberOfTrailingZeros(toBitboard);
 				move = from | (to << 8);
-				moveList[++idx] = move;
+				addMove(move);
 				toBitboard = toBitboard & ~(1L << to);
 			}
 			fromBitboard = fromBitboard & ~(1L << from);
@@ -252,7 +251,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			while (toBitboard != 0) {
 				to = Long.numberOfTrailingZeros(toBitboard);
 				move = from | (to << 8);
-				moveList[++idx] = move;
+				addMove(move);
 				toBitboard = toBitboard & ~(1L << to);
 			}
 			fromBitboard = fromBitboard & ~(1L << from);
@@ -274,7 +273,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 					bitboard[sideToKing] |= (1L << squareBetweenKingAndRook);
 					if(!legality.isKingInCheck(bitboard, side)){
 						move = from | (to << 8) | (EngineConstants.QUEEN_SIDE_CASTLING << 16);
-						moveList[++idx] = move;
+						addMove(move);
 					}
 					bitboard[sideToKing] &= ~(1L << squareBetweenKingAndRook);
 					bitboard[sideToKing] |= (1L << kingOriginalPos);
@@ -296,15 +295,13 @@ public class MoveGeneration implements MoveGenerationConstants {
 					bitboard[sideToKing] |= (1L << squareBetweenKingAndRook);
 					if(!legality.isKingInCheck(bitboard, side)){
 						move = from | (to << 8) | (EngineConstants.KING_SIDE_CASTLING << 16);
-						moveList[++idx] = move;
+						addMove(move);
 					}
 					bitboard[sideToKing] &= ~(1L << squareBetweenKingAndRook);
 					bitboard[sideToKing] |= (1L << kingOriginalPos);
 				}
 			}
 		}
-
-		return moveList;
 	}
 	
 

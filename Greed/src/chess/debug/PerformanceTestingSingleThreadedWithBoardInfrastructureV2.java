@@ -19,13 +19,15 @@
  **********************************************/
 package chess.debug;
 
+import java.util.ArrayList;
+
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.LegalityV4;
-import chess.engine.MoveGeneration;
 import chess.engine.Transformer;
 import chess.gui.BaseGui;
+import chess.movegen.MoveGeneration;
 
 public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 	private MoveGeneration moveGeneration = new MoveGeneration();
@@ -39,7 +41,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 5;
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, castlingRights, 0, null, 0);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, castlingRights, 0, new ArrayList<Long>(), 0);
 		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
 		obj.perft(depth, board);
 		System.out.println(obj.perftResult);
@@ -50,7 +52,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		long startTime = System.currentTimeMillis();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0, null, side);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0, new ArrayList<Long>(), side);
 		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
 		obj.perft(depth, board);
 		obj.perftResult.setTimeConsumed(System.currentTimeMillis() - startTime);
@@ -67,13 +69,13 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 
 		int depthMinusOne = depth - 1;
 		int depthPlusOne = depth + 1;
-		int i = 0;
 
 		boolean existsLegalMove = false;
 		int move;
-		int[] moveList = moveGeneration.generateMoves(board, depthPlusOne);
-		while (moveList[i] != 0) {
-			move = moveList[i];
+		moveGeneration.startPly();
+		moveGeneration.generateMoves(board, depthPlusOne);
+		while (moveGeneration.hasNext()) {
+			move = moveGeneration.next();
 			
 			board.doMove(move);
 
@@ -113,9 +115,9 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 			}
 
 			board.undoMove(move);
-
-			i++;
 		}
+		
+		moveGeneration.endPly();
 
 		if (depth == 1 && !existsLegalMove) {
 			perftResult.incrementCheckMateCount();

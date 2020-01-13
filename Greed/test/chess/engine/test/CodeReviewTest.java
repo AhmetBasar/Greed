@@ -103,6 +103,7 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.debug.DebugUtility.DEFAULT_BOARD");
 		whiteListFields.add("chess.debug.DebugUtility.EMPTY_BOARD");
 		whiteListFields.add("chess.debug.DebugUtility.BOARD_2");
+		whiteListFields.add("chess.debug.DebugUtility.POSSIBLE_TYPES");
 		
 		whiteListFields.add("chess.debug.PerformanceTesting.aliveThreadCount");
 		whiteListFields.add("chess.debug.PerformanceTesting.deadThreadCount");
@@ -150,6 +151,8 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.gui.PieceEffects.timerPool");
 		whiteListFields.add("chess.gui.ChessImageCache.instance");
 		whiteListFields.add("chess.util.Utility.SINGLE_BIT");
+		whiteListFields.add("chess.util.Utility.LINE");
+		whiteListFields.add("chess.util.Utility.PINNED_MOVEMENT");
 		
 		whiteListFields.add("chess.engine.test.ThreadPool.instance");
 		whiteListFields.add("chess.engine.OpeningBook.instance");
@@ -188,6 +191,7 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.engine.Material.PIECE_VALUES");
 		whiteListFields.add("chess.engine.Material.PIECE_MASKS");
 		whiteListFields.add("chess.engine.Material.PIECE_SHIFTS");
+		whiteListFields.add("chess.engine.Material.SLIDING_PIECE_MASKS");
 		
 	}
 

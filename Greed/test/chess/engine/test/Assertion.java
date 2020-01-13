@@ -27,5 +27,11 @@ public class Assertion {
 			throw new RuntimeException("Assertion Failed.");
 		}
 	}
+	
+	public static void assertTrue(boolean condition, String message) {
+		if (!condition) {
+			throw new RuntimeException(message);
+		}
+	}
 
 }
