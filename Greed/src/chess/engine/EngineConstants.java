@@ -83,6 +83,14 @@ public interface EngineConstants {
 	   ROW_7, ROW_7, ROW_7, ROW_7, ROW_7, ROW_7, ROW_7, ROW_7,
 	   ROW_8, ROW_8, ROW_8, ROW_8, ROW_8, ROW_8, ROW_8, ROW_8};
 	
+	public static final long ROW_MASK_23456 = ROW_2 | ROW_3 | ROW_4 | ROW_5 | ROW_6;
+	
+	public static final long ROW_MASK_34567 = ROW_3 | ROW_4 | ROW_5 | ROW_6 | ROW_7;
+	
+	public static final long[] RANK_PROMOTION = new long[] {ROW_7, ROW_2};
+	
+	public static final long[] RANK_NON_PROMOTION = new long[] {~ROW_7, ~ROW_2};
+	
 	public static final long
 	   FILE_A=0x0101010101010101L<<0,
 	   FILE_B=0x0101010101010101L<<1,

@@ -3,7 +3,10 @@ package chess.movegen;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.LegalityV4;
+import chess.engine.Move;
 import chess.engine.MoveGenerationConstants;
+import chess.engine.PrecalculatedAttackTables;
+import chess.util.Utility;
 
 // https://github.com/sandermvdb/chess22k
 public class MoveGeneration implements MoveGenerationConstants {
@@ -41,16 +44,282 @@ public class MoveGeneration implements MoveGenerationConstants {
 		moves[nextToGenerate[currentPly]++] = move;
 	}
 	
+	public void generateQuietMoves(IBoard board) {
+		switch (Long.bitCount(board.getCheckers())) {
+		case 0:
+			generateNotInCheckQuietMoves(board);
+			break;
+		case 1:
+			switch ((byte)(board.getPieces()[Long.numberOfTrailingZeros(board.getCheckers())] & 0XFE)) {
+			case EngineConstants.PAWN:
+			case EngineConstants.KNIGHT:
+				generateKingQuietMoves(board);
+				break;
+			default:
+				generateOutOfSlidingCheckQuietMoves(board);
+			}
+			break;
+		default:
+			generateKingQuietMoves(board);
+			break;
+		}
+	}
+	
+	public void generateAttackMoves(IBoard board) {
+		switch (Long.bitCount(board.getCheckers())) {
+		case 0:
+			break;
+		case 1:
+			break;
+		default:
+			break;
+		}
+	}
+	
+	public void generateNotInCheckQuietMoves(IBoard board) {
+		
+		// non-pinned pieces
+		generateKingQuietMoves(board);
+		generateQueenMoves(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getEmptySquares());
+		generateRookMoves(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getEmptySquares());
+		generateBishopMoves(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getEmptySquares());
+		generateKnightMoves(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), board.getEmptySquares());
+		generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board.getSide(), board.getEmptySquares());
+		
+		// pinned pieces
+		long pinnedPieces = board.getOccupiedSquaresBySide()[board.getSide()] & board.getPinnedPieces();
+		while (pinnedPieces != 0) {
+			byte pieceWc = (byte)(board.getPieces()[Long.numberOfTrailingZeros(pinnedPieces)] & 0XFE);
+			switch (pieceWc) {
+			case EngineConstants.PAWN:
+				generatePawnPushes(Long.lowestOneBit(pinnedPieces), board.getSide(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]]);
+				break;
+			case EngineConstants.BISHOP:
+				generateBishopMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]]);
+				break;
+			case EngineConstants.ROOK:
+				generateRookMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]]);
+				break;
+			case EngineConstants.QUEEN:
+				generateQueenMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]]);
+				break;
+			}
+			pinnedPieces &= (pinnedPieces - 1);
+		}
+	}
+	
 	public void generateKingQuietMoves(IBoard board) {
-		int side = board.getSide();
-		int from = board.getKingSquares()[side];
+		int from = board.getKingSquares()[board.getSide()];
 		long toBitboard = EngineConstants.KING_LOOKUP[from] & board.getEmptySquares();
 		while (toBitboard != 0) {
-			int to = Long.numberOfTrailingZeros(toBitboard);
-			int move = from | (to << 8);
-			addMove(move);
-			toBitboard = toBitboard & ~(1L << to);
+			addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+			toBitboard &= (toBitboard - 1);
 		}
+		
+		int to;
+		int side = board.getSide();
+		long[] bitboard = board.getBitboard();
+		long fromBitboard;
+		long emptySquares = board.getEmptySquares();
+		byte[][] castlingRights = board.getCastlingRights();
+		
+		// Castling Queen Side
+		if (board.getCheckers() == 0) {
+			fromBitboard = bitboard[side | EngineConstants.KING];
+			if ((from = Long.numberOfTrailingZeros(fromBitboard)) != 64) {
+				toBitboard = (castlingRights[side][0] & (emptySquares >>> castlingShift[side][0][0]) 
+						& (emptySquares >>> castlingShift[side][0][1])
+						& (emptySquares >>> castlingShift[side][0][2])) << castlingTarget[side][0];
+				if ((to = Long.numberOfTrailingZeros(toBitboard)) != 64) {
+					byte sideToKing = (byte)(side| EngineConstants.KING);
+					int kingOriginalPos = kingPositions[side];
+					int squareBetweenKingAndRook = betweenKingAndRook[side][0];
+					bitboard[sideToKing] &= ~(1L << kingOriginalPos);
+					bitboard[sideToKing] |= (1L << squareBetweenKingAndRook);
+					if(!legality.isKingInCheck(bitboard, side)){
+						addMove(Move.encodeMove(from, to, EngineConstants.QUEEN_SIDE_CASTLING));
+					}
+					bitboard[sideToKing] &= ~(1L << squareBetweenKingAndRook);
+					bitboard[sideToKing] |= (1L << kingOriginalPos);
+				}
+			}
+			
+			// Castling King Side 
+			fromBitboard = bitboard[side | EngineConstants.KING];
+			if ((from = Long.numberOfTrailingZeros(fromBitboard)) != 64) {
+				toBitboard = (castlingRights[side][1] & (emptySquares >>> castlingShift[side][1][0]) 
+						& (emptySquares >>> castlingShift[side][1][1])) << castlingTarget[side][1];
+				if ((to = Long.numberOfTrailingZeros(toBitboard)) != 64) {
+					byte sideToKing = (byte)(side| EngineConstants.KING);
+					int kingOriginalPos = kingPositions[side];
+					int squareBetweenKingAndRook = betweenKingAndRook[side][1];
+					bitboard[sideToKing] &= ~(1L << kingOriginalPos);
+					bitboard[sideToKing] |= (1L << squareBetweenKingAndRook);
+					if(!legality.isKingInCheck(bitboard, side)){
+						addMove(Move.encodeMove(from, to, EngineConstants.KING_SIDE_CASTLING));
+					}
+					bitboard[sideToKing] &= ~(1L << squareBetweenKingAndRook);
+					bitboard[sideToKing] |= (1L << kingOriginalPos);
+				}
+			}
+		}
+	}
+	
+	private void generateQueenMoves(long fromBitboard, long occupiedSquares, long possibleSquares) {
+		while (fromBitboard != 0) {
+			int from = Long.numberOfTrailingZeros(fromBitboard);
+			long toBitboard = MagicBitboard.generateQueenMoves(from, occupiedSquares) & possibleSquares;
+			
+			while (toBitboard != 0) {
+				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				toBitboard &= (toBitboard - 1);
+			}
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
+	private void generateRookMoves(long fromBitboard, long occupiedSquares, long possibleSquares) {
+		while (fromBitboard != 0) {
+			int from = Long.numberOfTrailingZeros(fromBitboard);
+			long toBitboard = MagicBitboard.generateRookMoves(from, occupiedSquares) & possibleSquares;
+			while (toBitboard != 0) {
+				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				toBitboard &= (toBitboard - 1);
+			}
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
+	private void generateBishopMoves(long fromBitboard, long occupiedSquares, long possibleSquares) {
+		while (fromBitboard != 0) {
+			int from = Long.numberOfTrailingZeros(fromBitboard);
+			long toBitboard = MagicBitboard.generateBishopMoves(from, occupiedSquares) & possibleSquares;
+			while (toBitboard != 0) {
+				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				toBitboard &= (toBitboard - 1);
+			}
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
+	private void generateKnightMoves(long fromBitboard, long possibleSquares) {
+		while (fromBitboard != 0) {
+			int from = Long.numberOfTrailingZeros(fromBitboard);
+			long toBitboard = EngineConstants.KNIGHT_LOOKUP[from] & possibleSquares;
+			while (toBitboard != 0) {
+				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				toBitboard &= (toBitboard - 1);
+			}
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
+	private void generatePawnPushes(long fromBitboard, int side, long possibleSquares) {
+		
+		if (fromBitboard == 0) {
+			return;
+		}
+		
+		switch (side) {
+		case EngineConstants.WHITE: {
+			long toBitboard = fromBitboard & (possibleSquares >>> 8) & EngineConstants.ROW_MASK_23456;
+			long singlePushes = toBitboard;
+			while (toBitboard != 0) {
+				int from = Long.numberOfTrailingZeros(toBitboard);
+				addMove(Move.encodeMove(from, from + 8));
+				toBitboard &= (toBitboard - 1);
+			}
+
+			toBitboard = singlePushes & (possibleSquares >>> 16) & EngineConstants.ROW_2;
+			while (toBitboard != 0) {
+				int from = Long.numberOfTrailingZeros(toBitboard);
+				addMove(Move.encodeMove(from, from + 16, EngineConstants.DOUBLE_PUSH));
+				toBitboard &= (toBitboard - 1);
+			}
+			break;
+		}
+		case EngineConstants.BLACK: {
+			long toBitboard = fromBitboard & (possibleSquares << 8) & EngineConstants.ROW_MASK_34567;
+			long singlePushes = toBitboard;
+			while (toBitboard != 0) {
+				int from = Long.numberOfTrailingZeros(toBitboard);
+				addMove(Move.encodeMove(from, from - 8));
+				toBitboard &= (toBitboard - 1);
+			}
+
+			toBitboard = singlePushes & (possibleSquares << 16) & EngineConstants.ROW_7;
+			while (toBitboard != 0) {
+				int from = Long.numberOfTrailingZeros(toBitboard);
+				addMove(Move.encodeMove(from, from - 16, EngineConstants.DOUBLE_PUSH));
+				toBitboard &= (toBitboard - 1);
+			}
+			break;
+		}
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	private void generateOutOfSlidingCheckQuietMoves(IBoard board) {
+		long possibleSquares = Utility.LINE[board.getKingSquares()[board.getSide()]][Long.numberOfTrailingZeros(board.getCheckers())];
+		if (possibleSquares != 0) {
+			generateKnightMoves(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), possibleSquares);
+			generateBishopMoves(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), possibleSquares);
+			generateRookMoves(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), possibleSquares);
+			generateQueenMoves(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & ~board.getPinnedPieces(), board.getOccupiedSquares(), possibleSquares);
+			generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board.getSide(), possibleSquares);
+		}
+		generateKingQuietMoves(board);
+	}
+	
+	public void generateNotInCheckAttackMoves(IBoard board) {
+		
+		long enemySquares = board.getOccupiedSquaresBySide()[board.getOpSide()];
+		
+		// non pinned pieces
+		generateEpAttacks(board);
+	}
+	
+	private void generateEpAttacks(IBoard board) {
+		if (board.getEpTarget() == 64) {
+			return;
+		}
+		long fromBitboard = board.getBitboard()[board.getSide() | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[board.getOpSide()][board.getEpTarget()];
+		while (fromBitboard != 0) {
+			addMove(Move.encodeMove(Long.numberOfTrailingZeros(fromBitboard), board.getEpTarget(), EngineConstants.EP_CAPTURE));
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
+	private void generatePawnAttacksAndPromotions(long pawns, IBoard board) {
+		
+		if (pawns == 0) {
+			return;
+		}
+		
+		switch (board.getSide()) {
+		case EngineConstants.WHITE: {
+
+			// non promotion.
+//			long fromBitboard = pawns & EngineConstants.RANK_NON_PROMOTION & 
+			
+			break;
+		}
+		case EngineConstants.BLACK: {
+			break;
+		}
+		default:
+			throw new IllegalArgumentException();
+		}
+	}
+	
+	private long getBlackPawnAttacks(long blackPawns) {
+		return (blackPawns >>> 9 & ~EngineConstants.FILE_H) | (blackPawns >>> 7 & ~EngineConstants.FILE_A);
+//		SDF
+	}
+	
+	private long getWhitePawnAttacks(long whitePawns) {
+		return (whitePawns << 9 & ~EngineConstants.FILE_A) | (whitePawns << 7 & ~EngineConstants.FILE_H);
 	}
 	
 	private LegalityV4 legality = new LegalityV4();

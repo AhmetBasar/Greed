@@ -41,4 +41,16 @@ public class Move {
 		return (move & 0x00010000) >>> 16;
 	}
 	
+	public static int encodeMove(int from, int to) {
+		return from | (to << 8);
+	}
+	
+	public static int encodeMove(int from, int to, int moveType) {
+		return from | (to << 8) | (moveType << 16);
+	}
+	
+//	public static int encodeCastlingMove(int from, int to, int) {
+//		return from | (to << 8);
+//	}
+	
 }

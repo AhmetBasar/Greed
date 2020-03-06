@@ -49,5 +49,9 @@ public interface IBoard {
 	int[] getKingSquares();
 	
 	long getCheckers();
+	
+	public long getPinnedPieces();
+
+	public long getDiscoveredPieces();
 
 }

@@ -1033,5 +1033,13 @@ public class BoardV8 implements IBoard, EngineConstants {
 			}
 		}
 	}
+
+	public long getPinnedPieces() {
+		return pinnedPieces;
+	}
+
+	public long getDiscoveredPieces() {
+		return discoveredPieces;
+	}
 	
 }

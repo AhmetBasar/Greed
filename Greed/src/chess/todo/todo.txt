@@ -270,3 +270,5 @@ Chess Bot Programming.
   - Write testing class for Check.
   - Change checkers detection implementation. No need to invoke super piece method when it is not discovered move and not promotion, not ep but normal move.
   - test checkers implementation again with legality.
+  - Rewrite generate castling moves method. it is very inefficient.
+  - rewrite generate pawn moves method with branchless implementation, than compare performances.

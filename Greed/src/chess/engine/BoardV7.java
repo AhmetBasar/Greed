@@ -995,4 +995,12 @@ public class BoardV7 implements IBoard, EngineConstants {
 		return checkers;
 	}
 	
+	public long getPinnedPieces() {
+		throw new RuntimeException("Not yet implemented.");
+	}
+
+	public long getDiscoveredPieces() {
+		throw new RuntimeException("Not yet implemented.");
+	}
+	
 }
