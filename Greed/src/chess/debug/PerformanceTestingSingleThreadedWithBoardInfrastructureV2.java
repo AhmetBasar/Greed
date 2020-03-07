@@ -30,7 +30,7 @@ import chess.gui.BaseGui;
 import chess.movegen.MoveGeneration;
 
 public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
-	private MoveGeneration moveGeneration = new MoveGeneration();
+	private MoveGeneration moveGeneration = new MoveGeneration(false);
 	private LegalityV4 legality = new LegalityV4();
 	private PerftResult perftResult = new PerftResult();
 

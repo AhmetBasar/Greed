@@ -5,7 +5,6 @@ import chess.engine.IBoard;
 import chess.engine.LegalityV4;
 import chess.engine.Move;
 import chess.engine.MoveGenerationConstants;
-import chess.engine.PrecalculatedAttackTables;
 import chess.util.Utility;
 
 // https://github.com/sandermvdb/chess22k
@@ -17,6 +16,11 @@ public class MoveGeneration implements MoveGenerationConstants {
 	private int[] nextToMove = new int[MAX_PLIES * 2];
 	
 	private int currentPly;
+	private boolean allowUnderPromotion = false;
+	
+	public MoveGeneration(boolean allowUnderPromotion) {
+		this.allowUnderPromotion = allowUnderPromotion;
+	}
 	
 	public void startPly() {
 		nextToGenerate[currentPly + 1] = nextToGenerate[currentPly];
@@ -65,13 +69,18 @@ public class MoveGeneration implements MoveGenerationConstants {
 		}
 	}
 	
-	public void generateAttackMoves(IBoard board) {
+	public void generateAttacks(IBoard board) {
 		switch (Long.bitCount(board.getCheckers())) {
 		case 0:
+			// not in-check
+			generateNotInCheckAttacks(board);
 			break;
 		case 1:
+			generateOutOfCheckAttacks(board);
 			break;
 		default:
+			// double check, only the king can attack
+			generateKingAttacks(board);
 			break;
 		}
 	}
@@ -105,6 +114,16 @@ public class MoveGeneration implements MoveGenerationConstants {
 				break;
 			}
 			pinnedPieces &= (pinnedPieces - 1);
+		}
+	}
+	
+	public void generateKingAttacks(IBoard board) {
+		int from = board.getKingSquares()[board.getSide()];
+		long toBitboard = EngineConstants.KING_LOOKUP[from] & board.getOccupiedSquaresBySide()[board.getOpSide()];
+		while (toBitboard != 0) {
+			int to = Long.numberOfTrailingZeros(toBitboard);
+			addMove(Move.encodeAttackMove(from, to, board.getPieces()[to]));
+			toBitboard &= (toBitboard - 1);
 		}
 	}
 	
@@ -178,12 +197,39 @@ public class MoveGeneration implements MoveGenerationConstants {
 		}
 	}
 	
+	private void generateQueenAttacks(long fromBitboard, long occupiedSquares, long possibleSquares, byte[] pieces) {
+		while (fromBitboard != 0) {
+			int from = Long.numberOfTrailingZeros(fromBitboard);
+			long toBitboard = MagicBitboard.generateQueenMoves(from, occupiedSquares) & possibleSquares;
+			
+			while (toBitboard != 0) {
+				int to = Long.numberOfTrailingZeros(toBitboard);
+				addMove(Move.encodeAttackMove(from, to, pieces[to]));
+				toBitboard &= (toBitboard - 1);
+			}
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
 	private void generateRookMoves(long fromBitboard, long occupiedSquares, long possibleSquares) {
 		while (fromBitboard != 0) {
 			int from = Long.numberOfTrailingZeros(fromBitboard);
 			long toBitboard = MagicBitboard.generateRookMoves(from, occupiedSquares) & possibleSquares;
 			while (toBitboard != 0) {
 				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				toBitboard &= (toBitboard - 1);
+			}
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
+	private void generateRookAttacks(long fromBitboard, long occupiedSquares, long possibleSquares, byte[] pieces) {
+		while (fromBitboard != 0) {
+			int from = Long.numberOfTrailingZeros(fromBitboard);
+			long toBitboard = MagicBitboard.generateRookMoves(from, occupiedSquares) & possibleSquares;
+			while (toBitboard != 0) {
+				int to = Long.numberOfTrailingZeros(toBitboard);
+				addMove(Move.encodeAttackMove(from, to, pieces[to]));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -202,12 +248,38 @@ public class MoveGeneration implements MoveGenerationConstants {
 		}
 	}
 	
+	private void generateBishopAttacks(long fromBitboard, long occupiedSquares, long possibleSquares, byte[] pieces) {
+		while (fromBitboard != 0) {
+			int from = Long.numberOfTrailingZeros(fromBitboard);
+			long toBitboard = MagicBitboard.generateBishopMoves(from, occupiedSquares) & possibleSquares;
+			while (toBitboard != 0) {
+				int to = Long.numberOfTrailingZeros(toBitboard);
+				addMove(Move.encodeAttackMove(from, to, pieces[to]));
+				toBitboard &= (toBitboard - 1);
+			}
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
 	private void generateKnightMoves(long fromBitboard, long possibleSquares) {
 		while (fromBitboard != 0) {
 			int from = Long.numberOfTrailingZeros(fromBitboard);
 			long toBitboard = EngineConstants.KNIGHT_LOOKUP[from] & possibleSquares;
 			while (toBitboard != 0) {
 				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				toBitboard &= (toBitboard - 1);
+			}
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
+	private void generateKnightAttacks(long fromBitboard, long possibleSquares, byte[] pieces) {
+		while (fromBitboard != 0) {
+			int from = Long.numberOfTrailingZeros(fromBitboard);
+			long toBitboard = EngineConstants.KNIGHT_LOOKUP[from] & possibleSquares;
+			while (toBitboard != 0) {
+				int to = Long.numberOfTrailingZeros(toBitboard);
+				addMove(Move.encodeAttackMove(from, to, pieces[to]));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -272,12 +344,55 @@ public class MoveGeneration implements MoveGenerationConstants {
 		generateKingQuietMoves(board);
 	}
 	
-	public void generateNotInCheckAttackMoves(IBoard board) {
+	public void generateNotInCheckAttacks(IBoard board) {
 		
 		long enemySquares = board.getOccupiedSquaresBySide()[board.getOpSide()];
+		long emptySquares = board.getEmptySquares();
 		
 		// non pinned pieces
 		generateEpAttacks(board);
+		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, enemySquares, emptySquares);
+		generateKnightAttacks(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), enemySquares, board.getPieces());
+		generateRookAttacks(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), enemySquares, board.getPieces());
+		generateBishopAttacks(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), enemySquares, board.getPieces());
+		generateQueenAttacks(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & ~board.getPinnedPieces(), board.getOccupiedSquares(), enemySquares, board.getPieces());
+		generateKingAttacks(board);
+		
+		// pinned pieces
+		long fromBitboard = board.getOccupiedSquaresBySide()[board.getSide()] & board.getPinnedPieces();
+		while (fromBitboard != 0) {
+			int from = Long.numberOfTrailingZeros(fromBitboard);
+			
+			byte fromPieceWc = (byte)(board.getPieces()[from] & 0XFE);
+			switch (fromPieceWc) {
+			case EngineConstants.PAWN:
+				generatePawnAttacksAndPromotions(Long.lowestOneBit(fromPieceWc), board, enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], 0);
+				break;
+			case EngineConstants.BISHOP:
+				generateBishopAttacks(Long.lowestOneBit(fromPieceWc), board.getOccupiedSquares(), enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], board.getPieces());
+				break;
+			case EngineConstants.ROOK:
+				generateRookAttacks(Long.lowestOneBit(fromPieceWc), board.getOccupiedSquares(), enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], board.getPieces());
+				break;
+			case EngineConstants.QUEEN:
+				generateQueenAttacks(Long.lowestOneBit(fromPieceWc), board.getOccupiedSquares(), enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], board.getPieces());
+				break;
+			}
+			fromBitboard &= (fromBitboard - 1);
+		}
+	}
+	
+	public void generateOutOfCheckAttacks(IBoard board) {
+		// attack to checker
+		// TODO: must not be pinned. And epSquare must be checker!
+		generateEpAttacks(board);
+		// TODO: prevent promotion move here.
+		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, board.getCheckers(), board.getEmptySquares());
+		generateKnightAttacks(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), board.getCheckers(), board.getPieces());
+		generateBishopAttacks(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
+		generateRookAttacks(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
+		generateQueenAttacks(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
+		generateKingAttacks(board);
 	}
 	
 	private void generateEpAttacks(IBoard board) {
@@ -286,26 +401,78 @@ public class MoveGeneration implements MoveGenerationConstants {
 		}
 		long fromBitboard = board.getBitboard()[board.getSide() | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[board.getOpSide()][board.getEpTarget()];
 		while (fromBitboard != 0) {
-			addMove(Move.encodeMove(Long.numberOfTrailingZeros(fromBitboard), board.getEpTarget(), EngineConstants.EP_CAPTURE));
+			addMove(Move.encodeAttackMove(Long.numberOfTrailingZeros(fromBitboard), board.getEpTarget(), EngineConstants.EP_CAPTURE, EngineConstants.PAWN | board.getOpSide()));
 			fromBitboard &= (fromBitboard - 1);
 		}
 	}
 	
-	private void generatePawnAttacksAndPromotions(long pawns, IBoard board) {
+	private void generatePawnAttacksAndPromotions(long pawns, IBoard board, long enemySquares, long emptySquares) {
 		
 		if (pawns == 0) {
 			return;
 		}
 		
-		switch (board.getSide()) {
+		int side = board.getSide();
+		
+		switch (side) {
 		case EngineConstants.WHITE: {
 
 			// non promotion.
-//			long fromBitboard = pawns & EngineConstants.RANK_NON_PROMOTION & 
+			long fromBitboard = pawns & EngineConstants.RANK_NON_PROMOTION[EngineConstants.WHITE] & getBlackPawnAttacks(enemySquares);
+			while (fromBitboard != 0) {
+				int from = Long.numberOfTrailingZeros(fromBitboard);
+				long toBitboard = EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.WHITE][from] & enemySquares;
+				while (toBitboard != 0) {
+					addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+					toBitboard &= (toBitboard - 1);
+				}
+				fromBitboard &= (fromBitboard - 1);
+			}
+			
+			// promotion.
+			long promotionPawns = pawns & EngineConstants.RANK_PROMOTION[EngineConstants.WHITE];
+			while (promotionPawns != 0) {
+				int from = Long.numberOfTrailingZeros(promotionPawns);
+				
+				if (((Long.lowestOneBit(promotionPawns) << 8) & emptySquares) != 0) {
+					generatePromotions(from, from + 8, side);
+				}
+				
+				// promotion attacks
+				generatePromotionAttacks(from, EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.WHITE][from] & enemySquares, side, board.getPieces());
+				
+				promotionPawns &= (promotionPawns - 1);
+			}
 			
 			break;
 		}
 		case EngineConstants.BLACK: {
+			// non promotion.
+			long fromBitboard = pawns & EngineConstants.RANK_NON_PROMOTION[EngineConstants.BLACK] & getWhitePawnAttacks(enemySquares);
+			while (fromBitboard != 0) {
+				int from = Long.numberOfTrailingZeros(fromBitboard);
+				long toBitboard = EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.BLACK][from] & enemySquares;
+				while (toBitboard != 0) {
+					addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+					toBitboard &= (toBitboard - 1);
+				}
+				fromBitboard &= (fromBitboard - 1);
+			}
+			
+			// promotion.
+			long promotionPawns = pawns & EngineConstants.RANK_PROMOTION[EngineConstants.BLACK];
+			while (promotionPawns != 0) {
+				int from = Long.numberOfTrailingZeros(promotionPawns);
+				
+				if (((Long.lowestOneBit(promotionPawns) >>> 8) & emptySquares) != 0) {
+					generatePromotions(from, from - 8, side);
+				}
+				
+				// promotion attacks
+				generatePromotionAttacks(from, EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.BLACK][from] & enemySquares, side, board.getPieces());
+				
+				promotionPawns &= (promotionPawns - 1);
+			}
 			break;
 		}
 		default:
@@ -313,9 +480,30 @@ public class MoveGeneration implements MoveGenerationConstants {
 		}
 	}
 	
+	private void generatePromotions(int from, int to, int side) {
+		Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN);
+		if (allowUnderPromotion) {
+			addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.KNIGHT));
+			addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.BISHOP));
+			addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.ROOK));
+		}
+	}
+	
+	private void generatePromotionAttacks(int from, long toBitboard, int side, byte[] pieces) {
+		while (toBitboard != 0) {
+			int to = Long.numberOfTrailingZeros(toBitboard);
+			Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN, pieces[to]);
+			if (allowUnderPromotion) {
+				addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.KNIGHT, pieces[to]));
+				addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.BISHOP, pieces[to]));
+				addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.ROOK, pieces[to]));
+			}	
+			toBitboard &= (toBitboard - 1);
+		}
+	}
+	
 	private long getBlackPawnAttacks(long blackPawns) {
 		return (blackPawns >>> 9 & ~EngineConstants.FILE_H) | (blackPawns >>> 7 & ~EngineConstants.FILE_A);
-//		SDF
 	}
 	
 	private long getWhitePawnAttacks(long whitePawns) {

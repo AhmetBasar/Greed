@@ -45,12 +45,24 @@ public class Move {
 		return from | (to << 8);
 	}
 	
+	public static int encodeAttackMove(int from, int to, int capturedPiece) {
+		return from | (to << 8) | (capturedPiece << 27);
+	}
+	
 	public static int encodeMove(int from, int to, int moveType) {
 		return from | (to << 8) | (moveType << 16);
 	}
 	
-//	public static int encodeCastlingMove(int from, int to, int) {
-//		return from | (to << 8);
-//	}
+	public static int encodeAttackMove(int from, int to, int moveType, int capturedPiece) {
+		return from | (to << 8) | (moveType << 16) | (capturedPiece << 27);
+	}
+	
+	public static int encodeMove(int from, int to, int moveType, int promotedPiece) {
+		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20);
+	}
+	
+	public static int encodeAttackMove(int from, int to, int moveType, int promotedPiece, int capturedPiece) {
+		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20) | (capturedPiece << 27);
+	}
 	
 }

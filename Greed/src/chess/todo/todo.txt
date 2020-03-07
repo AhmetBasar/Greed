@@ -272,3 +272,6 @@ Chess Bot Programming.
   - test checkers implementation again with legality.
   - Rewrite generate castling moves method. it is very inefficient.
   - rewrite generate pawn moves method with branchless implementation, than compare performances.
+  - in generateOutOfCheckAttacks method in MoveGeneration class, change implementation of generateEpAttacks (TODO: must not be pinned. And epSquare must be checker!)
+  - in generateOutOfCheckAttacks method in MoveGeneration class, change implementation of generatePawnAttacksAndPromotions (TODO: prevent promotion move here. but not promotion attack!)
+  
