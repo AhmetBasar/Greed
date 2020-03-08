@@ -423,7 +423,8 @@ public class MoveGeneration implements MoveGenerationConstants {
 				int from = Long.numberOfTrailingZeros(fromBitboard);
 				long toBitboard = EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.WHITE][from] & enemySquares;
 				while (toBitboard != 0) {
-					addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+					int to = Long.numberOfTrailingZeros(toBitboard);
+					addMove(Move.encodeAttackMove(from, to, board.getPieces()[to]));
 					toBitboard &= (toBitboard - 1);
 				}
 				fromBitboard &= (fromBitboard - 1);
@@ -453,7 +454,8 @@ public class MoveGeneration implements MoveGenerationConstants {
 				int from = Long.numberOfTrailingZeros(fromBitboard);
 				long toBitboard = EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.BLACK][from] & enemySquares;
 				while (toBitboard != 0) {
-					addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+					int to = Long.numberOfTrailingZeros(toBitboard);
+					addMove(Move.encodeAttackMove(from, to, board.getPieces()[to]));
 					toBitboard &= (toBitboard - 1);
 				}
 				fromBitboard &= (fromBitboard - 1);
