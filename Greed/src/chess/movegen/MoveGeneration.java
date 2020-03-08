@@ -1,5 +1,9 @@
 package chess.movegen;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.LegalityV4;
@@ -42,6 +46,22 @@ public class MoveGeneration implements MoveGenerationConstants {
 	
 	public boolean hasNext() {
 		return nextToGenerate[currentPly] != nextToMove[currentPly];
+	}
+	
+	public void sort() {
+		List<Integer> moveList = new ArrayList<Integer>();
+		int origNextToMove = nextToMove[currentPly];
+		while (hasNext()) {
+			moveList.add(next());
+		}
+		Collections.sort(moveList);
+		nextToMove[currentPly] = origNextToMove;
+		
+		for (Integer move : moveList) {
+			moves[nextToMove[currentPly]++] = move;
+		}
+		
+		nextToMove[currentPly] = origNextToMove;
 	}
 	
 	public void addMove(int move){
@@ -93,7 +113,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 		generateRookMoves(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getEmptySquares());
 		generateBishopMoves(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getEmptySquares());
 		generateKnightMoves(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), board.getEmptySquares());
-		generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board.getSide(), board.getEmptySquares());
+		generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board.getSide(), board.getEmptySquares(), board.getEmptySquares());
 		
 		// pinned pieces
 		long pinnedPieces = board.getOccupiedSquaresBySide()[board.getSide()] & board.getPinnedPieces();
@@ -101,7 +121,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			byte pieceWc = (byte)(board.getPieces()[Long.numberOfTrailingZeros(pinnedPieces)] & 0XFE);
 			switch (pieceWc) {
 			case EngineConstants.PAWN:
-				generatePawnPushes(Long.lowestOneBit(pinnedPieces), board.getSide(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]]);
+				generatePawnPushes(Long.lowestOneBit(pinnedPieces), board.getSide(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]], board.getEmptySquares());
 				break;
 			case EngineConstants.BISHOP:
 				generateBishopMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]]);
@@ -286,7 +306,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 		}
 	}
 	
-	private void generatePawnPushes(long fromBitboard, int side, long possibleSquares) {
+	private void generatePawnPushes(long fromBitboard, int side, long possibleSquares, long emptySquares) {
 		
 		if (fromBitboard == 0) {
 			return;
@@ -295,34 +315,36 @@ public class MoveGeneration implements MoveGenerationConstants {
 		switch (side) {
 		case EngineConstants.WHITE: {
 			long toBitboard = fromBitboard & (possibleSquares >>> 8) & EngineConstants.ROW_MASK_23456;
-			long singlePushes = toBitboard;
 			while (toBitboard != 0) {
 				int from = Long.numberOfTrailingZeros(toBitboard);
 				addMove(Move.encodeMove(from, from + 8));
 				toBitboard &= (toBitboard - 1);
 			}
 
-			toBitboard = singlePushes & (possibleSquares >>> 16) & EngineConstants.ROW_2;
+			toBitboard = fromBitboard & (possibleSquares >>> 16) & EngineConstants.ROW_2;
 			while (toBitboard != 0) {
-				int from = Long.numberOfTrailingZeros(toBitboard);
-				addMove(Move.encodeMove(from, from + 16, EngineConstants.DOUBLE_PUSH));
+				if ((emptySquares & (Long.lowestOneBit(toBitboard) << 8)) != 0) {
+					int from = Long.numberOfTrailingZeros(toBitboard);
+					addMove(Move.encodeMove(from, from + 16, EngineConstants.DOUBLE_PUSH));
+				}
 				toBitboard &= (toBitboard - 1);
 			}
 			break;
 		}
 		case EngineConstants.BLACK: {
 			long toBitboard = fromBitboard & (possibleSquares << 8) & EngineConstants.ROW_MASK_34567;
-			long singlePushes = toBitboard;
 			while (toBitboard != 0) {
 				int from = Long.numberOfTrailingZeros(toBitboard);
 				addMove(Move.encodeMove(from, from - 8));
 				toBitboard &= (toBitboard - 1);
 			}
 
-			toBitboard = singlePushes & (possibleSquares << 16) & EngineConstants.ROW_7;
+			toBitboard = fromBitboard & (possibleSquares << 16) & EngineConstants.ROW_7;
 			while (toBitboard != 0) {
-				int from = Long.numberOfTrailingZeros(toBitboard);
-				addMove(Move.encodeMove(from, from - 16, EngineConstants.DOUBLE_PUSH));
+				if ((emptySquares & (Long.lowestOneBit(toBitboard) >>> 8)) != 0) {
+					int from = Long.numberOfTrailingZeros(toBitboard);
+					addMove(Move.encodeMove(from, from - 16, EngineConstants.DOUBLE_PUSH));
+				}
 				toBitboard &= (toBitboard - 1);
 			}
 			break;
@@ -339,7 +361,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			generateBishopMoves(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), possibleSquares);
 			generateRookMoves(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), possibleSquares);
 			generateQueenMoves(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & ~board.getPinnedPieces(), board.getOccupiedSquares(), possibleSquares);
-			generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board.getSide(), possibleSquares);
+			generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board.getSide(), possibleSquares, board.getEmptySquares());
 		}
 		generateKingQuietMoves(board);
 	}
@@ -366,16 +388,16 @@ public class MoveGeneration implements MoveGenerationConstants {
 			byte fromPieceWc = (byte)(board.getPieces()[from] & 0XFE);
 			switch (fromPieceWc) {
 			case EngineConstants.PAWN:
-				generatePawnAttacksAndPromotions(Long.lowestOneBit(fromPieceWc), board, enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], 0);
+				generatePawnAttacksAndPromotions(Long.lowestOneBit(fromBitboard), board, enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], 0);
 				break;
 			case EngineConstants.BISHOP:
-				generateBishopAttacks(Long.lowestOneBit(fromPieceWc), board.getOccupiedSquares(), enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], board.getPieces());
+				generateBishopAttacks(Long.lowestOneBit(fromBitboard), board.getOccupiedSquares(), enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], board.getPieces());
 				break;
 			case EngineConstants.ROOK:
-				generateRookAttacks(Long.lowestOneBit(fromPieceWc), board.getOccupiedSquares(), enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], board.getPieces());
+				generateRookAttacks(Long.lowestOneBit(fromBitboard), board.getOccupiedSquares(), enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], board.getPieces());
 				break;
 			case EngineConstants.QUEEN:
-				generateQueenAttacks(Long.lowestOneBit(fromPieceWc), board.getOccupiedSquares(), enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], board.getPieces());
+				generateQueenAttacks(Long.lowestOneBit(fromBitboard), board.getOccupiedSquares(), enemySquares & Utility.PINNED_MOVEMENT[from][board.getKingSquares()[board.getSide()]], board.getPieces());
 				break;
 			}
 			fromBitboard &= (fromBitboard - 1);
