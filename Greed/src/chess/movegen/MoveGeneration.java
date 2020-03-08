@@ -505,7 +505,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 	}
 	
 	private void generatePromotions(int from, int to, int side) {
-		Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN);
+		addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN));
 		if (allowUnderPromotion) {
 			addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.KNIGHT));
 			addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.BISHOP));
@@ -516,7 +516,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 	private void generatePromotionAttacks(int from, long toBitboard, int side, byte[] pieces) {
 		while (toBitboard != 0) {
 			int to = Long.numberOfTrailingZeros(toBitboard);
-			Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN, pieces[to]);
+			addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN, pieces[to]));
 			if (allowUnderPromotion) {
 				addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.KNIGHT, pieces[to]));
 				addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.BISHOP, pieces[to]));
