@@ -29,6 +29,9 @@ public class Material implements EngineConstants {
 	
 	public static final int[] SLIDING_PIECE_MASKS = {PIECE_MASKS[WHITE_BISHOP] | PIECE_MASKS[WHITE_ROOK] | PIECE_MASKS[WHITE_QUEEN], 
 			PIECE_MASKS[BLACK_BISHOP] | PIECE_MASKS[BLACK_ROOK] | PIECE_MASKS[BLACK_QUEEN]};
+	
+	public static final int[] MAJOR_PIECE_MASKS = {PIECE_MASKS[WHITE_BISHOP] | PIECE_MASKS[WHITE_ROOK] | PIECE_MASKS[WHITE_QUEEN] | PIECE_MASKS[WHITE_KNIGHT] , 
+			PIECE_MASKS[BLACK_BISHOP] | PIECE_MASKS[BLACK_ROOK] | PIECE_MASKS[BLACK_QUEEN] | PIECE_MASKS[BLACK_KNIGHT]};
 
 	public static int getMaterialKey(long[] bb) {
 		int materialKey = 0;
@@ -44,6 +47,10 @@ public class Material implements EngineConstants {
 	
 	public static boolean hasSlidingPiece(int materialKey, int side) {
 		return (materialKey & SLIDING_PIECE_MASKS[side]) != 0;
+	}
+	
+	public static boolean hasMajorPiece(int materialKey, int side) {
+		return (materialKey & MAJOR_PIECE_MASKS[side]) != 0;
 	}
 	
 }

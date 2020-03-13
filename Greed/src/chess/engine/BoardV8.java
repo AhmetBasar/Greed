@@ -1041,5 +1041,58 @@ public class BoardV8 implements IBoard, EngineConstants {
 	public long getDiscoveredPieces() {
 		return discoveredPieces;
 	}
+
+	public int getMaterialKey() {
+		return materialKey;
+	}
 	
+	// https://github.com/sandermvdb/chess22k
+	public boolean isLegal(int move) {
+		int from = Move.getFrom(move);
+		int to = Move.getTo(move);
+		int moveType = Move.getMoveType(move);
+		if ((pieces[from] & 0XFE) == EngineConstants.KING) {
+			return Check.isKingIncheckIncludingKing(Material.hasMajorPiece(materialKey, opSide), to, bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from]);
+		}
+		
+		if (pieces[to] != 0) {
+			if (moveType == EP_CAPTURE_SHIFTED) {
+				return isLegalEpCapture(move);
+			}
+			return true;
+		}
+		
+		if (checkers != 0) {
+			return Check.isKingIncheck(kingSquares[side], bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from] ^ Utility.SINGLE_BIT[to]);
+		}
+		
+		return true;
+	}
+	
+	private boolean isLegalEpCapture(int move) {
+		
+		int to = Move.getTo(move);
+		int from = Move.getFrom(move);
+		byte fromPiece = pieces[from];
+		int epS = to + epSquareDiff[side];
+		
+		long occ = occupiedSquares;
+		capturedPiece = pieces[epS];
+		
+		bitboard[fromPiece] &= ~(1L << from);
+		bitboard[fromPiece] |= (1L << to);
+		bitboard[capturedPiece] &= ~(1L << epS);
+		occ &= ~(1L << from);
+		occ |= (1L << to);
+		occ &= ~(1L << epS);
+		
+		boolean isInCheck = Check.getCheckers(bitboard, side, opSide, kingSquares[side], occ) != 0;
+		
+		bitboard[fromPiece] |= (1L << from);
+		bitboard[fromPiece] &= ~(1L << to);
+		bitboard[capturedPiece] |= (1L << epS);
+		
+		return !isInCheck;
+	}
+
 }

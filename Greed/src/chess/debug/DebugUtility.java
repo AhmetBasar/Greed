@@ -59,6 +59,61 @@ public class DebugUtility {
 			   {     8,     0,     0,     0,    12,     0,     0,     8}
 	};
 	
+	private static final byte [][] BOARD_23={
+			   {     9,     0,     0,     0,     13,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     8,     0,     0,     12,     0,     0,     0}
+	};
+	
+	private static final byte [][] BOARD_24={
+			   {     0,     0,     0,     0,     13,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     9,     0,     8,     0,     12,     0,     0,     0}
+	};
+	
+	private static final byte [][] BOARD_25={
+			   {     0,     0,     0,     0,    13,     7,     0,     0},
+			   {     0,     0,     0,     3,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     2,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,    12,     0,     0,     0}
+	};
+	
+	private static final byte [][] BOARD_26={
+			   {     0,     0,     0,     0,    13,     0,     0,     0},
+			   {     0,     0,     0,     3,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,    10,    12,     0,     0,     0}
+	};
+	
+	private static final byte [][] BOARD_27={
+			   {     0,     0,     0,    11,    13,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,     0,     0,     0,     0,     0},
+			   {     0,     0,     0,    10,    12,     0,     0,     0}
+	};
+	
 	private static final byte[] POSSIBLE_TYPES = new byte[] {
 			/***/
 			EngineConstants.WHITE_PAWN,
@@ -94,6 +149,56 @@ public class DebugUtility {
 		for(int x=0;x<=7;x++){
 			for(int y=0;y<=7;y++){
 				board[x][y]=DEFAULT_BOARD[y][x];
+			}
+		}
+		return board;
+	}
+	
+	public static byte[][] getDefaultBoard23(){
+		byte[][] board = new byte[8][8];
+		for(int x=0;x<=7;x++){
+			for(int y=0;y<=7;y++){
+				board[x][y]=BOARD_23[y][x];
+			}
+		}
+		return board;
+	}
+	
+	public static byte[][] getDefaultBoard24(){
+		byte[][] board = new byte[8][8];
+		for(int x=0;x<=7;x++){
+			for(int y=0;y<=7;y++){
+				board[x][y]=BOARD_24[y][x];
+			}
+		}
+		return board;
+	}
+	
+	public static byte[][] getDefaultBoard25(){
+		byte[][] board = new byte[8][8];
+		for(int x=0;x<=7;x++){
+			for(int y=0;y<=7;y++){
+				board[x][y]=BOARD_25[y][x];
+			}
+		}
+		return board;
+	}
+	
+	public static byte[][] getDefaultBoard26(){
+		byte[][] board = new byte[8][8];
+		for(int x=0;x<=7;x++){
+			for(int y=0;y<=7;y++){
+				board[x][y]=BOARD_26[y][x];
+			}
+		}
+		return board;
+	}
+	
+	public static byte[][] getDefaultBoard27(){
+		byte[][] board = new byte[8][8];
+		for(int x=0;x<=7;x++){
+			for(int y=0;y<=7;y++){
+				board[x][y]=BOARD_27[y][x];
 			}
 		}
 		return board;

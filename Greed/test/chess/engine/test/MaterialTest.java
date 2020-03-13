@@ -33,6 +33,7 @@ public class MaterialTest implements EngineConstants {
 	public static void testAll() {
 		testGetMaterialKey();
 		testHasSlidingPiece();
+		testHasMajorPiece();
 	}
 	
 	private static void testGetMaterialKey() {
@@ -55,6 +56,20 @@ public class MaterialTest implements EngineConstants {
 			for (int side = EngineConstants.WHITE ; side <= EngineConstants.BLACK ; side++) {
 				boolean hasSlidingPiece = Material.hasSlidingPiece(materialKey, side);
 				if (hasSlidingPiece != ((bb[side | BISHOP] | bb[side | ROOK] | bb[side | QUEEN]) != 0)) {
+					DebugUtility.throwBoard(bb);
+					throw new RuntimeException("Failed.");
+				}
+			}			
+		}
+	}
+	
+	private static void testHasMajorPiece() {
+		for (int i = 0; i < 1000000; i++) {
+			long[] bb = Transformer.getBitboardStyl(DebugUtility.generateRealisticWeightedRandomBoard());
+			int materialKey = Material.getMaterialKey(bb);
+			for (int side = EngineConstants.WHITE ; side <= EngineConstants.BLACK ; side++) {
+				boolean hasSlidingPiece = Material.hasMajorPiece(materialKey, side);
+				if (hasSlidingPiece != ((bb[side | BISHOP] | bb[side | ROOK] | bb[side | QUEEN] | bb[side | KNIGHT]) != 0)) {
 					DebugUtility.throwBoard(bb);
 					throw new RuntimeException("Failed.");
 				}

@@ -21,6 +21,7 @@ package chess.engine;
 
 import chess.movegen.MagicBitboard;
 
+//https://github.com/sandermvdb/chess22k
 public class Check {
 	
 	
@@ -31,16 +32,60 @@ public class Check {
 	//TODO check if it is normal move?? may be much more efficient.
 	//TODO check if it is normal move?? may be much more efficient.
 	//TODO check if it is normal move?? may be much more efficient.
-	public static long getCheckers(IBoard board) {
-		int side = board.getSide();
-		int opSide = board.getOpSide();
-		int kingSquare = board.getKingSquares()[board.getSide()];
+	public static long getCheckers(long[] bb, int side, int opSide, int kingSquare, long occ) {
 		
-		return EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare] & board.getBitboard()[opSide | EngineConstants.PAWN]
-		 | EngineConstants.KNIGHT_LOOKUP[kingSquare] & board.getBitboard()[opSide | EngineConstants.KNIGHT]
-		 | (board.getBitboard()[opSide | EngineConstants.BISHOP] | board.getBitboard()[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateBishopMoves(kingSquare, board.getOccupiedSquares())
-		 | (board.getBitboard()[opSide | EngineConstants.ROOK] | board.getBitboard()[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateRookMoves(kingSquare, board.getOccupiedSquares())
+		return EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare] & bb[opSide | EngineConstants.PAWN]
+		 | EngineConstants.KNIGHT_LOOKUP[kingSquare] & bb[opSide | EngineConstants.KNIGHT]
+		 | (bb[opSide | EngineConstants.BISHOP] | bb[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateBishopMoves(kingSquare, occ)
+		 | (bb[opSide | EngineConstants.ROOK] | bb[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateRookMoves(kingSquare, occ)
 				 ;
+	}
+	
+	public static long getCheckers(IBoard board) {
+		return getCheckers(board.getBitboard(), board.getSide(), board.getOpSide(), board.getKingSquares()[board.getSide()], board.getOccupiedSquares());
+	}
+	
+	// TODO invoke it.
+	// TODO invoke it.
+	// TODO invoke it.
+	// TODO invoke it.
+	// TODO invoke it.
+	// TODO invoke it.
+	public static long getCheckers(long[] bb, int side, int opSide, int kingSquare, long occ, byte fromPiece) {
+		switch (fromPiece) {
+		case EngineConstants.PAWN:
+			return bb[opSide | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare];
+		case EngineConstants.KNIGHT:
+			return bb[opSide | EngineConstants.KNIGHT] & EngineConstants.KNIGHT_LOOKUP[kingSquare];
+		case EngineConstants.BISHOP:
+			return (bb[opSide | EngineConstants.BISHOP]) & MagicBitboard.generateBishopMoves(kingSquare, occ);
+		case EngineConstants.ROOK:
+			return (bb[opSide | EngineConstants.ROOK]) & MagicBitboard.generateRookMoves(kingSquare, occ);
+		case EngineConstants.QUEEN:
+			return (bb[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateQueenMoves(kingSquare, occ);
+		default:
+			return 0L;
+		}
+	}
+	
+	public static boolean isKingIncheckIncludingKing(boolean hasEnemyMajorPieces, int kingSquare, long[] bitboard, int opSide, int side, long occupiedSquares) {
+		if (hasEnemyMajorPieces) {
+			return ((bitboard[opSide | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare]
+			    | bitboard[opSide | EngineConstants.KING] & EngineConstants.KING_LOOKUP[kingSquare]) != 0);
+		}
+		
+		return (bitboard[opSide | EngineConstants.KNIGHT] & EngineConstants.KNIGHT_LOOKUP[kingSquare]
+			  | (bitboard[opSide | EngineConstants.ROOK] | bitboard[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateRookMoves(kingSquare, occupiedSquares)
+			  | (bitboard[opSide | EngineConstants.BISHOP] | bitboard[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateBishopMoves(kingSquare, occupiedSquares)
+		      | bitboard[opSide | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare]
+			  | bitboard[opSide | EngineConstants.KING] & EngineConstants.KING_LOOKUP[kingSquare]) != 0;
+	}
+	
+	public static boolean isKingIncheck(int kingSquare, long[] bitboard, int opSide, int side, long occupiedSquares) {
+		return (bitboard[opSide | EngineConstants.KNIGHT] & EngineConstants.KNIGHT_LOOKUP[kingSquare]
+			  | (bitboard[opSide | EngineConstants.ROOK] | bitboard[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateRookMoves(kingSquare, occupiedSquares)
+			  | (bitboard[opSide | EngineConstants.BISHOP] | bitboard[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateBishopMoves(kingSquare, occupiedSquares)
+		      | bitboard[opSide | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare]) != 0;
 	}
 	
 }

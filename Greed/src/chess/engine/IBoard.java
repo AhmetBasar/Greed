@@ -50,8 +50,12 @@ public interface IBoard {
 	
 	long getCheckers();
 	
-	public long getPinnedPieces();
+	long getPinnedPieces();
 
-	public long getDiscoveredPieces();
+	long getDiscoveredPieces();
+	
+	int getMaterialKey();
+	
+	boolean isLegal(int move);
 
 }

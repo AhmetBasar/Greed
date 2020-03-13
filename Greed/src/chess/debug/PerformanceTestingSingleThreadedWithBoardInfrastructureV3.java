@@ -29,10 +29,12 @@ import chess.engine.Transformer;
 import chess.gui.BaseGui;
 import chess.movegen.MoveGeneration;
 
-public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
-	private MoveGeneration moveGeneration = new MoveGeneration(false);
+public class PerformanceTestingSingleThreadedWithBoardInfrastructureV3 {
+	private MoveGeneration moveGeneration = new MoveGeneration(true);
 	private LegalityV4 legality = new LegalityV4();
 	private PerftResult perftResult = new PerftResult();
+	
+	public static int counterr = 0;
 
 	public static void main(String[] args) {
 		long ilk = System.currentTimeMillis();
@@ -41,19 +43,20 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(sourceBoard));
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 5;
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, 64, castlingRights, 0, new ArrayList<Long>(), 0);
-		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
+		IBoard board = BoardFactory.getInstance2(bitboard, pieces, 64, castlingRights, 0, new ArrayList<Long>(), 0);
+		PerformanceTestingSingleThreadedWithBoardInfrastructureV3 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV3();
 		obj.perft(depth, board);
 		System.out.println(obj.perftResult);
 		System.out.println("time = " + (System.currentTimeMillis() - ilk));
 	}
 	
 	public static void getAllVariations(byte[][] boardArray, int side, int depth, byte[][] castlingRights, BaseGui baseGui, int threadCount, int epTarget, int epSquare){
+		counterr = 0;
 		long startTime = System.currentTimeMillis();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0, new ArrayList<Long>(), side);
-		PerformanceTestingSingleThreadedWithBoardInfrastructureV2 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
+		IBoard board = BoardFactory.getInstance2(bitboard, pieces, epTarget, castlingRights, 0, new ArrayList<Long>(), side);
+		PerformanceTestingSingleThreadedWithBoardInfrastructureV3 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV3();
 		obj.perft(depth, board);
 		obj.perftResult.setTimeConsumed(System.currentTimeMillis() - startTime);
 		baseGui.getDebugPanel().setOutputMessage(obj.perftResult.toString());
@@ -61,18 +64,28 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 	}
 
 	public void perft(int depth, IBoard board) {
+		
+		counterr++;
+		System.out.println("counterr = " + counterr);
+		System.out.println("depth = " + depth);
+		DebugUtility.throwBoard(board.getBitboard());
 
 		if (depth == 0) {
+			System.out.println("arttýr");
 			perftResult.incrementNodeCount();
 			return;
 		}
 
 		int depthMinusOne = depth - 1;
+		int depthPlusOne = depth + 1;
 
 		boolean existsLegalMove = false;
 		int move;
 		moveGeneration.startPly();
-		moveGeneration.generateAllMoves(board);
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
+		moveGeneration.sort();
+		
 		while (moveGeneration.hasNext()) {
 			move = moveGeneration.next();
 			

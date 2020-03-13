@@ -1002,5 +1002,15 @@ public class BoardV7 implements IBoard, EngineConstants {
 	public long getDiscoveredPieces() {
 		throw new RuntimeException("Not yet implemented.");
 	}
+
+	@Override
+	public int getMaterialKey() {
+		return materialKey;
+	}
+
+	@Override
+	public boolean isLegal(int move) {
+		throw new RuntimeException("Not yet implemented.");
+	}
 	
 }

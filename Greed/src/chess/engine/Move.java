@@ -33,6 +33,10 @@ public class Move {
 		return (move & 0x0000ff00) >>> 8;
 	}
 	
+	public static int getFrom(int move) {
+		return move & 0x000000ff;
+	}
+	
 	public static int getMoveType(int move) {
 		return move & 0x00070000;
 	}
