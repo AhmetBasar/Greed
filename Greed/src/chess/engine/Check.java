@@ -69,7 +69,7 @@ public class Check {
 	}
 	
 	public static boolean isKingIncheckIncludingKing(boolean hasEnemyMajorPieces, int kingSquare, long[] bitboard, int opSide, int side, long occupiedSquares) {
-		if (hasEnemyMajorPieces) {
+		if (!hasEnemyMajorPieces) {
 			return ((bitboard[opSide | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare]
 			    | bitboard[opSide | EngineConstants.KING] & EngineConstants.KING_LOOKUP[kingSquare]) != 0);
 		}

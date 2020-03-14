@@ -118,19 +118,20 @@ public class MoveGeneration implements MoveGenerationConstants {
 		// pinned pieces
 		long pinnedPieces = board.getOccupiedSquaresBySide()[board.getSide()] & board.getPinnedPieces();
 		while (pinnedPieces != 0) {
-			byte pieceWc = (byte)(board.getPieces()[Long.numberOfTrailingZeros(pinnedPieces)] & 0XFE);
+			int pinnedPieceSquare = Long.numberOfTrailingZeros(pinnedPieces);
+			byte pieceWc = (byte)(board.getPieces()[pinnedPieceSquare] & 0XFE);
 			switch (pieceWc) {
 			case EngineConstants.PAWN:
-				generatePawnPushes(Long.lowestOneBit(pinnedPieces), board.getSide(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]], board.getEmptySquares());
+				generatePawnPushes(Long.lowestOneBit(pinnedPieces), board.getSide(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[pinnedPieceSquare][board.getKingSquares()[board.getSide()]], board.getEmptySquares());
 				break;
 			case EngineConstants.BISHOP:
-				generateBishopMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]]);
+				generateBishopMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[pinnedPieceSquare][board.getKingSquares()[board.getSide()]]);
 				break;
 			case EngineConstants.ROOK:
-				generateRookMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]]);
+				generateRookMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[pinnedPieceSquare][board.getKingSquares()[board.getSide()]]);
 				break;
 			case EngineConstants.QUEEN:
-				generateQueenMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[Long.numberOfTrailingZeros(pinnedPieces)][board.getKingSquares()[board.getSide()]]);
+				generateQueenMoves(Long.lowestOneBit(pinnedPieces), board.getOccupiedSquares(), board.getEmptySquares() & Utility.PINNED_MOVEMENT[pinnedPieceSquare][board.getKingSquares()[board.getSide()]]);
 				break;
 			}
 			pinnedPieces &= (pinnedPieces - 1);

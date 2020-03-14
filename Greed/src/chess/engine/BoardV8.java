@@ -118,6 +118,8 @@ public class BoardV8 implements IBoard, EngineConstants {
 		
 		checkers = Check.getCheckers(this);
 		
+		setPinnedAndDiscoveredPieces();
+		
 	}
 	
 	public void doNullMove() {
@@ -1052,18 +1054,19 @@ public class BoardV8 implements IBoard, EngineConstants {
 		int to = Move.getTo(move);
 		int moveType = Move.getMoveType(move);
 		if ((pieces[from] & 0XFE) == EngineConstants.KING) {
-			return Check.isKingIncheckIncludingKing(Material.hasMajorPiece(materialKey, opSide), to, bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from]);
+			return !Check.isKingIncheckIncludingKing(Material.hasMajorPiece(materialKey, opSide), to, bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from]);
 		}
 		
 		if (pieces[to] != 0) {
-			if (moveType == EP_CAPTURE_SHIFTED) {
-				return isLegalEpCapture(move);
-			}
 			return true;
 		}
 		
+		if (moveType == EP_CAPTURE_SHIFTED) {
+			return isLegalEpCapture(move);
+		}
+		
 		if (checkers != 0) {
-			return Check.isKingIncheck(kingSquares[side], bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from] ^ Utility.SINGLE_BIT[to]);
+			return !Check.isKingIncheck(kingSquares[side], bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from] ^ Utility.SINGLE_BIT[to]);
 		}
 		
 		return true;
