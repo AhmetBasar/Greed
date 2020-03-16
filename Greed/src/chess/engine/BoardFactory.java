@@ -19,4 +19,10 @@ public class BoardFactory {
 			int fiftyMoveCounter, List<Long> zobristKeyHistory, int side) {
 		return new BoardV8(bitboard, pieces, epT, castlingRights, fiftyMoveCounter, zobristKeyHistory, side);
 	}
+	
+	public static IBoard getInstance2(SearchParameters sp) {
+		return new BoardV8(sp.getBitboard(), sp.getPieces(), sp.getEpT(),
+				sp.getCastlingRights(), sp.getFiftyMoveCounter(),
+				sp.getZobristKeyHistory(), sp.getSide());
+	}
 }

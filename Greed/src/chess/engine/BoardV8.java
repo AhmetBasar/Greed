@@ -1062,20 +1062,14 @@ public class BoardV8 implements IBoard, EngineConstants {
 		}
 		
 		if (moveType == EP_CAPTURE_SHIFTED) {
-			return isLegalEpCapture(move);
-		}
-		
-		if (checkers != 0) {
-			return !Check.isKingIncheck(kingSquares[side], bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from] ^ Utility.SINGLE_BIT[to]);
+			return isLegalEpCapture(to, from);
 		}
 		
 		return true;
 	}
 	
-	private boolean isLegalEpCapture(int move) {
+	private boolean isLegalEpCapture(int to, int from) {
 		
-		int to = Move.getTo(move);
-		int from = Move.getFrom(move);
 		byte fromPiece = pieces[from];
 		int epS = to + epSquareDiff[side];
 		
