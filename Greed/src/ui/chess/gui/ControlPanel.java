@@ -339,7 +339,7 @@ class SuggestMoveActionListener implements ActionListener {
 			
 			long ilk = System.currentTimeMillis();
 			
-			SearchResult move = null;
+			SearchResult searchResult = null;
 			boolean isV2 = (obj instanceof ISearchableV2);
 			if (isV2) {
 				Method method = cls.getDeclaredMethod("search", engineParametersV2);
@@ -360,18 +360,18 @@ class SuggestMoveActionListener implements ActionListener {
 				params.setBookName(null);
 				params.setZobristKeyHistory(gamePlay.getZobristKeyHistory());
 				
-				move = (SearchResult) method.invoke(obj, params);
+				searchResult = (SearchResult) method.invoke(obj, params);
 			} else {
 				
 				Method method = cls.getDeclaredMethod("search", engineParameters);
-				move = (SearchResult) method.invoke(obj, debugPanel.getSearchDepth(), 
+				searchResult = (SearchResult) method.invoke(obj, debugPanel.getSearchDepth(), 
 						gamePlay.getEpTarget(), gamePlay.getEpSquare(), Transformer.getBitboardStyl(base.getBoard()),
 						Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())),
 						gamePlay.getCastlingRights(), gamePlay.getSide(), gamePlay.getZobristKey(), 1, gamePlay.getFiftyMoveCounter());
 			}
 			
 			System.out.println("time consumed =  "+ (System.currentTimeMillis() - ilk));
-			gamePlay.doMove(move.getBestMove());
+			gamePlay.doMove(searchResult.getBestMove());
 				
 		} catch(Exception ex) {
 			ex.printStackTrace();

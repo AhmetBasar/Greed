@@ -410,7 +410,9 @@ public class MoveGeneration implements MoveGenerationConstants {
 		// TODO: must not be pinned. And epSquare must be checker!
 		generateEpAttacks(board);
 		// TODO: prevent promotion move here.
-		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, board.getCheckers(), board.getEmptySquares());
+//		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, board.getCheckers(), board.getEmptySquares());
+//		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, board.getCheckers(), 0L);
+		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, board.getCheckers(), Utility.LINE[Long.numberOfTrailingZeros(board.getCheckers())][board.getKingSquares()[board.getSide()]]);
 		generateKnightAttacks(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), board.getCheckers(), board.getPieces());
 		generateBishopAttacks(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
 		generateRookAttacks(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
@@ -779,7 +781,6 @@ public class MoveGeneration implements MoveGenerationConstants {
 		}
 	}
 	
-	
 	//TODO : try direct access ep target and side instead of pass parameter. and compare performances..
 	public void generateAttackMoves(IBoard board) {
 		
@@ -788,6 +789,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 		int epTarget = board.getEpTarget();
 		long occupiedSquares = board.getOccupiedSquares();
 		long enemySquares = board.getOccupiedSquaresBySide()[board.getOpSide()];
+		long emptySquares = board.getEmptySquares();
 		
 		int diff;
 		long toBitboard;
@@ -795,9 +797,36 @@ public class MoveGeneration implements MoveGenerationConstants {
 		int to;
 		int from;
 		int move;
-
+		
 		// PAWNS
 		fromBitboard = bitboard[side | EngineConstants.PAWN];
+		
+		diff = pushDiffs[side];
+		toBitboard = ((fromBitboard << diff) | (fromBitboard >>> (64 - diff))) & emptySquares;
+		long singlePushes = toBitboard; // will be reused.
+		
+		// TODO : Maybe promotions should be handled before pawn pushes in order to reduce branching factor by alpha-beta cutoffs. 
+		// Pawn Promotions
+		toBitboard=singlePushes&promotionMask[side];
+		while(toBitboard != 0){
+			to=Long.numberOfTrailingZeros(toBitboard);
+			from=(((to-diff)%64)+64)%64;
+
+			//Queen Promotions
+			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.QUEEN) 	<< 20);
+			addMove(move);
+			//Rook Promotions
+			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.ROOK) 	<< 20);
+			addMove(move);
+			//Bishop Promotions
+			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.BISHOP) 	<< 20);
+			addMove(move);
+			//Knight Promotions
+			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.KNIGHT) 	<< 20);
+			addMove(move);
+
+			toBitboard=toBitboard & ~(1L << to);
+		}
 
 		// PAWN ATTACKS
 		for (int dir = 0; dir < 2; dir++) {
@@ -969,28 +998,28 @@ public class MoveGeneration implements MoveGenerationConstants {
 			toBitboard = toBitboard & ~(1L << to);
 		}
 		
-		// TODO : Maybe promotions should be handled before pawn pushes in order to reduce branching factor by alpha-beta cutoffs. 
-		// Pawn Promotions
-		toBitboard=singlePushes&promotionMask[side];
-		while(toBitboard != 0){
-			to=Long.numberOfTrailingZeros(toBitboard);
-			from=(((to-diff)%64)+64)%64;
-
-			//Queen Promotions
-			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.QUEEN) 	<< 20);
-			addMove(move);
-			//Rook Promotions
-			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.ROOK) 	<< 20);
-			addMove(move);
-			//Bishop Promotions
-			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.BISHOP) 	<< 20);
-			addMove(move);
-			//Knight Promotions
-			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.KNIGHT) 	<< 20);
-			addMove(move);
-			
-			toBitboard=toBitboard & ~(1L << to);
-		}
+//		// TODO : Maybe promotions should be handled before pawn pushes in order to reduce branching factor by alpha-beta cutoffs. 
+//		// Pawn Promotions
+//		toBitboard=singlePushes&promotionMask[side];
+//		while(toBitboard != 0){
+//			to=Long.numberOfTrailingZeros(toBitboard);
+//			from=(((to-diff)%64)+64)%64;
+//
+//			//Queen Promotions
+//			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.QUEEN) 	<< 20);
+//			addMove(move);
+//			//Rook Promotions
+//			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.ROOK) 	<< 20);
+//			addMove(move);
+//			//Bishop Promotions
+//			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.BISHOP) 	<< 20);
+//			addMove(move);
+//			//Knight Promotions
+//			move = from | (to << 8) | (EngineConstants.PROMOTION << 16) | ((side|(int)EngineConstants.KNIGHT) 	<< 20);
+//			addMove(move);
+//			
+//			toBitboard=toBitboard & ~(1L << to);
+//		}
 
 		// KNIGHT ATTACKS.
 		fromBitboard = bitboard[side | EngineConstants.KNIGHT];

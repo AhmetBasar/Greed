@@ -279,8 +279,8 @@ public class TestingPanel extends JPanel{
 		m3.invoke(obj);
 		//
 		
-		Method m2 = cls.getDeclaredMethod("setBoardStateHistory", new Class[] {Map.class});
-		m2.invoke(obj, gamePlay.getBoardStateHistory());
+//		Method m2 = cls.getDeclaredMethod("setBoardStateHistory", new Class[] {Map.class});
+//		m2.invoke(obj, gamePlay.getBoardStateHistory());
 		
 		SearchResult searchResult = null;
 		boolean isV2 = (obj instanceof ISearchableV2);

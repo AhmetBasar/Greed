@@ -213,10 +213,13 @@ public class DebugPanel extends JPanel{
 				jcbWhiteKingSideCastlingRight.setSelected(false);
 				jcbWhiteQueenSideCastlingRight.setSelected(false);
 				jtSearchDepth.setText("3");
+				
+				base.getGamePlay().setCastlingRights(new byte[][]{{0,0},{0,0}});
+				base.getGamePlay().setSide(GuiConstants.WHITES_TURN);
 			}
 		}));
 		
-		jbSearchCopyMake = new JButton("1");
+		jbSearchCopyMake = new JButton("v2");
 		jbSearchCopyMake.setMargin(new java.awt.Insets(1, 2, 1, 2));
 		jbSearchCopyMake.setSize(50, 25);
 		jbSearchCopyMake.setLocation(340, 10);
@@ -248,7 +251,7 @@ public class DebugPanel extends JPanel{
 			}
 		}));
 		
-		jbSearchCopyMake = new JButton("2");
+		jbSearchCopyMake = new JButton("v3");
 		jbSearchCopyMake.setMargin(new java.awt.Insets(1, 2, 1, 2));
 		jbSearchCopyMake.setSize(50, 25);
 		jbSearchCopyMake.setLocation(340, 40);
@@ -280,7 +283,7 @@ public class DebugPanel extends JPanel{
 			}
 		}));
 		
-		jbSearchCopyMake = new JButton("3");
+		jbSearchCopyMake = new JButton("v4");
 		jbSearchCopyMake.setMargin(new java.awt.Insets(1, 2, 1, 2));
 		jbSearchCopyMake.setSize(50, 25);
 		jbSearchCopyMake.setLocation(340, 70);
