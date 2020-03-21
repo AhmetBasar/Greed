@@ -272,7 +272,8 @@ Chess Bot Programming.
   - test checkers implementation again with legality.
   - Rewrite generate castling moves method. it is very inefficient.
   - rewrite generate pawn moves method with branchless implementation, than compare performances.
-  - (very important)in generateOutOfCheckAttacks method in MoveGeneration class, change implementation of generateEpAttacks (TODO: must not be pinned. And epSquare must be checker!)
+  - in generateOutOfCheckAttacks method in MoveGeneration class, change implementation of generateEpAttacks (TODO: must not be pinned. And epSquare must be checker!)
+     Wont fix. what if sliding attacker, own pawn, enemy pawn and own king are in the same row. how would you detect whether it is legal or not, without domove undomove???
   - (very important)in generateOutOfCheckAttacks method in MoveGeneration class, change implementation of generatePawnAttacksAndPromotions (TODO: prevent promotion move here. but not promotion attack!)
   - (very important)for pinned piece move generation, write methods for single fromPiece cases(lowestOneBit). (to prevent extra effort for while condition and a &= a - 1 calculation) and pass "from" parameter to prevent extra effort for numberoftrailingzeros invocation.
   - Write single line methods for inlineing. For example write method named getMoveType instead of executing directly move & 0x00070000

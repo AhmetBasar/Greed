@@ -69,51 +69,39 @@ public class MoveGeneration implements MoveGenerationConstants {
 	}
 	
 	public void generateMoves(IBoard board) {
-		switch (Long.bitCount(board.getCheckers())) {
-		case 0:
+		if (board.getCheckers() == 0) {
 			generateNotInCheckQuietMoves(board);
-			break;
-		case 1:
-			switch ((byte)(board.getPieces()[Long.numberOfTrailingZeros(board.getCheckers())] & 0XFE)) {
-			case EngineConstants.PAWN:
-			case EngineConstants.KNIGHT:
+		} else if (Long.bitCount(board.getCheckers()) == 1) {
+			if (board.getPieces()[Long.numberOfTrailingZeros(board.getCheckers())] <= EngineConstants.BLACK_KNIGHT) {
 				generateKingQuietMoves(board);
-				break;
-			default:
+			} else {
 				generateOutOfSlidingCheckQuietMoves(board);
 			}
-			break;
-		default:
+		} else {
 			generateKingQuietMoves(board);
-			break;
 		}
 	}
 	
 	public void generateAttacks(IBoard board) {
-		switch (Long.bitCount(board.getCheckers())) {
-		case 0:
-			// not in-check
+		if (board.getCheckers() == 0) {
 			generateNotInCheckAttacks(board);
-			break;
-		case 1:
+		} else if (Long.bitCount(board.getCheckers()) == 1) {
 			generateOutOfCheckAttacks(board);
-			break;
-		default:
-			// double check, only the king can attack
+		} else {
 			generateKingAttacks(board);
-			break;
 		}
 	}
 	
 	private void generateNotInCheckQuietMoves(IBoard board) {
 		
 		// non-pinned pieces
+		long nonPinnedPieces = ~board.getPinnedPieces();
 		generateKingQuietMoves(board);
-		generateQueenMoves(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getEmptySquares());
-		generateRookMoves(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getEmptySquares());
-		generateBishopMoves(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getEmptySquares());
-		generateKnightMoves(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), board.getEmptySquares());
-		generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board.getSide(), board.getEmptySquares(), board.getEmptySquares());
+		generateQueenMoves(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & nonPinnedPieces, board.getOccupiedSquares(), board.getEmptySquares());
+		generateRookMoves(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & nonPinnedPieces, board.getOccupiedSquares(), board.getEmptySquares());
+		generateBishopMoves(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & nonPinnedPieces, board.getOccupiedSquares(), board.getEmptySquares());
+		generateKnightMoves(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & nonPinnedPieces, board.getEmptySquares());
+		generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & nonPinnedPieces, board.getSide(), board.getEmptySquares(), board.getEmptySquares());
 		
 		// pinned pieces
 		long pinnedPieces = board.getOccupiedSquaresBySide()[board.getSide()] & board.getPinnedPieces();
@@ -358,11 +346,12 @@ public class MoveGeneration implements MoveGenerationConstants {
 	private void generateOutOfSlidingCheckQuietMoves(IBoard board) {
 		long possibleSquares = Utility.LINE[board.getKingSquares()[board.getSide()]][Long.numberOfTrailingZeros(board.getCheckers())];
 		if (possibleSquares != 0) {
-			generateKnightMoves(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), possibleSquares);
-			generateBishopMoves(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), possibleSquares);
-			generateRookMoves(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), possibleSquares);
-			generateQueenMoves(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & ~board.getPinnedPieces(), board.getOccupiedSquares(), possibleSquares);
-			generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board.getSide(), possibleSquares, board.getEmptySquares());
+			long nonPinnedPieces = ~board.getPinnedPieces();
+			generateKnightMoves(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & nonPinnedPieces, possibleSquares);
+			generateBishopMoves(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & nonPinnedPieces, board.getOccupiedSquares(), possibleSquares);
+			generateRookMoves(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & nonPinnedPieces, board.getOccupiedSquares(), possibleSquares);
+			generateQueenMoves(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & nonPinnedPieces, board.getOccupiedSquares(), possibleSquares);
+			generatePawnPushes(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & nonPinnedPieces, board.getSide(), possibleSquares, board.getEmptySquares());
 		}
 		generateKingQuietMoves(board);
 	}
@@ -371,14 +360,15 @@ public class MoveGeneration implements MoveGenerationConstants {
 		
 		long enemySquares = board.getOccupiedSquaresBySide()[board.getOpSide()];
 		long emptySquares = board.getEmptySquares();
+		long nonPinnedPieces = ~board.getPinnedPieces();
 		
 		// non pinned pieces
 		generateEpAttacks(board);
-		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, enemySquares, emptySquares);
-		generateKnightAttacks(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), enemySquares, board.getPieces());
-		generateRookAttacks(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), enemySquares, board.getPieces());
-		generateBishopAttacks(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), enemySquares, board.getPieces());
-		generateQueenAttacks(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & ~board.getPinnedPieces(), board.getOccupiedSquares(), enemySquares, board.getPieces());
+		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & nonPinnedPieces, board, enemySquares, emptySquares);
+		generateKnightAttacks(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & nonPinnedPieces, enemySquares, board.getPieces());
+		generateRookAttacks(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & nonPinnedPieces, board.getOccupiedSquares(), enemySquares, board.getPieces());
+		generateBishopAttacks(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & nonPinnedPieces, board.getOccupiedSquares(), enemySquares, board.getPieces());
+		generateQueenAttacks(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & nonPinnedPieces, board.getOccupiedSquares(), enemySquares, board.getPieces());
 		generateKingAttacks(board);
 		
 		// pinned pieces
@@ -407,16 +397,14 @@ public class MoveGeneration implements MoveGenerationConstants {
 	
 	private void generateOutOfCheckAttacks(IBoard board) {
 		// attack to checker
-		// TODO: must not be pinned. And epSquare must be checker!
+		long nonPinnedPieces = ~board.getPinnedPieces();
+		
 		generateEpAttacks(board);
-		// TODO: prevent promotion move here.
-//		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, board.getCheckers(), board.getEmptySquares());
-//		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, board.getCheckers(), 0L);
-		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & ~board.getPinnedPieces(), board, board.getCheckers(), Utility.LINE[Long.numberOfTrailingZeros(board.getCheckers())][board.getKingSquares()[board.getSide()]]);
-		generateKnightAttacks(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & ~board.getPinnedPieces(), board.getCheckers(), board.getPieces());
-		generateBishopAttacks(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
-		generateRookAttacks(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
-		generateQueenAttacks(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & ~board.getPinnedPieces(), board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
+		generatePawnAttacksAndPromotions(board.getBitboard()[board.getSide() | EngineConstants.PAWN] & nonPinnedPieces, board, board.getCheckers(), Utility.LINE[Long.numberOfTrailingZeros(board.getCheckers())][board.getKingSquares()[board.getSide()]]);
+		generateKnightAttacks(board.getBitboard()[board.getSide() | EngineConstants.KNIGHT] & nonPinnedPieces, board.getCheckers(), board.getPieces());
+		generateBishopAttacks(board.getBitboard()[board.getSide() | EngineConstants.BISHOP] & nonPinnedPieces, board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
+		generateRookAttacks(board.getBitboard()[board.getSide() | EngineConstants.ROOK] & nonPinnedPieces, board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
+		generateQueenAttacks(board.getBitboard()[board.getSide() | EngineConstants.QUEEN] & nonPinnedPieces, board.getOccupiedSquares(), board.getCheckers(), board.getPieces());
 		generateKingAttacks(board);
 	}
 	
