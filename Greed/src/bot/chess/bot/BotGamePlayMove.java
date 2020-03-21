@@ -207,8 +207,6 @@ public class BotGamePlayMove {
 		base.updateZobristKey(TranspositionTable.zobristBlackMove);
 		if(base.getGamePlay().getEpTarget() != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side][base.getGamePlay().getEpTarget()] & base.getBitboard()[(side ^ 1) | EngineConstants.PAWN]) != 0)
 			base.updateZobristKey(TranspositionTable.zobristEnPassantArray[base.getGamePlay().getEpTarget()]);
-		if(currentEpTarget != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side ^ 1][currentEpTarget] & base.getBitboard()[(side) | EngineConstants.PAWN]) != 0)
-			base.updateZobristKey(TranspositionTable.zobristEnPassantArray[currentEpTarget]);
 		//
 		base.getGamePlay().setEpTarget(currentEpTarget);
 		base.getGamePlay().setEpSquare(currentEpSquare);
@@ -288,6 +286,9 @@ public class BotGamePlayMove {
 			base.getBitboard()[sideToRook] &= ~(1L << castlingRookTo);
 			
 		}
+		
+		if(currentEpTarget != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side ^ 1][currentEpTarget] & base.getBitboard()[(side) | EngineConstants.PAWN]) != 0)
+			base.updateZobristKey(TranspositionTable.zobristEnPassantArray[currentEpTarget]);
 	}
 
 	private boolean isSimpleMove(){

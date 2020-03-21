@@ -182,8 +182,6 @@ public class GamePlayMove {
 		base.getGamePlay().updateZobristKey(TranspositionTable.zobristBlackMove);
 		if(base.getGamePlay().getEpTarget() != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side][base.getGamePlay().getEpTarget()] & bitboard[(side ^ 1) | EngineConstants.PAWN]) != 0)
 			base.getGamePlay().updateZobristKey(TranspositionTable.zobristEnPassantArray[base.getGamePlay().getEpTarget()]);
-		if(currentEpTarget != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side ^ 1][currentEpTarget] & bitboard[(side) | EngineConstants.PAWN]) != 0)
-			base.getGamePlay().updateZobristKey(TranspositionTable.zobristEnPassantArray[currentEpTarget]);
 		//
 		base.getGamePlay().setEpTarget(currentEpTarget);
 		base.getGamePlay().setEpSquare(currentEpSquare);
@@ -233,6 +231,9 @@ public class GamePlayMove {
             base.getChessBoardPanel().getCell(from).setItem(fromItem);
             PieceEffects.doEffect(base, castlingRookTo, castlingRookFrom);
 		}
+		
+		if(currentEpTarget != 64 && (EngineConstants.PAWN_ATTACK_LOOKUP[side ^ 1][currentEpTarget] & Transformer.getBitboardStyl(base.getBoard())[(side) | EngineConstants.PAWN]) != 0)
+			base.getGamePlay().updateZobristKey(TranspositionTable.zobristEnPassantArray[currentEpTarget]);
 	}
 
 	public boolean isKingInCheck() {
