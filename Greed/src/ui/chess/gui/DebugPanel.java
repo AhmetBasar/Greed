@@ -209,7 +209,7 @@ public class DebugPanel extends JPanel{
 //				base.setBoard(DebugUtility.getDefaultBoard24());
 //				base.setBoard(DebugUtility.getDefaultBoard25());
 //				base.setBoard(DebugUtility.getDefaultBoard26());
-				base.setBoard(DebugUtility.getDefaultBoard27());
+				base.setBoard(DebugUtility.getDefaultBoard());
 				
 				jcbBlackKingSideCastlingRight.setSelected(false);
 				jcbBlackQueenSideCastlingRight.setSelected(false);

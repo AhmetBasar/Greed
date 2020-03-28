@@ -25,11 +25,11 @@ import chess.util.Utility;
 
 public class FenGenerator {
 
-	private static final char[] pieces = new char[] { '.', '.', 'P', 'p', 'N', 'n', 'B', 'b', 'R', 'r', 'Q', 'q', 'K', 'k' };
+	private static final char[] PIECES = new char[] { '.', '.', 'P', 'p', 'N', 'n', 'B', 'b', 'R', 'r', 'Q', 'q', 'K', 'k' };
 
 	public static final String[] FILES = new String[] { "a", "b", "c", "d", "e", "f", "g", "h" };
 
-	private static final char[] sideToMove = new char[] { 'w', 'b' };
+	private static final char[] SIDE_TO_MOVE = new char[] { 'w', 'b' };
 
 	public static String getFenString(IBoard b) {
 		StringBuilder sbFenString = new StringBuilder();
@@ -46,7 +46,7 @@ public class FenGenerator {
 						sbRankString.append(emptySquareCount);
 						emptySquareCount = 0;
 					}
-					sbRankString.append(pieces[pieceIndex]);
+					sbRankString.append(PIECES[pieceIndex]);
 				}
 			}
 			if (emptySquareCount > 0) {
@@ -60,7 +60,7 @@ public class FenGenerator {
 
 		sbFenString.append(" ");
 
-		sbFenString.append(sideToMove[b.getSide()]);
+		sbFenString.append(SIDE_TO_MOVE[b.getSide()]);
 
 		sbFenString.append(" ");
 

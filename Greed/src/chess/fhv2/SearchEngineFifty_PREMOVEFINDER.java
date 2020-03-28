@@ -143,6 +143,9 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2 {
 	}
 	
 	public int getBestMovee(int depth, IBoard board, boolean isLastIteration, int preMoveDepth, int distance, int firstMove){
+		if (true) {
+			throw new RuntimeException("New Design Not Yet Implemented.");
+		}
 		
 		int alpha = MINUS_INFINITY;
 		int beta = PLUS_INFINITY;

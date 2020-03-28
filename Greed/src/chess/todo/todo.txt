@@ -282,6 +282,8 @@ Chess Bot Programming.
   - DO NOT USE BYTE. because integer casting is too expensive :( use integer as much as possible.
   - change move structure.
   - change castling right structure.
-  
+  - delete moveLists field from IBoard.
+  - Do not use Legality in engine class anymore.
+  - do we really need to check whether the king is in check when trying ttBestMove???
    
   

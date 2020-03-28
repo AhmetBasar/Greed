@@ -192,6 +192,15 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.engine.Material.PIECE_MASKS");
 		whiteListFields.add("chess.engine.Material.PIECE_SHIFTS");
 		whiteListFields.add("chess.engine.Material.SLIDING_PIECE_MASKS");
+		whiteListFields.add("chess.engine.Material.MAJOR_PIECE_MASKS");
+		
+		whiteListFields.add("chess.engine.test.suites.FenGenerator.PIECES");
+		whiteListFields.add("chess.engine.test.suites.FenGenerator.FILES");
+		whiteListFields.add("chess.engine.test.suites.FenGenerator.SIDE_TO_MOVE");
+		
+		whiteListFields.add("chess.fhv2.SearchEngineFifty12.instance");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty12.newInstances");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty12.STATIC_NULLMOVE_MARGIN");
 		
 	}
 
