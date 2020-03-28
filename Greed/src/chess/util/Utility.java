@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -171,5 +172,10 @@ public class Utility {
 	
 	public static boolean isSet(long bb, int index){
 		return ((bb >>> index) & 1L) == 1L;
+	}
+	
+	public static int generateStrongRandomNumber(int begin, int end) {
+		SecureRandom r = new SecureRandom();
+		return r.nextInt(end - begin) + begin;
 	}
 }

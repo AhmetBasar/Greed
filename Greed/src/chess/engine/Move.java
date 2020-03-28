@@ -21,6 +21,16 @@ package chess.engine;
 
 public class Move {
 	
+	public static void main(String[] args) {
+		int move = 6503476;
+		System.out.println("move = " + move);
+		System.out.println("move & 0x0000_00FF = " + (move & 0x0000_00FF));
+		System.out.println("(move & 0x0000_FF00) >>> 8 = " + ((move & 0x0000_FF00) >>> 8));
+		System.out.println("(move & 0x000F_0000) >>> 16 = " + ((move & 0x000F_0000) >>> 16));
+		System.out.println("(move & 0x0700_0000) >>> 24 = " + ((move & 0x0700_0000) >>> 24));
+		System.out.println("(move & 0x7800_0000) >>> 27 = " + ((move & 0x7800_0000) >>> 27));
+	}
+	
 	public static byte getPromotedPiece(int move) {
 		return (byte)((move & 0x00f00000) >>> 20);		
 	}
@@ -49,27 +59,36 @@ public class Move {
 		return from | (to << 8);
 	}
 	
-	public static int encodeAttackMove(int from, int to, int capturedPiece) {
-//		return from | (to << 8) | (capturedPiece << 27);
-		return from | (to << 8);
+	public static int encodeMove(int from, int to, int fromPiece) {
+		return from | (to << 8) | (fromPiece << 24);
 	}
 	
-	public static int encodeMove(int from, int to, int moveType) {
+	public static int encodeAttackMove(int from, int to, int capturedPiece, int fromPiece) {
+		return from | (to << 8) | (fromPiece << 24) | (capturedPiece << 27);
+	}
+	
+	public static int encodeSpecialMove(int from, int to, int moveType) {
 		return from | (to << 8) | (moveType << 16);
 	}
 	
-	public static int encodeAttackMove(int from, int to, int moveType, int capturedPiece) {
-//		return from | (to << 8) | (moveType << 16) | (capturedPiece << 27);
-		return from | (to << 8) | (moveType << 16);
+	public static int encodeSpecialMove(int from, int to, int moveType, int fromPiece) {
+		return from | (to << 8) | (moveType << 16) | (fromPiece << 24);
 	}
 	
-	public static int encodeMove(int from, int to, int moveType, int promotedPiece) {
+	public static int encodeSpecialAttackMove(int from, int to, int moveType, int capturedPiece, int fromPiece) {
+		return from | (to << 8) | (moveType << 16) | (fromPiece << 24) | (capturedPiece << 27);
+	}
+	
+//	public static int encodePromotionMove(int from, int to, int moveType, int promotedPiece) {
+//		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20) | (EngineConstants.PAWN_MVVLVA << 24);
+//	}
+	
+	public static int encodePromotionMove(int from, int to, int moveType, int promotedPiece) {
 		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20);
 	}
 	
-	public static int encodeAttackMove(int from, int to, int moveType, int promotedPiece, int capturedPiece) {
-//		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20) | (capturedPiece << 27);
-		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20);
+	public static int encodePromotionAttackMove(int from, int to, int moveType, int promotedPiece, int capturedPiece) {
+		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20) | (EngineConstants.PAWN_MVVLVA << 24) | (capturedPiece << 27);
 	}
 	
 }

@@ -49,23 +49,30 @@ public class MoveGeneration implements MoveGenerationConstants {
 	}
 	
 	public void sort() {
-		List<Integer> moveList = new ArrayList<Integer>();
-		int origNextToMove = nextToMove[currentPly];
-		while (hasNext()) {
-			moveList.add(next());
+		int left = nextToMove[currentPly];
+		for (int i = left, j = i; i < nextToGenerate[currentPly] - 1; j = ++i) {
+			int score = moveScores[i + 1];
+			int move = moves[i + 1];
+			while (score > moveScores[j]) {
+				moveScores[j + 1] = moveScores[j];
+				moves[j + 1] = moves[j];
+				if (j-- == left) {
+					break;
+				}
+			}
+			moveScores[j + 1] = score;
+			moves[j + 1] = move;
 		}
-		Collections.sort(moveList);
-		nextToMove[currentPly] = origNextToMove;
-		
-		for (Integer move : moveList) {
-			moves[nextToMove[currentPly]++] = move;
-		}
-		
-		nextToMove[currentPly] = origNextToMove;
 	}
 	
 	public void addMove(int move){
 		moves[nextToGenerate[currentPly]++] = move;
+	}
+	
+	public void setMvvLvaScores() {
+		for (int i = nextToMove[currentPly]; i < nextToGenerate[currentPly]; i++) {
+			moveScores[i] = moves[i];
+		}
 	}
 	
 	public void generateMoves(IBoard board) {
@@ -131,7 +138,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 		long toBitboard = EngineConstants.KING_LOOKUP[from] & board.getOccupiedSquaresBySide()[board.getOpSide()];
 		while (toBitboard != 0) {
 			int to = Long.numberOfTrailingZeros(toBitboard);
-			addMove(Move.encodeAttackMove(from, to, board.getPieces()[to]));
+			addMove(Move.encodeAttackMove(from, to, EngineConstants.PIECE_VALUES_MVVLVA[board.getPieces()[to]], EngineConstants.KING_MVVLVA));
 			toBitboard &= (toBitboard - 1);
 		}
 	}
@@ -140,7 +147,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 		int from = board.getKingSquares()[board.getSide()];
 		long toBitboard = EngineConstants.KING_LOOKUP[from] & board.getEmptySquares();
 		while (toBitboard != 0) {
-			addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+			addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard), EngineConstants.KING_MVVLVA));
 			toBitboard &= (toBitboard - 1);
 		}
 		
@@ -165,7 +172,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 					bitboard[sideToKing] &= ~(1L << kingOriginalPos);
 					bitboard[sideToKing] |= (1L << squareBetweenKingAndRook);
 					if(!legality.isKingInCheck(bitboard, side)){
-						addMove(Move.encodeMove(from, to, EngineConstants.QUEEN_SIDE_CASTLING));
+						addMove(Move.encodeSpecialMove(from, to, EngineConstants.QUEEN_SIDE_CASTLING));
 					}
 					bitboard[sideToKing] &= ~(1L << squareBetweenKingAndRook);
 					bitboard[sideToKing] |= (1L << kingOriginalPos);
@@ -184,7 +191,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 					bitboard[sideToKing] &= ~(1L << kingOriginalPos);
 					bitboard[sideToKing] |= (1L << squareBetweenKingAndRook);
 					if(!legality.isKingInCheck(bitboard, side)){
-						addMove(Move.encodeMove(from, to, EngineConstants.KING_SIDE_CASTLING));
+						addMove(Move.encodeSpecialMove(from, to, EngineConstants.KING_SIDE_CASTLING));
 					}
 					bitboard[sideToKing] &= ~(1L << squareBetweenKingAndRook);
 					bitboard[sideToKing] |= (1L << kingOriginalPos);
@@ -199,7 +206,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			long toBitboard = MagicBitboard.generateQueenMoves(from, occupiedSquares) & possibleSquares;
 			
 			while (toBitboard != 0) {
-				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard), EngineConstants.QUEEN_MVVLVA));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -213,7 +220,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			
 			while (toBitboard != 0) {
 				int to = Long.numberOfTrailingZeros(toBitboard);
-				addMove(Move.encodeAttackMove(from, to, pieces[to]));
+				addMove(Move.encodeAttackMove(from, to, EngineConstants.PIECE_VALUES_MVVLVA[pieces[to]], EngineConstants.QUEEN_MVVLVA));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -225,7 +232,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			int from = Long.numberOfTrailingZeros(fromBitboard);
 			long toBitboard = MagicBitboard.generateRookMoves(from, occupiedSquares) & possibleSquares;
 			while (toBitboard != 0) {
-				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard), EngineConstants.ROOK_MVVLVA));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -238,7 +245,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			long toBitboard = MagicBitboard.generateRookMoves(from, occupiedSquares) & possibleSquares;
 			while (toBitboard != 0) {
 				int to = Long.numberOfTrailingZeros(toBitboard);
-				addMove(Move.encodeAttackMove(from, to, pieces[to]));
+				addMove(Move.encodeAttackMove(from, to, EngineConstants.PIECE_VALUES_MVVLVA[pieces[to]], EngineConstants.ROOK_MVVLVA));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -250,7 +257,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			int from = Long.numberOfTrailingZeros(fromBitboard);
 			long toBitboard = MagicBitboard.generateBishopMoves(from, occupiedSquares) & possibleSquares;
 			while (toBitboard != 0) {
-				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard), EngineConstants.BISHOP_MVVLVA));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -263,7 +270,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			long toBitboard = MagicBitboard.generateBishopMoves(from, occupiedSquares) & possibleSquares;
 			while (toBitboard != 0) {
 				int to = Long.numberOfTrailingZeros(toBitboard);
-				addMove(Move.encodeAttackMove(from, to, pieces[to]));
+				addMove(Move.encodeAttackMove(from, to, EngineConstants.PIECE_VALUES_MVVLVA[pieces[to]], EngineConstants.BISHOP_MVVLVA));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -275,7 +282,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			int from = Long.numberOfTrailingZeros(fromBitboard);
 			long toBitboard = EngineConstants.KNIGHT_LOOKUP[from] & possibleSquares;
 			while (toBitboard != 0) {
-				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard)));
+				addMove(Move.encodeMove(from, Long.numberOfTrailingZeros(toBitboard), EngineConstants.KNIGHT_MVVLVA));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -288,7 +295,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			long toBitboard = EngineConstants.KNIGHT_LOOKUP[from] & possibleSquares;
 			while (toBitboard != 0) {
 				int to = Long.numberOfTrailingZeros(toBitboard);
-				addMove(Move.encodeAttackMove(from, to, pieces[to]));
+				addMove(Move.encodeAttackMove(from, to, EngineConstants.PIECE_VALUES_MVVLVA[pieces[to]], EngineConstants.KNIGHT_MVVLVA));
 				toBitboard &= (toBitboard - 1);
 			}
 			fromBitboard &= (fromBitboard - 1);
@@ -314,7 +321,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			while (toBitboard != 0) {
 				if ((emptySquares & (Long.lowestOneBit(toBitboard) << 8)) != 0) {
 					int from = Long.numberOfTrailingZeros(toBitboard);
-					addMove(Move.encodeMove(from, from + 16, EngineConstants.DOUBLE_PUSH));
+					addMove(Move.encodeSpecialMove(from, from + 16, EngineConstants.DOUBLE_PUSH));
 				}
 				toBitboard &= (toBitboard - 1);
 			}
@@ -332,7 +339,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 			while (toBitboard != 0) {
 				if ((emptySquares & (Long.lowestOneBit(toBitboard) >>> 8)) != 0) {
 					int from = Long.numberOfTrailingZeros(toBitboard);
-					addMove(Move.encodeMove(from, from - 16, EngineConstants.DOUBLE_PUSH));
+					addMove(Move.encodeSpecialMove(from, from - 16, EngineConstants.DOUBLE_PUSH));
 				}
 				toBitboard &= (toBitboard - 1);
 			}
@@ -414,7 +421,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 		}
 		long fromBitboard = board.getBitboard()[board.getSide() | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[board.getOpSide()][board.getEpTarget()];
 		while (fromBitboard != 0) {
-			addMove(Move.encodeAttackMove(Long.numberOfTrailingZeros(fromBitboard), board.getEpTarget(), EngineConstants.EP_CAPTURE, EngineConstants.PAWN | board.getOpSide()));
+			addMove(Move.encodeSpecialAttackMove(Long.numberOfTrailingZeros(fromBitboard), board.getEpTarget(), EngineConstants.EP_CAPTURE, board.getOpSide() | EngineConstants.PAWN, EngineConstants.PAWN_MVVLVA));
 			fromBitboard &= (fromBitboard - 1);
 		}
 	}
@@ -437,7 +444,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 				long toBitboard = EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.WHITE][from] & enemySquares;
 				while (toBitboard != 0) {
 					int to = Long.numberOfTrailingZeros(toBitboard);
-					addMove(Move.encodeAttackMove(from, to, board.getPieces()[to]));
+					addMove(Move.encodeAttackMove(from, to, EngineConstants.PIECE_VALUES_MVVLVA[board.getPieces()[to]], EngineConstants.PAWN_MVVLVA));
 					toBitboard &= (toBitboard - 1);
 				}
 				fromBitboard &= (fromBitboard - 1);
@@ -468,7 +475,7 @@ public class MoveGeneration implements MoveGenerationConstants {
 				long toBitboard = EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.BLACK][from] & enemySquares;
 				while (toBitboard != 0) {
 					int to = Long.numberOfTrailingZeros(toBitboard);
-					addMove(Move.encodeAttackMove(from, to, board.getPieces()[to]));
+					addMove(Move.encodeAttackMove(from, to, EngineConstants.PIECE_VALUES_MVVLVA[board.getPieces()[to]], EngineConstants.PAWN_MVVLVA));
 					toBitboard &= (toBitboard - 1);
 				}
 				fromBitboard &= (fromBitboard - 1);
@@ -496,22 +503,22 @@ public class MoveGeneration implements MoveGenerationConstants {
 	}
 	
 	private void generatePromotions(int from, int to, int side) {
-		addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN));
+		addMove(Move.encodePromotionMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN));
 		if (allowUnderPromotion) {
-			addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.KNIGHT));
-			addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.BISHOP));
-			addMove(Move.encodeMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.ROOK));
+			addMove(Move.encodePromotionMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.KNIGHT));
+			addMove(Move.encodePromotionMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.BISHOP));
+			addMove(Move.encodePromotionMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.ROOK));
 		}
 	}
 	
 	private void generatePromotionAttacks(int from, long toBitboard, int side, byte[] pieces) {
 		while (toBitboard != 0) {
 			int to = Long.numberOfTrailingZeros(toBitboard);
-			addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN, pieces[to]));
+			addMove(Move.encodePromotionAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.QUEEN, EngineConstants.PIECE_VALUES_MVVLVA[pieces[to]]));
 			if (allowUnderPromotion) {
-				addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.KNIGHT, pieces[to]));
-				addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.BISHOP, pieces[to]));
-				addMove(Move.encodeAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.ROOK, pieces[to]));
+				addMove(Move.encodePromotionAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.KNIGHT, EngineConstants.PIECE_VALUES_MVVLVA[pieces[to]]));
+				addMove(Move.encodePromotionAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.BISHOP, EngineConstants.PIECE_VALUES_MVVLVA[pieces[to]]));
+				addMove(Move.encodePromotionAttackMove(from, to, EngineConstants.PROMOTION, side | EngineConstants.ROOK, EngineConstants.PIECE_VALUES_MVVLVA[pieces[to]]));
 			}	
 			toBitboard &= (toBitboard - 1);
 		}

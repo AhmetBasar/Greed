@@ -40,6 +40,11 @@ import chess.debug.PerformanceTestingSingleThreadedCopyMake;
 import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV2;
 import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV3;
 import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV4;
+import chess.engine.BoardFactory;
+import chess.engine.SearchParameters;
+import chess.engine.Transformer;
+import chess.engine.test.suites.FenGenerator;
+import chess.game.GamePlay;
 
 public class DebugPanel extends JPanel{
 
@@ -642,6 +647,20 @@ public class DebugPanel extends JPanel{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// get FEN
+				GamePlay gp = base.getGamePlay();
+				SearchParameters params = new SearchParameters();
+				params.setEpT(gp.getEpTarget());
+				params.setEpS(gp.getEpSquare());
+				params.setBitboard(Transformer.getBitboardStyl(base.getBoard()));
+				params.setPieces(Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())));
+				params.setCastlingRights(gp.getCastlingRights());
+				params.setSide(gp.getSide());
+				params.setUiZobristKey(gp.getZobristKey());
+				params.setUiPawnZobristKey(gp.getPawnZobristKey());
+				params.setFiftyMoveCounter(gp.getFiftyMoveCounter());
+				params.setZobristKeyHistory(gp.getZobristKeyHistory());
+				
+				jtFEN.setText(FenGenerator.getFenString(BoardFactory.getInstance(params)));
 			}
 		}));
 		
