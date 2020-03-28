@@ -24,14 +24,6 @@ import chess.movegen.MagicBitboard;
 //https://github.com/sandermvdb/chess22k
 public class Check {
 	
-	
-	//TODO check if it is normal move?? may be much more efficient.
-	//TODO check if it is normal move?? may be much more efficient.
-	//TODO check if it is normal move?? may be much more efficient.
-	//TODO check if it is normal move?? may be much more efficient.
-	//TODO check if it is normal move?? may be much more efficient.
-	//TODO check if it is normal move?? may be much more efficient.
-	//TODO check if it is normal move?? may be much more efficient.
 	public static long getCheckers(long[] bb, int side, int opSide, int kingSquare, long occ) {
 		
 		return EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare] & bb[opSide | EngineConstants.PAWN]
@@ -43,29 +35,6 @@ public class Check {
 	
 	public static long getCheckers(IBoard board) {
 		return getCheckers(board.getBitboard(), board.getSide(), board.getOpSide(), board.getKingSquares()[board.getSide()], board.getOccupiedSquares());
-	}
-	
-	// TODO invoke it.
-	// TODO invoke it.
-	// TODO invoke it.
-	// TODO invoke it.
-	// TODO invoke it.
-	// TODO invoke it.
-	public static long getCheckers(long[] bb, int side, int opSide, int kingSquare, long occ, byte fromPiece) {
-		switch (fromPiece) {
-		case EngineConstants.PAWN:
-			return bb[opSide | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare];
-		case EngineConstants.KNIGHT:
-			return bb[opSide | EngineConstants.KNIGHT] & EngineConstants.KNIGHT_LOOKUP[kingSquare];
-		case EngineConstants.BISHOP:
-			return (bb[opSide | EngineConstants.BISHOP]) & MagicBitboard.generateBishopMoves(kingSquare, occ);
-		case EngineConstants.ROOK:
-			return (bb[opSide | EngineConstants.ROOK]) & MagicBitboard.generateRookMoves(kingSquare, occ);
-		case EngineConstants.QUEEN:
-			return (bb[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateQueenMoves(kingSquare, occ);
-		default:
-			return 0L;
-		}
 	}
 	
 	public static boolean isKingIncheckIncludingKing(boolean hasEnemyMajorPieces, int kingSquare, long[] bitboard, int opSide, int side, long occupiedSquares) {
