@@ -30,7 +30,7 @@ import chess.gui.BaseGui;
 import chess.movegen.MoveGeneration;
 
 public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
-	private MoveGeneration moveGeneration = new MoveGeneration(false);
+	private MoveGeneration moveGeneration = new MoveGeneration(true);
 	private LegalityV4 legality = new LegalityV4();
 	private PerftResult perftResult = new PerftResult();
 
@@ -72,7 +72,8 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 		boolean existsLegalMove = false;
 		int move;
 		moveGeneration.startPly();
-		moveGeneration.generateAllMoves(board);
+		moveGeneration.generateAttackMoves(board);
+		moveGeneration.generateQuietMoves(board);
 		while (moveGeneration.hasNext()) {
 			move = moveGeneration.next();
 			
@@ -104,7 +105,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV2 {
 						perftResult.incrementCaptureCount();
 					}
 
-					if (legality.isKingInCheck(board.getBitboard(), board.getSide())) {
+					if (board.getCheckers() != 0) {
 						perftResult.incrementCheckCount();
 					}
 					//

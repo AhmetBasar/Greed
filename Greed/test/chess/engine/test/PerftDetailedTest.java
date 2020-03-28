@@ -22,7 +22,7 @@ package chess.engine.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV2;
+import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV4;
 import chess.engine.BoardFactory;
 import chess.engine.IBoard;
 import chess.engine.Transformer;
@@ -92,11 +92,11 @@ public class PerftDetailedTest {
 									checkMateCount = Integer.parseInt(detailedInfos[9]);
 								}
 							}
-							IBoard board = BoardFactory.getInstance(Transformer.getBitboardStyl(fenOperations.getBoard())
+							IBoard board = BoardFactory.getInstance2(Transformer.getBitboardStyl(fenOperations.getBoard())
 									, Transformer.getByteArrayStyl(Transformer.getBitboardStyl(fenOperations.getBoard()))
 									, fenOperations.getEpTarget()
 									, fenOperations.getCastlingRights(), 0, new ArrayList<Long>(), fenOperations.getSide());
-							PerformanceTestingSingleThreadedWithBoardInfrastructureV2 engine = new PerformanceTestingSingleThreadedWithBoardInfrastructureV2();
+							PerformanceTestingSingleThreadedWithBoardInfrastructureV4 engine = new PerformanceTestingSingleThreadedWithBoardInfrastructureV4();
 							engine.getPerftResult().resetCounters();
 							engine.perft(depth, board);
 							

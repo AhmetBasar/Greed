@@ -34,8 +34,6 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV4 {
 	private LegalityV4 legality = new LegalityV4();
 	private PerftResult perftResult = new PerftResult();
 	
-	public static int counterr = 0;
-
 	public static void main(String[] args) {
 		long ilk = System.currentTimeMillis();
 		byte[][] sourceBoard = DebugUtility.getDefaultBoard();
@@ -51,7 +49,6 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV4 {
 	}
 	
 	public static void getAllVariations(byte[][] boardArray, int side, int depth, byte[][] castlingRights, BaseGui baseGui, int threadCount, int epTarget, int epSquare){
-		counterr = 0;
 		long startTime = System.currentTimeMillis();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
@@ -64,39 +61,24 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV4 {
 	}
 
 	public void perft(int depth, IBoard board) {
-		
-		if (counterr == 4) {
-			System.out.println();
-		}
-		
-		counterr++;
-		System.out.println("counterr = " + counterr);
-		System.out.println("depth = " + depth);
-		DebugUtility.throwBoard(board.getBitboard());
-
 		if (depth == 0) {
-			System.out.println("arttýr");
 			perftResult.incrementNodeCount();
 			return;
 		}
 
 		int depthMinusOne = depth - 1;
-		int depthPlusOne = depth + 1;
 
 		boolean existsLegalMove = false;
 		int move;
 		moveGeneration.startPly();
 		moveGeneration.generateAttacks(board);
 		moveGeneration.generateMoves(board);
-		moveGeneration.sort();
-		
 		while (moveGeneration.hasNext()) {
 			move = moveGeneration.next();
 			
 			if (!board.isLegal(move)) {
 				continue;
 			}
-			
 			board.doMove(move);
 
 			existsLegalMove = true;
@@ -124,7 +106,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV4 {
 					perftResult.incrementCaptureCount();
 				}
 				
-				if (legality.isKingInCheck(board.getBitboard(), board.getSide())) {
+				if (board.getCheckers() != 0) {
 					perftResult.incrementCheckCount();
 				}
 				//

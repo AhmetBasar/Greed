@@ -21,7 +21,6 @@ package chess.fhv2;
 
 import java.util.Arrays;
 
-import chess.debug.DebugUtility;
 import chess.engine.BoardFactory;
 import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
@@ -43,9 +42,7 @@ import chess.movegen.MoveGeneration;
 
 //http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm
 public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
-//	private MoveGenerationOrderedOnlyQueenPromotions_SBIV2 moveGenerationOrdered = new MoveGenerationOrderedOnlyQueenPromotions_SBIV2();
-//	private MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 moveGenerationCaptures = new MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2();
-	MoveGeneration moveGeneration = new MoveGeneration(true);
+	MoveGeneration moveGeneration = new MoveGeneration(false);
 	private LegalityV4 legality = new LegalityV4();
 	
 	private final int MINUS_INFINITY = -99999;
@@ -229,6 +226,7 @@ public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
 		moveGeneration.startPly();
 		moveGeneration.generateAttacks(board);
 		moveGeneration.generateMoves(board);
+		moveGeneration.setMvvLvaScores();
 		moveGeneration.sort();
 		
 		int move;
@@ -368,6 +366,7 @@ public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
 		moveGeneration.startPly();
 		moveGeneration.generateAttacks(board);
 		moveGeneration.generateMoves(board);
+		moveGeneration.setMvvLvaScores();
 		moveGeneration.sort();
 		
 		int move;
@@ -423,8 +422,6 @@ public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
 	}
 	
 	private int quiescentSearch(IBoard board, int alpha, int beta, int depth){
-//		System.out.println("depth = " + depth);
-//		DebugUtility.throwBoard(board.getBitboard());
 		int standPatScore =  EngineConstants.SIDE_COLOR[board.getSide()] * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
 		
 		if(standPatScore >= beta){
@@ -441,6 +438,7 @@ public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
 		
 		moveGeneration.startPly();
 		moveGeneration.generateAttacks(board);
+		moveGeneration.setMvvLvaScores();
 		moveGeneration.sort();
 		int tempValue;
 		int move;
@@ -484,78 +482,6 @@ public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
 					alpha = tempValue;
 					foundPv = true;
 				}
-			}
-			board.undoMoveWithoutZobrist(move);
-		}
-		
-		moveGeneration.endPly();
-		
-		return alpha;
-	}
-	
-	private int quiescentSearch2(IBoard board, int alpha, int beta, int depth){
-		int standPatScore =  EngineConstants.SIDE_COLOR[board.getSide()] * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
-		
-		if(standPatScore >= beta){
-			return beta;
-		}
-		
-		if(standPatScore > alpha){
-			alpha = standPatScore;
-		}
-		
-		boolean foundPv = false;
-
-		
-		
-		moveGeneration.startPly();
-		moveGeneration.generateAttacks(board);
-		moveGeneration.sort();
-		int tempValue;
-		int move;
-		while (moveGeneration.hasNext()) {
-			move = moveGeneration.next();
-			
-			if (!board.isLegal(move)) {
-				continue;
-			}
-			
-			// https://github.com/sandermvdb/chess22k
-			if (CompileTimeConstants.ENABLE_QUIESCENCE_FUTILITY_PRUNING) {
-				switch (Move.getMoveType(move)) {
-				case EngineConstants.PROMOTION_SHIFTED:
-					break;
-				case EngineConstants.EP_CAPTURE_SHIFTED:
-					if (standPatScore + FUTILITY_MARGIN + EngineConstants.WHITE_PAWN_V < alpha) {
-						continue;
-					}
-					break;
-				default:
-					if (standPatScore + FUTILITY_MARGIN + EngineConstants.PIECE_VALUES_POSITIVE[board.getPieces()[Move.getTo(move)]] < alpha) {
-						continue;
-					}
-					break;					
-				}
-			}
-			
-			board.doMoveWithoutZobrist(move);
-			if (foundPv) {
-				tempValue = -quiescentSearch(board, -alpha - 1, -alpha, depth - 1);
-				if (tempValue > alpha) {
-					tempValue = -quiescentSearch(board, -beta, -alpha, depth - 1);
-				}
-			} else {
-				tempValue = -quiescentSearch(board, -beta, -alpha, depth - 1);
-			}
-			
-			if(tempValue >= beta){
-				board.undoMoveWithoutZobrist(move);
-				moveGeneration.endPly();
-				return beta;
-			}
-			if(tempValue > alpha){
-				alpha = tempValue;
-				foundPv = true;
 			}
 			board.undoMoveWithoutZobrist(move);
 		}
