@@ -26,10 +26,7 @@ import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.ISearchableV2;
-import chess.engine.LegalityV4;
 import chess.engine.Move;
-import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;
-import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.engine.OpeningBook;
 import chess.engine.PawnHashTable;
 import chess.engine.SearchParameters;
@@ -43,7 +40,6 @@ import chess.movegen.MoveGeneration;
 //http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm
 public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
 	MoveGeneration moveGeneration = new MoveGeneration(false);
-	private LegalityV4 legality = new LegalityV4();
 	
 	private final int MINUS_INFINITY = -99999;
 	private final int PLUS_INFINITY = 99999;
@@ -210,14 +206,12 @@ public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
 		if(ttBestMove != 0){
 			board.doMove(ttBestMove);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-				
-				if(tempValue > alpha){
-					hashType = HASH_EXACT;
-					alpha = tempValue;
-					bestMove = ttBestMove;
-				}
+			tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
+			
+			if(tempValue > alpha){
+				hashType = HASH_EXACT;
+				alpha = tempValue;
+				bestMove = ttBestMove;
 			}
 			
 			board.undoMove(ttBestMove);
@@ -341,24 +335,21 @@ public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
 		if(ttBestMove != 0){
 			board.doMove(ttBestMove);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				existsLegalMove = true;
-				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-				
-				if (tempValue >= beta) {
-					board.undoMove(ttBestMove);
-					tt.recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA, isTimeout);
-					addKiller(ttBestMove, distance);
-					return beta;
-				}
-				
-				if (tempValue > alpha) {
-					alpha = tempValue;
-					bestMove = ttBestMove;
-					hashType = HASH_EXACT;
-					foundPv = true;
-				}
-				
+			existsLegalMove = true;
+			tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
+			
+			if (tempValue >= beta) {
+				board.undoMove(ttBestMove);
+				tt.recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA, isTimeout);
+				addKiller(ttBestMove, distance);
+				return beta;
+			}
+			
+			if (tempValue > alpha) {
+				alpha = tempValue;
+				bestMove = ttBestMove;
+				hashType = HASH_EXACT;
+				foundPv = true;
 			}
 			board.undoMove(ttBestMove);
 		}
@@ -462,26 +453,28 @@ public class SearchEngineFifty12 implements ISearchableV2, EngineConstants {
 				}
 			}
 			
+			if (!board.isLegal(move)) {
+				continue;
+			}
+			
 			board.doMoveWithoutZobrist(move);
-			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				if (foundPv) {
-					tempValue = -quiescentSearch(board, -alpha - 1, -alpha, depth - 1);
-					if (tempValue > alpha) {
-						tempValue = -quiescentSearch(board, -beta, -alpha, depth - 1);
-					}
-				} else {
+			if (foundPv) {
+				tempValue = -quiescentSearch(board, -alpha - 1, -alpha, depth - 1);
+				if (tempValue > alpha) {
 					tempValue = -quiescentSearch(board, -beta, -alpha, depth - 1);
 				}
-				
-				if(tempValue >= beta){
-					board.undoMoveWithoutZobrist(move);
-					moveGeneration.endPly();
-					return beta;
-				}
-				if(tempValue > alpha){
-					alpha = tempValue;
-					foundPv = true;
-				}
+			} else {
+				tempValue = -quiescentSearch(board, -beta, -alpha, depth - 1);
+			}
+			
+			if(tempValue >= beta){
+				board.undoMoveWithoutZobrist(move);
+				moveGeneration.endPly();
+				return beta;
+			}
+			if(tempValue > alpha){
+				alpha = tempValue;
+				foundPv = true;
 			}
 			board.undoMoveWithoutZobrist(move);
 		}
