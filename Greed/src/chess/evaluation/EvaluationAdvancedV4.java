@@ -42,6 +42,7 @@ public class EvaluationAdvancedV4 {
 	
 	// https://github.com/sandermvdb/chess22k
 	public static final int[] PAWN_CONNECTED = {0, 0, 12, 14, 20, 58, 122};
+	public static final int[] PAWN_NEIGHBOUR = {0, 0, 4, 10, 26, 88, 326};
 	
 	private static final boolean usePsqt = true;
 	private static final boolean useBishopPair = true;
@@ -276,13 +277,28 @@ public class EvaluationAdvancedV4 {
 		 **/
 		long bb = MoveGeneration.getWhitePawnAttacks(wp) & wp;
 		while (bb != 0) {
-			eval += PAWN_CONNECTED[Long.numberOfTrailingZeros(bb) / 8];
+			eval += PAWN_CONNECTED[Utility.getRank(Long.numberOfTrailingZeros(bb), true)];
 			bb &= bb - 1;
 		}
 		
 		bb = MoveGeneration.getBlackPawnAttacks(bp) & bp;
 		while (bb != 0) {
 			eval -= PAWN_CONNECTED[7 - (Utility.getRank(Long.numberOfTrailingZeros(bb), true))];
+			bb &= bb - 1;
+		}
+		
+		/**
+		 * Neighbor pawn bonus.
+		 **/
+		bb = BitboardUtility.getPawnNeighbors(wp) & wp;
+		while (bb != 0) {
+			eval += PAWN_NEIGHBOUR[Utility.getRank(Long.numberOfTrailingZeros(bb), true)];
+			bb &= bb - 1;
+		}
+		
+		bb = BitboardUtility.getPawnNeighbors(bp) & bp;
+		while (bb != 0) {
+			eval -= PAWN_NEIGHBOUR[7 - Utility.getRank(Long.numberOfTrailingZeros(bb), true)];
 			bb &= bb - 1;
 		}
 		
