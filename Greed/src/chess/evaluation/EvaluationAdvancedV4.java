@@ -25,6 +25,7 @@ import chess.engine.PawnHashTable;
 import chess.engine.PawnTranspositionElement;
 import chess.engine.TranspositionTable;
 import chess.gui.GuiConstants;
+import chess.movegen.MoveGeneration;
 
 public class EvaluationAdvancedV4 {
 	
@@ -37,6 +38,9 @@ public class EvaluationAdvancedV4 {
 	private static final int BONUS_ROOK_ON_SEMI_OPEN_FILE = 10;
 //	private static final int BONUS_ROOK_ON_OPEN_FILE = 10;
 //	private static final int BONUS_ROOK_BATTERY = 10;
+	
+	// https://github.com/sandermvdb/chess22k
+	public static final int[] PAWN_CONNECTED = {0, 0, 12, 14, 20, 58, 122};
 	
 	private static final boolean usePsqt = true;
 	private static final boolean useBishopPair = true;
@@ -265,6 +269,21 @@ public class EvaluationAdvancedV4 {
 		int wpCount = Long.bitCount(wp);
 		int bpCount = Long.bitCount(bp);
 		int eval = 0;
+		
+		/**
+		 * Connected pawn bonus.
+		 **/
+		long bb = MoveGeneration.getWhitePawnAttacks(wp) & wp;
+		while (bb != 0) {
+			eval += PAWN_CONNECTED[Long.numberOfTrailingZeros(bb) / 8];
+			bb &= bb - 1;
+		}
+		
+		bb = MoveGeneration.getBlackPawnAttacks(bp) & bp;
+		while (bb != 0) {
+			eval -= PAWN_CONNECTED[7 - Long.numberOfTrailingZeros(bb) / 8];
+			bb &= bb - 1;
+		}
 		
 		/**
 		 * Passed pawn bonus.
