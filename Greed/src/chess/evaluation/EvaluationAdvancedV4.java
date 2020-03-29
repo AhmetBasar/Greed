@@ -35,6 +35,8 @@ public class EvaluationAdvancedV4 {
 	private static final int PENALTY_DOUBLED_PAWN = 10;
 	private static final int PENALTY_ISOLATED_PAWN = 20;
 	private static final int PENALTY_BACKWARD_PAWN = 20;
+	private static final int PENALTY_PAWN_DEFENDS_2_PAWNS = 6;
+	
 	private static final int BONUS_PASSED_PAWN = 20;
 	private static final int BONUS_ROOK_ON_SEMI_OPEN_FILE = 10;
 //	private static final int BONUS_ROOK_ON_OPEN_FILE = 10;
@@ -325,6 +327,12 @@ public class EvaluationAdvancedV4 {
 			if (usePsqt) {
 				eval += PieceSquareTable.positionalValue[EngineConstants.WHITE_PAWN][trailingZeros];
 			}
+			
+			// Penalty Pawn Defending 2 pawn
+			if (Long.bitCount(EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.WHITE][trailingZeros] & wp) == 2) {
+				eval -= PENALTY_PAWN_DEFENDS_2_PAWNS;
+			}
+			
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
@@ -341,6 +349,12 @@ public class EvaluationAdvancedV4 {
 			if (usePsqt) {
 				eval += PieceSquareTable.positionalValue[EngineConstants.BLACK_PAWN][trailingZeros];
 			}
+			
+			// Penalty Pawn Defending 2 pawn
+			if (Long.bitCount(EngineConstants.PAWN_ATTACK_LOOKUP[EngineConstants.BLACK][trailingZeros] & bp) == 2) {
+				eval += PENALTY_PAWN_DEFENDS_2_PAWNS;
+			}
+			
 			fromBitboard &= (fromBitboard - 1);
 		}
 		
