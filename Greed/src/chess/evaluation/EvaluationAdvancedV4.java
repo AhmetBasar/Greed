@@ -26,6 +26,7 @@ import chess.engine.PawnTranspositionElement;
 import chess.engine.TranspositionTable;
 import chess.gui.GuiConstants;
 import chess.movegen.MoveGeneration;
+import chess.util.Utility;
 
 public class EvaluationAdvancedV4 {
 	
@@ -281,7 +282,7 @@ public class EvaluationAdvancedV4 {
 		
 		bb = MoveGeneration.getBlackPawnAttacks(bp) & bp;
 		while (bb != 0) {
-			eval -= PAWN_CONNECTED[7 - Long.numberOfTrailingZeros(bb) / 8];
+			eval -= PAWN_CONNECTED[7 - (Utility.getRank(Long.numberOfTrailingZeros(bb), true))];
 			bb &= bb - 1;
 		}
 		
