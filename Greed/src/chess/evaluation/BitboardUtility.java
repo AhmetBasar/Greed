@@ -117,5 +117,9 @@ public class BitboardUtility {
 	public static long bPawnWestAttacks(long bp) {
 		return southWestOne(bp);
 	}
+	
+	public static long getPawnNeighbors(long pawns) {
+		return (pawns << 1 & EngineConstants.NOT_FILE_A) | (pawns >>> 1 & EngineConstants.NOT_FILE_H);
+	}
 
 }

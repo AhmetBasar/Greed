@@ -1,9 +1,5 @@
 package chess.movegen;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.LegalityV4;
@@ -524,11 +520,11 @@ public class MoveGeneration implements MoveGenerationConstants {
 		}
 	}
 	
-	private long getBlackPawnAttacks(long blackPawns) {
+	public static long getBlackPawnAttacks(long blackPawns) {
 		return (blackPawns >>> 9 & ~EngineConstants.FILE_H) | (blackPawns >>> 7 & ~EngineConstants.FILE_A);
 	}
 	
-	private long getWhitePawnAttacks(long whitePawns) {
+	public static long getWhitePawnAttacks(long whitePawns) {
 		return (whitePawns << 9 & ~EngineConstants.FILE_A) | (whitePawns << 7 & ~EngineConstants.FILE_H);
 	}
 	

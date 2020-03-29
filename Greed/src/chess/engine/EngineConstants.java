@@ -106,6 +106,9 @@ public interface EngineConstants {
 	   FILE_G=0x0101010101010101L<<6,
 	   FILE_H=0x0101010101010101L<<7;
 	
+	public static final long NOT_FILE_A = ~FILE_A;
+	public static final long NOT_FILE_H = ~FILE_H;
+	
 	public static final long[] FILE = {
 			FILE_A,
 			FILE_B,

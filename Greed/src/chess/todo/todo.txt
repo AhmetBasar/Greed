@@ -285,5 +285,9 @@ Chess Bot Programming.
   - delete moveLists field from IBoard.
   - Do not use Legality in engine class anymore.
   - do we really need to check whether the king is in check when trying ttBestMove???
+  - Use material score cache in evaluation.
+  - Heap memory is growing up consistently when tournament is running(when 15.000 games are played, then 2 g heap is used). Use profiler to detect possible memory leaks.
+  - Replace ~EngineConstants.FILE_A with EngineConstants.NOT_FILE_A
+  - Replace ~EngineConstants.FILE_H with EngineConstants.NOT_FILE_H
    
   
