@@ -115,7 +115,7 @@ public class SearchEngineFifty13 implements ISearchableV2, EngineConstants {
 	
 	// Margins shamelessly stolen from chess22k
 	private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
-	private static final int[] RAZORING_MARGIN = { 0, 240, 280, 300 };
+//	private static final int[] RAZORING_MARGIN = { 0, 240, 280, 300 };
 	
 	public SearchResult search(SearchParameters searchParameters) {
 		
@@ -318,14 +318,14 @@ public class SearchEngineFifty13 implements ISearchableV2, EngineConstants {
 				}
 			}
 			
-			if (CompileTimeConstants.ENABLE_RAZORING && depth < RAZORING_MARGIN.length && Math.abs(alpha) < EngineConstants.SCORE_MATE_BOUND) {
-				if (eval + RAZORING_MARGIN[depth] < alpha) {
-					int score = quiescentSearch(board, alpha - RAZORING_MARGIN[depth], alpha - RAZORING_MARGIN[depth] + 1);
-					if (score + RAZORING_MARGIN[depth] <= alpha) {
-						return alpha;
-					}
-				}
-			}
+//			if (CompileTimeConstants.ENABLE_RAZORING && depth < RAZORING_MARGIN.length && Math.abs(alpha) < EngineConstants.SCORE_MATE_BOUND) {
+//				if (eval + RAZORING_MARGIN[depth] < alpha) {
+//					int score = quiescentSearch(board, alpha - RAZORING_MARGIN[depth], alpha - RAZORING_MARGIN[depth] + 1);
+//					if (score + RAZORING_MARGIN[depth] <= alpha) {
+//						return alpha;
+//					}
+//				}
+//			}
 			
 			if (CompileTimeConstants.ENABLE_NULL_MOVE_PRUNING) {
 				//=>> NullMove Begin

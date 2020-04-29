@@ -202,6 +202,13 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.fhv2.SearchEngineFifty12.newInstances");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty12.STATIC_NULLMOVE_MARGIN");
 		
+		whiteListFields.add("chess.evaluation.EvaluationAdvancedV4.PAWN_CONNECTED");
+		whiteListFields.add("chess.evaluation.EvaluationAdvancedV4.PAWN_NEIGHBOUR");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty13.instance");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty13.newInstances");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty13.STATIC_NULLMOVE_MARGIN");
+		whiteListFields.add("chess.fhv2.SearchEngineFifty13.RAZORING_MARGIN");
+		
 	}
 
 }

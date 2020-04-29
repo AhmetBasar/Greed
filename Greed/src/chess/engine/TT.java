@@ -56,5 +56,12 @@ public class TT implements ITranspositionTable {
 			hashTable[index] = ttElement;
 		}
 	}
+	
+	public int adjustEval(int hashType, int eval, int ttScore) {
+		if (hashType == EngineConstants.HASH_EXACT || (hashType == EngineConstants.HASH_ALPHA && eval > ttScore) || (hashType == EngineConstants.HASH_BETA && eval < ttScore)) {
+			return ttScore;
+		}
+		return eval;
+	}
 
 }
