@@ -278,7 +278,7 @@ Chess Bot Programming.
   - (very important)for pinned piece move generation, write methods for single fromPiece cases(lowestOneBit). (to prevent extra effort for while condition and a &= a - 1 calculation) and pass "from" parameter to prevent extra effort for numberoftrailingzeros invocation.
   - Write single line methods for inlineing. For example write method named getMoveType instead of executing directly move & 0x00070000
   - rewrite checkers detection. When the move is not discovered and quiet than can be detected very fast.
-  [OKEY] - write genFen method, than write new perft test suite that tests generateOutOfCheckAttacks method of the MoveGeneration class for generatePawnAttacksAndPromotions method invocation. check evasion with simple promotion move but not promotion attack.
+ [OKEY] - write genFen method, than write new perft test suite that tests generateOutOfCheckAttacks method of the MoveGeneration class for generatePawnAttacksAndPromotions method invocation. check evasion with simple promotion move but not promotion attack.
   - DO NOT USE BYTE. because integer casting is too expensive :( use integer as much as possible.
   - change move structure.
   - change castling right structure.
