@@ -209,6 +209,9 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.fhv2.SearchEngineFifty13.STATIC_NULLMOVE_MARGIN");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty13.RAZORING_MARGIN");
 		
+		whiteListFields.add("chess.fhv2.SearchEngineFifty11.STATIC_NULLMOVE_MARGIN");
+		
+		
 	}
 
 }

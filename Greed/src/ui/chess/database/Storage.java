@@ -35,7 +35,7 @@ public class Storage {
 	public Storage() {
 		InputStream is = null;
 		try {
-			is = new FileInputStream("D:\\storage\\Storage.properties");
+			is = new FileInputStream("C:\\Users\\Ahmet\\Desktop\\storage\\Storage.properties");
 			properties.load(is);
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -47,7 +47,7 @@ public class Storage {
 	private void store() {
 		FileOutputStream fis = null;
 		try {
-			fis = new FileOutputStream("D:\\storage\\Storage.properties");
+			fis = new FileOutputStream("C:\\\\Users\\\\Ahmet\\\\Desktop\\\\storage\\Storage.properties");
 			properties.store(fis, null);
 			fis.flush();
 		} catch (IOException e) {

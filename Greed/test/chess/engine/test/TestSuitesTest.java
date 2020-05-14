@@ -61,7 +61,7 @@ public class TestSuitesTest {
 				@Override
 				public void run() {
 					try {
-						chess.fhv2.SearchEngineFifty12 engine = chess.fhv2.SearchEngineFifty12.getNewInstance();
+						chess.fhv2.SearchEngineFifty11 engine = chess.fhv2.SearchEngineFifty11.getNewInstance();
 						
 						for (String epdString : part) {
 							if (epdString.startsWith(TestConstants.COMMENT_INDICATOR)) {

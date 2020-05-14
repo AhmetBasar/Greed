@@ -39,7 +39,7 @@ import chess.evaluation.EvaluationAdvancedV4;
 import chess.movegen.MoveGeneration;
 
 //http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm
-public class SearchEngineFifty13 implements ISearchableV2, EngineConstants {
+public class SearchEngineFifty11 implements ISearchableV2, EngineConstants {
 	MoveGeneration moveGeneration = new MoveGeneration(false);
 	
 	private final int MINUS_INFINITY = -99999;
@@ -53,25 +53,25 @@ public class SearchEngineFifty13 implements ISearchableV2, EngineConstants {
 	// This should be variable.
 	private static final int R = 2;
 	
-	private static SearchEngineFifty13 instance;
-	private static SearchEngineFifty13[] newInstances = new SearchEngineFifty13[16];
+	private static SearchEngineFifty11 instance;
+	private static SearchEngineFifty11[] newInstances = new SearchEngineFifty11[16];
 	
-	private SearchEngineFifty13(){
+	private SearchEngineFifty11(){
 		TranspositionTable.fillZobristArrays();
 		timeControllerThread.start();
 	}
 	
-	public static SearchEngineFifty13 getInstance() {
+	public static SearchEngineFifty11 getInstance() {
 		if (instance == null) {
-			instance = new SearchEngineFifty13();
+			instance = new SearchEngineFifty11();
 		}
 		return instance;
 	}
 	
-	public static synchronized SearchEngineFifty13 getNewInstance() {
+	public static synchronized SearchEngineFifty11 getNewInstance() {
 		for (int i = 0; i < newInstances.length; i++) {
 			if (newInstances[i] == null) {
-				newInstances[i] = new SearchEngineFifty13();
+				newInstances[i] = new SearchEngineFifty11();
 				return newInstances[i];
 			}
 		}
