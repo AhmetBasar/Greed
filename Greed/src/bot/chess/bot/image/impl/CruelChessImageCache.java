@@ -35,8 +35,13 @@ import chess.bot.image.AbstractImageCache;
 public class CruelChessImageCache extends AbstractImageCache {
 
 	@Override
+	protected String getImageFolder() {
+		return "src/bot/";
+	}
+	
+	@Override
 	protected String getImagePath() {
-		return "src/bot/chess/bot/image/templateimages/cruelchessimages/";
+		return "chess/bot/image/templateimages/cruelchessimages/";
 	}
 
 	@Override

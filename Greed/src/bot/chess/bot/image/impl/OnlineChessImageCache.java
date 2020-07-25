@@ -31,8 +31,13 @@ import chess.bot.image.AbstractImageCache;
 public class OnlineChessImageCache extends AbstractImageCache {
 
 	@Override
+	protected String getImageFolder() {
+		return "src/bot/";
+	}
+	
+	@Override
 	protected String getImagePath() {
-		return "src/bot/chess/bot/image/templateimages/onlinechessimages/";
+		return "chess/bot/image/templateimages/onlinechessimages/";
 	}
 
 	@Override
@@ -165,7 +170,7 @@ public class OnlineChessImageCache extends AbstractImageCache {
 
 	@Override
 	protected int getXGap() {
-		return 6;
+		return 7;
 	}
 
 	@Override

@@ -259,7 +259,12 @@ public abstract class AbstractImageCache implements IImageCache {
 				Field field = AbstractImageCache.class.getDeclaredField(type.getFieldName());
 				field.setAccessible(true);
 				try {
-					field.set(this, ImageIO.read(new File(getImagePath() + type.getFieldName() + getImageExtension())));
+					File imageFile = new File(getImageFolder() + getImagePath() + type.getFieldName() + getImageExtension());
+					if (imageFile.exists()) {
+						field.set(this, ImageIO.read(imageFile));
+					} else {
+						field.set(this, ImageIO.read(this.getClass().getClassLoader().getResourceAsStream(getImagePath() + type.getFieldName() + getImageExtension())));
+					}
 				} catch (Exception e) {
 					System.out.println("asdf");
 					System.out.println("asdf");
@@ -278,6 +283,8 @@ public abstract class AbstractImageCache implements IImageCache {
 		return adjustedPoint;
 	}
 
+	protected abstract String getImageFolder();
+	
 	protected abstract String getImagePath();
 
 	protected abstract String getImageExtension();
