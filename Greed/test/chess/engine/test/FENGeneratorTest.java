@@ -40,7 +40,7 @@ public class FENGeneratorTest {
 			FenOperations fenOperations = new FenOperations();
 			fenOperations.setFenString(fenData);
 
-			IBoard board = BoardFactory.getInstance(Transformer.getBitboardStyl(fenOperations.getBoard()),
+			IBoard board = BoardFactory.getInstance2(Transformer.getBitboardStyl(fenOperations.getBoard()),
 					Transformer.getByteArrayStyl(Transformer.getBitboardStyl(fenOperations.getBoard())),
 					fenOperations.getEpTarget(), fenOperations.getCastlingRights(), 0, new ArrayList<Long>(),
 					fenOperations.getSide());
