@@ -34,8 +34,6 @@ import javax.swing.JTextPane;
 import chess.database.StorageConstants;
 import chess.debug.DebugUtility;
 import chess.debug.PerformanceTestingSimple;
-import chess.debug.PerformanceTestingSingleThreaded;
-import chess.debug.PerformanceTestingSingleThreadedCopyMake;
 import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV4;
 import chess.engine.BoardFactory;
 import chess.engine.SearchParameters;
@@ -67,13 +65,10 @@ public class DebugPanel extends JPanel{
 	private byte[][] castlingRights = new byte[2][2];
 	int threadCount;
 	
-	private JButton jbSearch;
 	private JButton jbSearchSimple;
 	private JButton jbSearchSimpleKinderGarten;
 	private JButton jbSearchCopyMake;
 	private JCheckBox jcbUseActualGameParameters;
-//	private JButton jbSearchBoard;
-	private JButton jbSearchBoardThreaded;
 	private JButton jbChangeTurn;
 	private JButton jbSetFEN;
 	private JButton jbClearFEN;
@@ -253,84 +248,12 @@ public class DebugPanel extends JPanel{
 			}
 		}));
 		
-		jbSearchCopyMake = new JButton("S.Cop");
-		jbSearchCopyMake.setMargin(new java.awt.Insets(1, 2, 1, 2));
-		jbSearchCopyMake.setSize(50, 25);
-		jbSearchCopyMake.setLocation(340, 160);
-		add(jbSearchCopyMake);
-		jbSearchCopyMake.addActionListener((new java.awt.event.ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				jtpResult.setText("");
-				castlingRights[0][0] = jcbWhiteQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				castlingRights[0][1] = jcbWhiteKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				castlingRights[1][0] = jcbBlackQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				castlingRights[1][1] = jcbBlackKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				threadCount = Integer.parseInt(jtThredCount.getText());
-				
-				if (jcbUseActualGameParameters.isSelected()) {
-					PerformanceTestingSingleThreadedCopyMake.getAllVariations(base.getBoard(),
-							base.getGamePlay().getSide(),
-							Integer.parseInt(jtSearchDepth.getText()),
-							base.getGamePlay().getCastlingRights(),
-							base,
-							threadCount,
-							base.getGamePlay().getEpTarget(),
-							base.getGamePlay().getEpSquare());
-				} else {
-					PerformanceTestingSingleThreadedCopyMake.getAllVariations(base.getBoard(), base.getGamePlay().getSide(), Integer.parseInt(jtSearchDepth.getText()), castlingRights, base, threadCount,
-							Integer.parseInt(jtEnpassantTarget.getText()), Integer.parseInt(jtEnpassantSquare.getText()));
-				}
-//				setEnableAll(false);
-			}
-		}));
-		
 		jcbUseActualGameParameters = new JCheckBox();
 		jcbUseActualGameParameters.setText("asdfasdfasdfasdfsad");
 		jcbUseActualGameParameters.setSelected(false);
 		jcbUseActualGameParameters.setSize(50, 25);
 		jcbUseActualGameParameters.setLocation(390, 160);
 		add(jcbUseActualGameParameters);
-		
-		jbSearchBoardThreaded = new JButton("S.Thre");
-		jbSearchBoardThreaded.setMargin(new java.awt.Insets(1, 2, 1, 2));
-		jbSearchBoardThreaded.setSize(50, 25);
-		jbSearchBoardThreaded.setLocation(290, 160);
-		add(jbSearchBoardThreaded);
-		jbSearchBoardThreaded.addActionListener((new java.awt.event.ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				jtpResult.setText("");
-				castlingRights[0][0] = jcbWhiteQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				castlingRights[0][1] = jcbWhiteKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				castlingRights[1][0] = jcbBlackQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				castlingRights[1][1] = jcbBlackKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				threadCount = Integer.parseInt(jtThredCount.getText());
-				
-				
-				setEnableAll(false);
-				if (jcbUseActualGameParameters.isSelected()) {
-					PerformanceTestingSingleThreaded.getAllVariations(base.getBoard(),
-							base.getGamePlay().getSide(),
-							Integer.parseInt(jtSearchDepth.getText()),
-							base.getGamePlay().getCastlingRights(),
-							base,
-							threadCount,
-							base.getGamePlay().getEpTarget(),
-							base.getGamePlay().getEpSquare());
-				} else {
-					PerformanceTestingSingleThreaded.getAllVariations(base.getBoard(), base.getGamePlay().getSide(), Integer.parseInt(jtSearchDepth.getText()), castlingRights, base, threadCount,
-							Integer.parseInt(jtEnpassantTarget.getText()), Integer.parseInt(jtEnpassantSquare.getText()));
-				}
-				
-			}
-		}));
-		
-		
-		
-		//
-		
-		
 		
 		jbChangeTurn = new JButton(base.getGamePlay().getSide() == GuiConstants.WHITES_TURN ? "White's turn" : "Black's turn");
 		jbChangeTurn.setMargin(new java.awt.Insets(1, 2, 1, 2));
