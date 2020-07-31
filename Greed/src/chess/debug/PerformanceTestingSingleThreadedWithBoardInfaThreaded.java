@@ -19,6 +19,8 @@
  **********************************************/
 package chess.debug;
 
+import java.util.ArrayList;
+
 import chess.engine.BoardFactory;
 import chess.engine.IBoard;
 import chess.engine.LegalityV4;
@@ -60,7 +62,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 		resetCounters();
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0, null, side);
+		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0, new ArrayList<Long>(), side);
 		PerformanceTestingSingleThreadedWithBoardInfaThreaded.dispatchThreads(depth, board, castlingRights, side, threadCount);
 	}
 	
@@ -141,7 +143,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfaThreaded {
 			partialMoveListIndex++;
 			if (partialMoveListIndex == partialMoveListSize) {
 				partialMoveListIndex = 0;
-				IBoard b = BoardFactory.getInstance(board.getBitboard().clone(), Transformer.getByteArrayStyl(board.getBitboard().clone()), board.getEpTarget(), castlingRights, 0, null, side);
+				IBoard b = BoardFactory.getInstance(board.getBitboard().clone(), Transformer.getByteArrayStyl(board.getBitboard().clone()), board.getEpTarget(), castlingRights, 0, new ArrayList<Long>(), side);
 				new PerformanceTestingSingleThreadedWithBoardInfaThreaded(depth, b, partialMoveList).start();
 				aliveThreadCount++;
 			}

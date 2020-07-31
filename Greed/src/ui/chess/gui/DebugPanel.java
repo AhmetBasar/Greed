@@ -33,7 +33,6 @@ import javax.swing.JTextPane;
 
 import chess.database.StorageConstants;
 import chess.debug.DebugUtility;
-import chess.debug.PerformanceTestingSimple;
 import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV4;
 import chess.engine.BoardFactory;
 import chess.engine.SearchParameters;
@@ -124,39 +123,6 @@ public class DebugPanel extends JPanel{
 //				setEnableAll(false);
 //			}
 //		}));
-		
-		jbSearchSimple = new JButton("Search Simple");
-		jbSearchSimple.setMargin(new java.awt.Insets(1, 2, 1, 2));
-		jbSearchSimple.setSize(80, 25);
-		jbSearchSimple.setLocation(340, 100);
-		add(jbSearchSimple);
-		jbSearchSimple.addActionListener((new java.awt.event.ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				jtpResult.setText("");
-				castlingRights[0][0] = jcbWhiteQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				castlingRights[0][1] = jcbWhiteKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				castlingRights[1][0] = jcbBlackQueenSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				castlingRights[1][1] = jcbBlackKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
-				threadCount = Integer.parseInt(jtThredCount.getText());
-				
-				if (jcbUseActualGameParameters.isSelected()) {
-					PerformanceTestingSimple.getAllVariations(base.getBoard(),
-							base.getGamePlay().getSide(),
-							Integer.parseInt(jtSearchDepth.getText()),
-							base.getGamePlay().getCastlingRights(),
-							base,
-							threadCount,
-							base.getGamePlay().getEpTarget(),
-							base.getGamePlay().getEpSquare());
-				} else {
-					PerformanceTestingSimple.getAllVariations(base.getBoard(), base.getGamePlay().getSide(), Integer.parseInt(jtSearchDepth.getText()), castlingRights, base, threadCount,
-							Integer.parseInt(jtEnpassantTarget.getText()), Integer.parseInt(jtEnpassantSquare.getText()));
-				}
-				
-				setEnableAll(false);
-			}
-		}));
 		
 		jbSearchSimpleKinderGarten = new JButton("KinderGarten");
 		jbSearchSimpleKinderGarten.setMargin(new java.awt.Insets(1, 2, 1, 2));

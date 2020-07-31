@@ -27,8 +27,7 @@ import java.util.Map;
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
-import chess.engine.LegalityV4;
-import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
+import chess.movegen.MoveGeneration;
 import chess.util.Utility;
 
 public class SanGenerator {
@@ -61,7 +60,7 @@ public class SanGenerator {
 
 		String pieceSymbol = PIECES[fromPiece];
 
-		IBoard board = BoardFactory.getInstance(bitboard, pieces, epTarget, castlingRights, 0, new ArrayList<Long>(), side);
+		IBoard board = BoardFactory.getInstance2(bitboard, pieces, epTarget, castlingRights, 0, new ArrayList<Long>(), side);
 		Map<String, Map<String, List<String>>> ambiguities = getAmbiguities(1, board, move);
 
 		switch (moveType) {
@@ -165,27 +164,22 @@ public class SanGenerator {
 	private static Map<String, Map<String, List<String>>> getAmbiguities(int depth, IBoard board, int bestMove) {
 		Map<String, Map<String, List<String>>> ambiguities = new HashMap<>();
 
-		int depthPlusOne = depth + 1;
-		int i = 0;
-
 		int move;
-		LegalityV4 legality = new LegalityV4();
-		MoveGenerationOrderedOnlyQueenPromotions_SBIV2 moveGeneration = new MoveGenerationOrderedOnlyQueenPromotions_SBIV2();
-		moveGeneration.generateMoves(board, depthPlusOne, depth);
-		int[] moveList = board.getMoveList();
+		//
+		MoveGeneration moveGeneration = new MoveGeneration(false);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
 		
-		while (moveList[i] != 0) {
-			move = moveList[i];
+		while (moveGeneration.hasNext()) {
+			move = moveGeneration.next();
 
 			String to = String.valueOf((move & 0x0000ff00) >>> 8);
 			int from = move & 0x000000ff;
 			int moveType = move & 0x00070000;
 			String fromPiece = String.valueOf(board.getPieces()[from]);
 
-			board.doMove(move);
-
-			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-
+			if (board.isLegal(move)) {
 				if (moveType == 0) {
 
 					Map<String, List<String>> fromAmbiguities = ambiguities.get(to);
@@ -204,13 +198,15 @@ public class SanGenerator {
 				}
 			}
 
-			if (move == bestMove && legality.isKingInCheck(board.getBitboard(), board.getSide())) {
+			board.doMove(move);
+			
+			boolean isKingInCheck = board.getCheckers() != 0;
+			
+			if (move == bestMove && isKingInCheck) {
 				ambiguities.put("isKingInCheck", null);
 			}
 
 			board.undoMove(move);
-
-			i++;
 		}
 
 		return ambiguities;
