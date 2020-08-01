@@ -26,10 +26,8 @@ import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.ISearchableV2;
-import chess.engine.LegalityV4;
+import chess.engine.Material;
 import chess.engine.Move;
-import chess.engine.MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2;
-import chess.engine.MoveGenerationOrderedOnlyQueenPromotions_SBIV2;
 import chess.engine.OpeningBook;
 import chess.engine.PawnHashTable;
 import chess.engine.SearchParameters;
@@ -38,19 +36,14 @@ import chess.engine.TT;
 import chess.engine.TranspositionElement;
 import chess.engine.TranspositionTable;
 import chess.evaluation.EvaluationAdvancedV4;
+import chess.movegen.MoveGeneration;
 
 //http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm
 public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
-	private MoveGenerationOrderedOnlyQueenPromotions_SBIV2 moveGenerationOrdered = new MoveGenerationOrderedOnlyQueenPromotions_SBIV2();
-	private MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2 moveGenerationCaptures = new MoveGenerationOrderedCapturesOnlyQueenPromotions_SBIV2();
-	private LegalityV4 legality = new LegalityV4();
+	MoveGeneration moveGeneration = new MoveGeneration(false);
 	
 	private final int MINUS_INFINITY = -99999;
 	private final int PLUS_INFINITY = 99999;
-	
-	private static final int HASH_EXACT = 1;
-	private static final int HASH_ALPHA = 2;
-	private static final int HASH_BETA = 3;
 	
 	private int[] primaryKillerss = new int[128]; // The index corresponds to the ply the killer move is located in
 	private int[] secondaryKillerss = new int[128];
@@ -122,6 +115,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	
 	// Margins shamelessly stolen from chess22k
 	private static final int[] STATIC_NULLMOVE_MARGIN = { 0, 60, 130, 210, 300, 400, 510 };
+//	private static final int[] RAZORING_MARGIN = { 0, 240, 280, 300 };
 	
 	public SearchResult search(SearchParameters searchParameters) {
 		
@@ -152,7 +146,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		for (int i = 1; isFixedDepth ? (i <= depth) : true; i++) {
 			currentDepth = i;
 			
-			IBoard board = BoardFactory.getInstance(searchParameters);
+			IBoard board = BoardFactory.getInstance2(searchParameters);
 			
 			if (i == 1 && searchParameters.getBookName() != null) {
 //				long s = System.currentTimeMillis();
@@ -210,36 +204,43 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		if(ttBestMove != 0){
 			board.doMove(ttBestMove);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-				
-				if(tempValue > alpha){
-					hashType = HASH_EXACT;
-					alpha = tempValue;
-					bestMove = ttBestMove;
-				}
+			tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
+			
+			if(tempValue > alpha){
+				hashType = HASH_EXACT;
+				alpha = tempValue;
+				bestMove = ttBestMove;
 			}
 			
 			board.undoMove(ttBestMove);
 		}
 		
-		moveGenerationOrdered.generateMoves(board, depth + 1, depth);
-		int[] moveList = board.getMoveList();
-		Arrays.sort(moveList);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
+		moveGeneration.setMvvLvaScores();
+		moveGeneration.sort();
 		
 		int move;
-		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
+		while (moveGeneration.hasNext()) {
+			move = moveGeneration.next();
+			
+			if (!board.isLegal(move)) {
+				continue;
+			}
+			
 			board.doMove(move);
-			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-				if(tempValue > alpha){
-					hashType = HASH_EXACT;
-					alpha = tempValue;
-					bestMove = move;
-				}
+			tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
+			if(tempValue > alpha){
+				hashType = HASH_EXACT;
+				alpha = tempValue;
+				bestMove = move;
 			}
 			board.undoMove(move);
 		}
+		
+		moveGeneration.endPly();
+		
 		tt.recordTranspositionTable(board.getZobristKey(), alpha, bestMove, depth, hashType, isTimeout);
 		return bestMove;
 	}
@@ -264,6 +265,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		}
 		
 		int ttBestMove = 0;
+		int ttScore = 0;
 		TranspositionElement ttElement = tt.probe(zobristKey);
 		if(ttElement != null && ttElement.zobristKey == zobristKey){
 			if(ttElement.depth >= depth){
@@ -283,13 +285,14 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 				}
 			}
 			ttBestMove = ttElement.bestMove;
+			ttScore = ttElement.score;
 		}
 		
 		boolean isKingInCheck = board.getCheckers() != 0;
 //		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), board.getSide());
 		if(!isKingInCheck && depth <= 0){
 			searchResult.incrementEvaluatedLeafNodeCount();
-			return quiescentSearch(board, alpha, beta, depth);
+			return quiescentSearch(board, alpha, beta);
 		}
 		
 		int bestMove = 0;
@@ -300,23 +303,37 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		
 		// TODO: && !isPvNode
 		if (!isKingInCheck) {
+			int eval =  EngineConstants.SIDE_COLOR[board.getSide()]
+					* EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
 			
+			// TODO: Comment out here.
+			if (ttScore != 0) {
+				eval = tt.adjustEval(ttElement.hashType, eval, ttScore);
+			}
 			
 			// https://github.com/sandermvdb/chess22k
 			if (CompileTimeConstants.ENABLE_STATIC_NULL_MOVE_PRUNING && depth < STATIC_NULLMOVE_MARGIN.length) {
-				int eval =  EngineConstants.SIDE_COLOR[board.getSide()]
-						* EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
 				if (eval - STATIC_NULLMOVE_MARGIN[depth] >= beta) {
 					return beta;
 				}
 			}
 			
+//			if (CompileTimeConstants.ENABLE_RAZORING && depth < RAZORING_MARGIN.length && Math.abs(alpha) < EngineConstants.SCORE_MATE_BOUND) {
+//				if (eval + RAZORING_MARGIN[depth] < alpha) {
+//					int score = quiescentSearch(board, alpha - RAZORING_MARGIN[depth], alpha - RAZORING_MARGIN[depth] + 1);
+//					if (score + RAZORING_MARGIN[depth] <= alpha) {
+//						return alpha;
+//					}
+//				}
+//			}
+			
 			if (CompileTimeConstants.ENABLE_NULL_MOVE_PRUNING) {
 				//=>> NullMove Begin
-				if (allowNullMove && depth > 2) {
+				if (allowNullMove && eval >= beta && Material.hasMajorPiece(board.getMaterialKey(), board.getSide())) {
 					
 					board.doNullMove();
-					tempValue = -negamax(depth - 1 - R, board, -beta, -beta + 1, false, distance + 1);
+					final int reduction = depth / 4 + 3 + Math.min((eval - beta) / 80, 3);
+					tempValue = depth - reduction <= 0 ? -quiescentSearch(board, -beta, -beta + 1) : -negamax(depth - reduction, board, -beta, -beta + 1, false, distance + 1);
 					board.undoNullMove();
 					
 					if (tempValue >= beta) {
@@ -332,64 +349,69 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		if(ttBestMove != 0){
 			board.doMove(ttBestMove);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				existsLegalMove = true;
-				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-				
-				if (tempValue >= beta) {
-					board.undoMove(ttBestMove);
-					tt.recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA, isTimeout);
-					addKiller(ttBestMove, distance);
-					return beta;
-				}
-				
-				if (tempValue > alpha) {
-					alpha = tempValue;
-					bestMove = ttBestMove;
-					hashType = HASH_EXACT;
-					foundPv = true;
-				}
-				
+			existsLegalMove = true;
+			tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
+			
+			if (tempValue >= beta) {
+				board.undoMove(ttBestMove);
+				tt.recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA, isTimeout);
+				addKiller(ttBestMove, distance);
+				return beta;
+			}
+			
+			if (tempValue > alpha) {
+				alpha = tempValue;
+				bestMove = ttBestMove;
+				hashType = HASH_EXACT;
+				foundPv = true;
 			}
 			board.undoMove(ttBestMove);
 		}
 		
-		moveGenerationOrdered.generateMoves(board, depth + 1, depth);
-		int[] moveList = board.getMoveList();
-		
-		sortMoves(moveList, distance);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
+		moveGeneration.setMvvLvaScores();
+		moveGeneration.sort();
 		
 		int move;
-		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
+		while (moveGeneration.hasNext()) {
+			move = moveGeneration.next();
+			
+			if (!board.isLegal(move)) {
+				continue;
+			}
+			
 			board.doMove(move);
 			
-			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				existsLegalMove = true;
-				if (foundPv) {
-					tempValue = -negamax(depth - 1, board, -alpha - 1, -alpha, true, distance + 1);
-					if (tempValue > alpha) {
-						tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-					}
-				} else {
+			existsLegalMove = true;
+			if (foundPv) {
+				tempValue = -negamax(depth - 1, board, -alpha - 1, -alpha, true, distance + 1);
+				if (tempValue > alpha) {
 					tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
 				}
-				
-				if (tempValue >= beta) {
-					board.undoMove(move);
-					tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, isTimeout);
-					addKiller(move, distance);
-					return beta;
-				}
-				
-				if(tempValue > alpha){
-					alpha = tempValue;
-					bestMove = move;
-					hashType = HASH_EXACT;
-					foundPv = true;
-				}
+			} else {
+				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
+			}
+			
+			if (tempValue >= beta) {
+				board.undoMove(move);
+				tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, isTimeout);
+				addKiller(move, distance);
+				moveGeneration.endPly();
+				return beta;
+			}
+			
+			if(tempValue > alpha){
+				alpha = tempValue;
+				bestMove = move;
+				hashType = HASH_EXACT;
+				foundPv = true;
 			}
 			board.undoMove(move);
 		}
+		
+		moveGeneration.endPly();
 		
 		if (!existsLegalMove) {
 			if (isKingInCheck) {
@@ -404,7 +426,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		return alpha;
 	}
 	
-	private int quiescentSearch(IBoard board, int alpha, int beta, int depth){
+	private int quiescentSearch(IBoard board, int alpha, int beta){
 		int standPatScore =  EngineConstants.SIDE_COLOR[board.getSide()] * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
 		
 		if(standPatScore >= beta){
@@ -416,15 +438,17 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		}
 		
 		boolean foundPv = false;
+
 		
-		moveGenerationCaptures.generateMoves(board, depth + 1, depth);
-		int[] moveList = board.getMoveList();
 		
-		Arrays.sort(moveList);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.setMvvLvaScores();
+		moveGeneration.sort();
 		int tempValue;
 		int move;
-		for ( int i = EngineConstants.MOVE_LIST_SIZE - 1  ; (move = moveList[i]) != 0 ; i--) {
-			
+		while (moveGeneration.hasNext()) {
+			move = moveGeneration.next();
 			// https://github.com/sandermvdb/chess22k
 			if (CompileTimeConstants.ENABLE_QUIESCENCE_FUTILITY_PRUNING) {
 				switch (Move.getMoveType(move)) {
@@ -443,28 +467,34 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 				}
 			}
 			
+			if (!board.isLegal(move)) {
+				continue;
+			}
+			
 			board.doMoveWithoutZobrist(move);
-			if (!legality.isKingInCheck(board.getBitboard(), board.getOpSide())) {
-				if (foundPv) {
-					tempValue = -quiescentSearch(board, -alpha - 1, -alpha, depth - 1);
-					if (tempValue > alpha) {
-						tempValue = -quiescentSearch(board, -beta, -alpha, depth - 1);
-					}
-				} else {
-					tempValue = -quiescentSearch(board, -beta, -alpha, depth - 1);
+			if (foundPv) {
+				tempValue = -quiescentSearch(board, -alpha - 1, -alpha);
+				if (tempValue > alpha) {
+					tempValue = -quiescentSearch(board, -beta, -alpha);
 				}
-				
-				if(tempValue >= beta){
-					board.undoMoveWithoutZobrist(move);
-					return beta;
-				}
-				if(tempValue > alpha){
-					alpha = tempValue;
-					foundPv = true;
-				}
+			} else {
+				tempValue = -quiescentSearch(board, -beta, -alpha);
+			}
+			
+			if(tempValue >= beta){
+				board.undoMoveWithoutZobrist(move);
+				moveGeneration.endPly();
+				return beta;
+			}
+			if(tempValue > alpha){
+				alpha = tempValue;
+				foundPv = true;
 			}
 			board.undoMoveWithoutZobrist(move);
 		}
+		
+		moveGeneration.endPly();
+		
 		return alpha;
 	}
 	
