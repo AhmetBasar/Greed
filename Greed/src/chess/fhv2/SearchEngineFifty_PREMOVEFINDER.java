@@ -30,7 +30,6 @@ import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.ISearchableV2;
-import chess.engine.LegalityV4;
 import chess.engine.Move;
 import chess.engine.PawnHashTable;
 import chess.engine.SearchParameters;
@@ -45,7 +44,6 @@ import chess.movegen.MoveGeneration;
 public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineConstants {
 	
 	private MoveGeneration moveGeneration = new MoveGeneration(false);
-	private LegalityV4 legality = new LegalityV4();
 	
 	private final int MINUS_INFINITY = -99999;
 	private final int PLUS_INFINITY = 99999;
@@ -258,7 +256,9 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 			ttBestMove = ttElement.bestMove;
 		}
 		
-		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), board.getSide());
+		
+		boolean isKingInCheck = board.getCheckers() != 0;
+//		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), board.getSide());
 		if(!isKingInCheck && depth <= 0){
 			searchResult.incrementEvaluatedLeafNodeCount();
 			return quiescentSearch(board, alpha, beta);
@@ -347,7 +347,8 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 		moveGeneration.endPly();
 		
 		if (!existsLegalMove) {
-			if (legality.isKingInCheck(board.getBitboard(), board.getSide())) {
+			if (isKingInCheck) {
+//			if (legality.isKingInCheck(board.getBitboard(), board.getSide())) {
 				return MINUS_INFINITY + distance;
 			} else {
 				return 0;
