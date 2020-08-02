@@ -19,6 +19,8 @@
  **********************************************/
 package chess.debug;
 
+import java.util.List;
+
 public class PerftResult {
 
 	private long nodeCount;
@@ -122,6 +124,24 @@ public class PerftResult {
 
 	public void setTimeConsumed(long timeConsumed) {
 		this.timeConsumed = timeConsumed;
+	}
+	
+	public void combinePerftResults(List<PerftResult> perftResults, int depth) {
+		resetCounters();
+		for (PerftResult perftResult : perftResults) {
+			nodeCount += perftResult.getNodeCount();
+			castlingCount += perftResult.getCastlingCount();
+			epCount += perftResult.getEpCount();
+			captureCount += perftResult.getCaptureCount();
+			checkMateCount += perftResult.getCheckMateCount();
+			promotionCount += perftResult.getPromotionCount();
+			checkCount += perftResult.getCheckCount();
+			timeConsumed += perftResult.getTimeConsumed();
+		}
+		
+		if (depth == 0) {
+			nodeCount = 1;
+		}
 	}
 
 }

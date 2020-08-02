@@ -24,14 +24,12 @@ import java.util.ArrayList;
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
-import chess.engine.LegalityV4;
 import chess.engine.Transformer;
 import chess.gui.BaseGui;
 import chess.movegen.MoveGeneration;
 
 public class PerformanceTestingSingleThreadedWithBoardInfrastructureV4 {
 	private MoveGeneration moveGeneration = new MoveGeneration(true);
-	private LegalityV4 legality = new LegalityV4();
 	private PerftResult perftResult = new PerftResult();
 	
 	public static void main(String[] args) {

@@ -155,6 +155,7 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.util.Utility.PINNED_MOVEMENT");
 		
 		whiteListFields.add("chess.engine.test.ThreadPool.instance");
+		whiteListFields.add("chess.engine.test.ThreadPool4Workers.instance");
 		whiteListFields.add("chess.engine.OpeningBook.instance");
 		whiteListFields.add("chess.engine.OpeningBook.rgn");
 		

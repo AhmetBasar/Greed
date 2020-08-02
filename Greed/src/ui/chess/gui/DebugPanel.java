@@ -33,6 +33,7 @@ import javax.swing.JTextPane;
 
 import chess.database.StorageConstants;
 import chess.debug.DebugUtility;
+import chess.debug.PerformanceTestingSingleThreadedWithBoardInfaThreaded;
 import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV4;
 import chess.engine.BoardFactory;
 import chess.engine.SearchParameters;
@@ -139,21 +140,22 @@ public class DebugPanel extends JPanel{
 				castlingRights[1][1] = jcbBlackKingSideCastlingRight.isSelected() ? (byte)1 : (byte)0;
 				threadCount = Integer.parseInt(jtThredCount.getText());
 				
-//				if (jcbUseActualGameParameters.isSelected()) {
-//					PerformanceTestingSimpleKinderGarten.getAllVariations(base.getBoard(),
-//							base.getGamePlay().getSide(),
-//							Integer.parseInt(jtSearchDepth.getText()),
-//							base.getGamePlay().getCastlingRights(),
-//							base,
-//							threadCount,
-//							base.getGamePlay().getEpTarget(),
-//							base.getGamePlay().getEpSquare());
-//				} else {
-//					PerformanceTestingSimpleKinderGarten.getAllVariations(base.getBoard(), base.getGamePlay().getSide(), Integer.parseInt(jtSearchDepth.getText()), castlingRights, base, threadCount,
-//							Integer.parseInt(jtEnpassantTarget.getText()), Integer.parseInt(jtEnpassantSquare.getText()));
-//				}
-				
 				setEnableAll(false);
+				
+				if (jcbUseActualGameParameters.isSelected()) {
+					PerformanceTestingSingleThreadedWithBoardInfaThreaded.getAllVariations(base.getBoard(),
+							base.getGamePlay().getSide(),
+							Integer.parseInt(jtSearchDepth.getText()),
+							base.getGamePlay().getCastlingRights(),
+							base,
+							threadCount,
+							base.getGamePlay().getEpTarget(),
+							base.getGamePlay().getEpSquare());
+				} else {
+					PerformanceTestingSingleThreadedWithBoardInfaThreaded.getAllVariations(base.getBoard(), base.getGamePlay().getSide(), Integer.parseInt(jtSearchDepth.getText()), castlingRights, base, threadCount,
+							Integer.parseInt(jtEnpassantTarget.getText()), Integer.parseInt(jtEnpassantSquare.getText()));
+				}
+				
 			}
 		}));
 		
