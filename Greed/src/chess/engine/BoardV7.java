@@ -22,6 +22,8 @@ package chess.engine;
 import java.util.List;
 
 import chess.engine.test.Assertion;
+import chess.movegen.MagicBitboard;
+import chess.util.Utility;
 
 public class BoardV7 implements IBoard, EngineConstants {
 	
@@ -46,8 +48,9 @@ public class BoardV7 implements IBoard, EngineConstants {
 	private long[] pawnZobristKeys = new long[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[] fiftyMoveCounters = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	private int[] nullMoveCounters = new int[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
-	private int[][] moveLists = new int[TEMP_BOARD_SIZE][EngineConstants.MOVE_LIST_SIZE];
 	private long[] checkerss = new long[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
+	private long[] pinnedPiecess = new long[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
+	private long[] discoveredPiecess = new long[TEMP_BOARD_SIZE]; // 25 ply? wtf!...
 	//
 	
 	public byte capturedPiece;
@@ -70,13 +73,15 @@ public class BoardV7 implements IBoard, EngineConstants {
 	
 	public int[] kingSquares = new int[2];
 	public long checkers;
+	public long pinnedPieces;
+	public long discoveredPieces;
 	
 	public int getEpTarget() {
 		return epT;
 	}
 	
 	public int[] getMoveList() {
-		return moveLists[this.moveIndex];
+		throw new RuntimeException("Not Yet Implemented");
 	}
 	
 	public BoardV7(long[] bitboard, byte[] pieces, int epT, byte[][] castlingRights, int fiftyMoveCounter, List<Long> zobristKeyHistory, int side) {
@@ -111,6 +116,8 @@ public class BoardV7 implements IBoard, EngineConstants {
 		kingSquares[BLACK] = Long.numberOfTrailingZeros(bitboard[BLACK_KING]);
 		
 		checkers = Check.getCheckers(this);
+		
+		setPinnedAndDiscoveredPieces();
 		
 	}
 	
@@ -158,6 +165,8 @@ public class BoardV7 implements IBoard, EngineConstants {
 		fiftyMoveCounters[moveIndex] = fiftyMoveCounter;
 		nullMoveCounters[moveIndex] = nullMoveCounter;
 		checkerss[moveIndex] = checkers;
+		pinnedPiecess[moveIndex] = pinnedPieces;
+		discoveredPiecess[moveIndex] = discoveredPieces;
 		moveIndex++;
 	}
 	
@@ -174,6 +183,8 @@ public class BoardV7 implements IBoard, EngineConstants {
 		fiftyMoveCounter = fiftyMoveCounters[moveIndex];
 		nullMoveCounter = nullMoveCounters[moveIndex];
 		checkers = checkerss[moveIndex];
+		pinnedPieces = pinnedPiecess[moveIndex];
+		discoveredPieces = discoveredPiecess[moveIndex];
 	}
 	
 	public void doMove(int move) {
@@ -427,6 +438,8 @@ public class BoardV7 implements IBoard, EngineConstants {
 		emptySquares = ~occupiedSquares;
 		
 		checkers = Check.getCheckers(this);
+		
+		setPinnedAndDiscoveredPieces();
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
 			checkConsistency();
@@ -742,6 +755,8 @@ public class BoardV7 implements IBoard, EngineConstants {
 		emptySquares = ~occupiedSquares;
 		
 		checkers = Check.getCheckers(this);
+		
+		setPinnedAndDiscoveredPieces();
 	}
 	
 	public void undoMoveWithoutZobrist(int move) {
@@ -995,22 +1010,85 @@ public class BoardV7 implements IBoard, EngineConstants {
 		return checkers;
 	}
 	
+	// https://github.com/sandermvdb/chess22k
+	public void setPinnedAndDiscoveredPieces() {
+		pinnedPieces = 0;
+		discoveredPieces = 0;
+		
+		for (int side = WHITE; side <= BLACK; side++) {
+			int opSide = side ^ 1;
+			if (!Material.hasSlidingPiece(materialKey, opSide)) {
+				continue;
+			}
+			int kingSquare = kingSquares[side];
+			long enemySlidingPiece = ((bitboard[opSide | EngineConstants.BISHOP] | bitboard[opSide | EngineConstants.QUEEN]) & MagicBitboard.getBishopMovesWithoutBlocker(kingSquare))
+					| ((bitboard[opSide | EngineConstants.ROOK] | bitboard[opSide | EngineConstants.QUEEN]) & MagicBitboard.getRookMovesWithoutBlocker(kingSquare));
+			
+			while (enemySlidingPiece != 0) {
+				long candidates = Utility.LINE[Long.numberOfTrailingZeros(enemySlidingPiece)][kingSquare] & occupiedSquares;
+				if (Long.bitCount(candidates) == 1) {
+					pinnedPieces |= candidates & occupiedSquaresBySide[side];
+					discoveredPieces |= candidates & occupiedSquaresBySide[opSide];
+				}
+				enemySlidingPiece &= (enemySlidingPiece - 1);
+			}
+		}
+	}
+
 	public long getPinnedPieces() {
-		throw new RuntimeException("Not yet implemented.");
+		return pinnedPieces;
 	}
 
 	public long getDiscoveredPieces() {
-		throw new RuntimeException("Not yet implemented.");
+		return discoveredPieces;
 	}
 
-	@Override
 	public int getMaterialKey() {
 		return materialKey;
 	}
-
-	@Override
+	
+	// https://github.com/sandermvdb/chess22k
 	public boolean isLegal(int move) {
-		throw new RuntimeException("Not yet implemented.");
+		int from = Move.getFrom(move);
+		int to = Move.getTo(move);
+		int moveType = Move.getMoveType(move);
+		if ((pieces[from] & 0XFE) == EngineConstants.KING) {
+			return !Check.isKingIncheckIncludingKing(Material.hasMajorPiece(materialKey, opSide), to, bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from]);
+		}
+		
+		if (pieces[to] != 0) {
+			return true;
+		}
+		
+		if (moveType == EP_CAPTURE_SHIFTED) {
+			return isLegalEpCapture(to, from);
+		}
+		
+		return true;
 	}
 	
+	private boolean isLegalEpCapture(int to, int from) {
+		
+		byte fromPiece = pieces[from];
+		int epS = to + epSquareDiff[side];
+		
+		long occ = occupiedSquares;
+		capturedPiece = pieces[epS];
+		
+		bitboard[fromPiece] &= ~(1L << from);
+		bitboard[fromPiece] |= (1L << to);
+		bitboard[capturedPiece] &= ~(1L << epS);
+		occ &= ~(1L << from);
+		occ |= (1L << to);
+		occ &= ~(1L << epS);
+		
+		boolean isInCheck = Check.getCheckers(bitboard, side, opSide, kingSquares[side], occ) != 0;
+		
+		bitboard[fromPiece] |= (1L << from);
+		bitboard[fromPiece] &= ~(1L << to);
+		bitboard[capturedPiece] |= (1L << epS);
+		
+		return !isInCheck;
+	}
+
 }
