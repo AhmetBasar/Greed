@@ -33,13 +33,13 @@ import javax.swing.JTextPane;
 
 import chess.database.StorageConstants;
 import chess.debug.DebugUtility;
-import chess.debug.PerformanceTestingMultiThreaded;
-import chess.debug.PerformanceTestingSingleThreaded;
 import chess.engine.BoardFactory;
 import chess.engine.SearchParameters;
 import chess.engine.Transformer;
 import chess.engine.test.suites.FenGenerator;
 import chess.game.GamePlay;
+import chess.perft.PerformanceTestingMultiThreaded;
+import chess.perft.PerformanceTestingSingleThreaded;
 
 public class DebugPanel extends JPanel{
 

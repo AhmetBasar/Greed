@@ -22,11 +22,11 @@ package chess.engine.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import chess.debug.PerformanceTestingSingleThreaded;
 import chess.engine.BoardFactory;
 import chess.engine.IBoard;
 import chess.engine.Transformer;
 import chess.gui.FenOperations;
+import chess.perft.PerformanceTestingSingleThreaded;
 import chess.util.Utility;
 
 public class PerftDetailedTest {
