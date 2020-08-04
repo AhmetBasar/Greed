@@ -22,7 +22,7 @@ package chess.engine.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV4;
+import chess.debug.PerformanceTestingSingleThreaded;
 import chess.engine.BoardFactory;
 import chess.engine.IBoard;
 import chess.engine.Transformer;
@@ -96,7 +96,7 @@ public class PerftDetailedTest {
 									, Transformer.getByteArrayStyl(Transformer.getBitboardStyl(fenOperations.getBoard()))
 									, fenOperations.getEpTarget()
 									, fenOperations.getCastlingRights(), 0, new ArrayList<Long>(), fenOperations.getSide());
-							PerformanceTestingSingleThreadedWithBoardInfrastructureV4 engine = new PerformanceTestingSingleThreadedWithBoardInfrastructureV4();
+							PerformanceTestingSingleThreaded engine = new PerformanceTestingSingleThreaded();
 							engine.getPerftResult().resetCounters();
 							engine.perft(depth, board);
 							

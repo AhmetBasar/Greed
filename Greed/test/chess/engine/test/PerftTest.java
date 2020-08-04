@@ -22,7 +22,7 @@ package chess.engine.test;
 import java.util.ArrayList;
 import java.util.List;
 
-import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV4;
+import chess.debug.PerformanceTestingSingleThreaded;
 import chess.engine.BoardFactory;
 import chess.engine.IBoard;
 import chess.engine.Transformer;
@@ -47,7 +47,7 @@ public class PerftTest {
 				@Override
 				public void run() {
 					try {
-						PerformanceTestingSingleThreadedWithBoardInfrastructureV4 engine = new PerformanceTestingSingleThreadedWithBoardInfrastructureV4();
+						PerformanceTestingSingleThreaded engine = new PerformanceTestingSingleThreaded();
 						
 						for (int k = 1; k < datas.length; k++) {
 							String result = datas[k].trim();
