@@ -28,7 +28,7 @@ import chess.engine.Transformer;
 import chess.gui.BaseGui;
 import chess.movegen.MoveGeneration;
 
-public class PerformanceTestingSingleThreadedWithBoardInfrastructureV4 {
+public class PerformanceTestingSingleThreaded {
 	private MoveGeneration moveGeneration = new MoveGeneration(true);
 	private PerftResult perftResult = new PerftResult();
 	
@@ -40,7 +40,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV4 {
 		byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 		int depth = 5;
 		IBoard board = BoardFactory.getInstance2(bitboard, pieces, 64, castlingRights, 0, new ArrayList<Long>(), 0);
-		PerformanceTestingSingleThreadedWithBoardInfrastructureV4 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV4();
+		PerformanceTestingSingleThreaded obj = new PerformanceTestingSingleThreaded();
 		obj.perft(depth, board);
 		System.out.println(obj.perftResult);
 		System.out.println("time = " + (System.currentTimeMillis() - ilk));
@@ -51,7 +51,7 @@ public class PerformanceTestingSingleThreadedWithBoardInfrastructureV4 {
 		long[] bitboard = Transformer.getBitboardStyl(boardArray);
 		byte[] pieces = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(boardArray));
 		IBoard board = BoardFactory.getInstance2(bitboard, pieces, epTarget, castlingRights, 0, new ArrayList<Long>(), side);
-		PerformanceTestingSingleThreadedWithBoardInfrastructureV4 obj = new PerformanceTestingSingleThreadedWithBoardInfrastructureV4();
+		PerformanceTestingSingleThreaded obj = new PerformanceTestingSingleThreaded();
 		obj.perft(depth, board);
 		obj.perftResult.setTimeConsumed(System.currentTimeMillis() - startTime);
 		baseGui.getDebugPanel().setOutputMessage(obj.perftResult.toString());

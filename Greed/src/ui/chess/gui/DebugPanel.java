@@ -34,7 +34,7 @@ import javax.swing.JTextPane;
 import chess.database.StorageConstants;
 import chess.debug.DebugUtility;
 import chess.debug.PerformanceTestingMultiThreaded;
-import chess.debug.PerformanceTestingSingleThreadedWithBoardInfrastructureV4;
+import chess.debug.PerformanceTestingSingleThreaded;
 import chess.engine.BoardFactory;
 import chess.engine.SearchParameters;
 import chess.engine.Transformer;
@@ -200,7 +200,7 @@ public class DebugPanel extends JPanel{
 				threadCount = Integer.parseInt(jtThredCount.getText());
 				
 				if (jcbUseActualGameParameters.isSelected()) {
-					PerformanceTestingSingleThreadedWithBoardInfrastructureV4.getAllVariations(base.getBoard(),
+					PerformanceTestingSingleThreaded.getAllVariations(base.getBoard(),
 							base.getGamePlay().getSide(),
 							Integer.parseInt(jtSearchDepth.getText()),
 							base.getGamePlay().getCastlingRights(),
@@ -209,7 +209,7 @@ public class DebugPanel extends JPanel{
 							base.getGamePlay().getEpTarget(),
 							base.getGamePlay().getEpSquare());
 				} else {
-					PerformanceTestingSingleThreadedWithBoardInfrastructureV4.getAllVariations(base.getBoard(), base.getGamePlay().getSide(), Integer.parseInt(jtSearchDepth.getText()), castlingRights, base, threadCount,
+					PerformanceTestingSingleThreaded.getAllVariations(base.getBoard(), base.getGamePlay().getSide(), Integer.parseInt(jtSearchDepth.getText()), castlingRights, base, threadCount,
 							Integer.parseInt(jtEnpassantTarget.getText()), Integer.parseInt(jtEnpassantSquare.getText()));
 				}
 //				setEnableAll(false);
