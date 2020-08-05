@@ -221,33 +221,8 @@ public class DebugUtility {
 	}
 	
 	public static int getItem(long bitboard[], int index){
-		int item = 0;
-		if((bitboard[EngineConstants.WHITE_PAWN] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.WHITE_PAWN_V;
-		} else if((bitboard[EngineConstants.WHITE_KNIGHT] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.WHITE_KNIGHT_V;
-		} else if((bitboard[EngineConstants.WHITE_BISHOP] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.WHITE_BISHOP_V;
-		} else if((bitboard[EngineConstants.WHITE_ROOK] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.WHITE_ROOK_V;
-		} else if((bitboard[EngineConstants.WHITE_QUEEN] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.WHITE_QUEEN_V;
-		} else if((bitboard[EngineConstants.WHITE_KING] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.WHITE_KING_V;
-		} else if((bitboard[EngineConstants.BLACK_PAWN] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.BLACK_PAWN_V;
-		} else if((bitboard[EngineConstants.BLACK_KNIGHT] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.BLACK_KNIGHT_V;
-		} else if((bitboard[EngineConstants.BLACK_BISHOP] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.BLACK_BISHOP_V;
-		} else if((bitboard[EngineConstants.BLACK_ROOK] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.BLACK_ROOK_V;
-		} else if((bitboard[EngineConstants.BLACK_QUEEN] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.BLACK_QUEEN_V;
-		} else if((bitboard[EngineConstants.BLACK_KING] & (1L << index)) >>> index == 1L){
-			item = EngineConstants.BLACK_KING_V;
-		}
-		return item;
+		byte[] pieces = Transformer.getByteArrayStyl(bitboard);
+		return EngineConstants.PIECE_VALUES[pieces[index]];
 	}
 	
 	public static byte[][] generateRandomBoard() {
