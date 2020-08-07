@@ -38,8 +38,10 @@ public class TestingFramework {
 				String className = f.getName().substring(0, f.getName().lastIndexOf("."));
 				Class<?> klass = Class.forName(packageName + "." + className);
 				Method method = klass.getDeclaredMethod("testAll");
+				long sTime = System.currentTimeMillis();
 				method.invoke(null);
-				System.out.println(Utility.leftSpacePad(className, 30) + " successfull.");
+				long eTime = System.currentTimeMillis();
+				System.out.println(Utility.leftSpacePad(className, 30) + " successfull. (" + (eTime - sTime) + " millisecond)");
 				
 			}
 		}
