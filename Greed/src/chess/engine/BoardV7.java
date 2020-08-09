@@ -19,6 +19,7 @@
  **********************************************/
 package chess.engine;
 
+import java.util.Arrays;
 import java.util.List;
 
 import chess.engine.test.Assertion;
@@ -987,11 +988,23 @@ public class BoardV7 implements IBoard, EngineConstants {
 		// check black occupancy.
 		Assertion.assertTrue(occupiedSquaresBySide[BLACK] == (bitboard[BLACK_PAWN] | bitboard[BLACK_KNIGHT] | bitboard[BLACK_BISHOP] | bitboard[BLACK_ROOK] | bitboard[BLACK_QUEEN] | bitboard[BLACK_KING]));
 		
+		// check board occupancy.
+		Assertion.assertTrue(occupiedSquares == (occupiedSquaresBySide[BLACK] | occupiedSquaresBySide[WHITE]));
+		
+		// check empty squares.
+		Assertion.assertTrue(emptySquares == ~occupiedSquares);
+		
 		// check white king square
 		Assertion.assertTrue(kingSquares[WHITE] == Long.numberOfTrailingZeros(bitboard[WHITE_KING]));
 		
 		// check black king square
 		Assertion.assertTrue(kingSquares[BLACK] == Long.numberOfTrailingZeros(bitboard[BLACK_KING]));
+		
+		// check board consistency
+		Assertion.assertTrue(Arrays.equals(Transformer.getByteArrayStyl(bitboard), pieces));
+		
+		// check checkers
+		Assertion.assertTrue(checkers == Check.getCheckers(this));
 		
 	}
 
