@@ -22,6 +22,7 @@ package chess.debug;
 import java.util.concurrent.ThreadLocalRandom;
 
 import chess.engine.EngineConstants;
+import chess.engine.IBoard;
 import chess.engine.Transformer;
 
 public class DebugUtility {
@@ -126,6 +127,10 @@ public class DebugUtility {
 	        targetArray[i] = sourceArray[i].clone();
 	    }
 	    return targetArray;
+	}
+	
+	public static void throwBoard(IBoard board){
+		throwBoard(board.getBitboard());
 	}
 	
 	public static void throwBoard(byte[][] board){

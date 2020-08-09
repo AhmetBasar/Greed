@@ -137,10 +137,12 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		epT = 64;
 		
+		capturedPiece = 0;
+		
 		changeSideToMove();
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			checkConsistency();
+			checkConsistency(true);
 		}
 	}
 	
@@ -149,7 +151,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		fetchPreviousValues();
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			checkConsistency();
+			checkConsistency(true);
 		}
 	}
 	
@@ -442,7 +444,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		setPinnedAndDiscoveredPieces();
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			checkConsistency();
+			checkConsistency(false);
 		}
 	}
 	
@@ -570,7 +572,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		emptySquares = ~occupiedSquares;
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			checkConsistency();
+			checkConsistency(false);
 		}
 	}
 	
@@ -953,10 +955,13 @@ public class BoardV7 implements IBoard, EngineConstants {
 		return opSide;
 	}
 
-	private void checkConsistency() {
+	private void checkConsistency(boolean isNullMove) {
 		
 		// The king can not be captured.
 		Assertion.assertTrue((capturedPiece & 0XFE) != EngineConstants.KING);
+		
+		// Friendly piece cannot be Captured
+		Assertion.assertTrue(capturedPiece == 0 || isNullMove || (capturedPiece & (byte) 1) == side);
 		
 		// fifty move counter can not be less than move index. (UI related issues.)
 		Assertion.assertTrue(moveIndex >= fiftyMoveCounter);
@@ -1073,7 +1078,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		int epS = to + epSquareDiff[side];
 		
 		long occ = occupiedSquares;
-		capturedPiece = pieces[epS];
+		byte capturedPiece = pieces[epS];
 		
 		bitboard[fromPiece] &= ~(1L << from);
 		bitboard[fromPiece] |= (1L << to);
