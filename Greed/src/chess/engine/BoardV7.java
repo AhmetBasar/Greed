@@ -142,7 +142,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		changeSideToMove();
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			checkConsistency(true);
+			checkConsistency();
 		}
 	}
 	
@@ -151,7 +151,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		fetchPreviousValues();
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			checkConsistency(true);
+			checkConsistency();
 		}
 	}
 	
@@ -444,7 +444,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		setPinnedAndDiscoveredPieces();
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			checkConsistency(false);
+			checkConsistency();
 		}
 	}
 	
@@ -572,7 +572,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		emptySquares = ~occupiedSquares;
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			checkConsistency(false);
+			checkConsistency();
 		}
 	}
 	
@@ -955,13 +955,13 @@ public class BoardV7 implements IBoard, EngineConstants {
 		return opSide;
 	}
 
-	private void checkConsistency(boolean isNullMove) {
+	private void checkConsistency() {
 		
 		// The king can not be captured.
 		Assertion.assertTrue((capturedPiece & 0XFE) != EngineConstants.KING);
 		
 		// Friendly piece cannot be Captured
-		Assertion.assertTrue(capturedPiece == 0 || isNullMove || (capturedPiece & (byte) 1) == side);
+		Assertion.assertTrue(capturedPiece == 0 || (capturedPiece & (byte) 1) == side);
 		
 		// fifty move counter can not be less than move index. (UI related issues.)
 		Assertion.assertTrue(moveIndex >= fiftyMoveCounter);
