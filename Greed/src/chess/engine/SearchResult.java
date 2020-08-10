@@ -53,6 +53,9 @@ public class SearchResult {
 	public boolean equals(Object obj) {
 		Field[] allFields = SearchResult.class.getDeclaredFields();
 		for (Field field : allFields) {
+			if (field.getName().equals("timeConsumed")) {
+				continue;
+			}
 			field.setAccessible(true);
 			try {
 				Object value1 = field.get(this);

@@ -212,6 +212,13 @@ public class CodeReviewTest {
 		
 		whiteListFields.add("chess.fhv2.SearchEngineFifty11.STATIC_NULLMOVE_MARGIN");
 		
+		whiteListFields.add("chess.util.Defaults.BOOLEAN");
+		whiteListFields.add("chess.util.Defaults.BYTE");
+		whiteListFields.add("chess.util.Defaults.SHORT");
+		whiteListFields.add("chess.util.Defaults.INT");
+		whiteListFields.add("chess.util.Defaults.LONG");
+		whiteListFields.add("chess.util.Defaults.FLOAT");
+		whiteListFields.add("chess.util.Defaults.DOUBLE");
 		
 	}
 

@@ -241,11 +241,6 @@ public class SearchResultTest {
 		}
 		
 		searchResult2.setBookMove(true);
-		if (searchResult.equals(searchResult2)) {
-			throw new RuntimeException("Failed.");
-		}
-		
-		searchResult2.setTimeConsumed(1);
 		if (!searchResult.equals(searchResult2)) {
 			throw new RuntimeException("Failed.");
 		}

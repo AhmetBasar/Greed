@@ -41,7 +41,7 @@ public class TestingFramework {
 				long sTime = System.currentTimeMillis();
 				method.invoke(null);
 				long eTime = System.currentTimeMillis();
-				System.out.println(Utility.leftSpacePad(className, 30) + " successfull. (" + (eTime - sTime) + " millisecond)");
+				System.out.println(Utility.leftSpacePad(className, 30) + " successfull. " + Utility.leftSpacePad(String.valueOf((eTime - sTime)), 10) + " milliseconds.");
 				
 			}
 		}
