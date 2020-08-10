@@ -221,7 +221,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 		
 		int hashType = HASH_ALPHA;
 		long zobristKey = board.getZobristKey();
-		if (board.hasRepeated(zobristKey)) {
+		if (board.hasRepeated(zobristKey, searchResult)) {
 			return 0;
 		}
 		
@@ -260,7 +260,6 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 		boolean isKingInCheck = board.getCheckers() != 0;
 //		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), board.getSide());
 		if(!isKingInCheck && depth <= 0){
-			searchResult.incrementEvaluatedLeafNodeCount();
 			return quiescentSearch(board, alpha, beta);
 		}
 		
@@ -365,7 +364,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 	}
 	
 	private int quiescentSearch(IBoard board, int alpha, int beta){
-		int standPatScore =  EngineConstants.SIDE_COLOR[board.getSide()] * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
+		int standPatScore =  EngineConstants.SIDE_COLOR[board.getSide()] * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable, searchResult);
 		
 		if(standPatScore >= beta){
 			return beta;

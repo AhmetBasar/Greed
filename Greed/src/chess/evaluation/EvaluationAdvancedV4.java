@@ -23,6 +23,7 @@ import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
 import chess.engine.PawnHashTable;
 import chess.engine.PawnTranspositionElement;
+import chess.engine.SearchResult;
 import chess.engine.TranspositionTable;
 import chess.gui.GuiConstants;
 import chess.movegen.MoveGeneration;
@@ -49,7 +50,11 @@ public class EvaluationAdvancedV4 {
 	private static final boolean usePsqt = true;
 	private static final boolean useBishopPair = true;
 	
-	public static int evaluate(long[] bitboard, byte[][] castlingRights, int side, long pawnZobristKey, PawnHashTable pawnHashTable){
+	public static int evaluate(long[] bitboard, byte[][] castlingRights, int side, long pawnZobristKey, PawnHashTable pawnHashTable, SearchResult searchResult){
+		
+		if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+			searchResult.incrementEvaluatedNodeCount();
+		}
 		
 		if (CompileTimeConstants.ENABLE_ASSERTION) {
 			if (pawnZobristKey != TranspositionTable.getPawnZobristKey(bitboard)) {
@@ -64,8 +69,14 @@ public class EvaluationAdvancedV4 {
 		
 		PawnTranspositionElement ttElement = pawnHashTable.probe(pawnZobristKey);
 		if(ttElement != null && ttElement.zobristKey == pawnZobristKey){
+			if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+				searchResult.incrementPawnHashTableHitCount();
+			}
 			eval += ttElement.score;
 		} else {
+			if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+				searchResult.incrementPawnHashTableMissCount();
+			}
 			int pawnScore = evalPawn(bitboard, wp, bp);
 			eval += pawnScore;
 			pawnHashTable.recordTranspositionTable(pawnZobristKey, pawnScore);

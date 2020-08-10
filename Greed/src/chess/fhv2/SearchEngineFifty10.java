@@ -187,6 +187,10 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	
 	public int getBestMovee(int depth, IBoard board, int distance){
 		
+		if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+			searchResult.incrementNegamaxNodeCount();
+		}
+		
 		int alpha = MINUS_INFINITY;
 		int beta = PLUS_INFINITY;
 		
@@ -198,7 +202,14 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		int ttBestMove = 0;
 		TranspositionElement ttElement = tt.probe(board.getZobristKey());
 		if(ttElement != null && ttElement.zobristKey == board.getZobristKey()){
+			if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+				searchResult.incrementTtHitCount();
+			}
 			ttBestMove = ttElement.bestMove;
+		} else {
+			if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+				searchResult.incrementTtMissCount();
+			}
 		}
 		
 		if(ttBestMove != 0){
@@ -258,9 +269,13 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			return 0;
 		}
 		
+		if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+			searchResult.incrementNegamaxNodeCount();
+		}
+		
 		int hashType = HASH_ALPHA;
 		long zobristKey = board.getZobristKey();
-		if (board.hasRepeated(zobristKey)) {
+		if (board.hasRepeated(zobristKey, searchResult)) {
 			return 0;
 		}
 		
@@ -268,6 +283,9 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		int ttScore = 0;
 		TranspositionElement ttElement = tt.probe(zobristKey);
 		if(ttElement != null && ttElement.zobristKey == zobristKey){
+			if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+				searchResult.incrementTtHitCount();
+			}
 			if(ttElement.depth >= depth){
 				switch (ttElement.hashType) {
 				case HASH_EXACT:
@@ -286,12 +304,15 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			}
 			ttBestMove = ttElement.bestMove;
 			ttScore = ttElement.score;
+		} else {
+			if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+				searchResult.incrementTtMissCount();
+			}
 		}
 		
 		boolean isKingInCheck = board.getCheckers() != 0;
 //		boolean isKingInCheck = legality.isKingInCheck(board.getBitboard(), board.getSide());
 		if(!isKingInCheck && depth <= 0){
-			searchResult.incrementEvaluatedLeafNodeCount();
 			return quiescentSearch(board, alpha, beta);
 		}
 		
@@ -304,7 +325,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		// TODO: && !isPvNode
 		if (!isKingInCheck) {
 			int eval =  EngineConstants.SIDE_COLOR[board.getSide()]
-					* EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
+					* EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable, searchResult);
 			
 			// TODO: Comment out here.
 			if (ttScore != 0) {
@@ -314,6 +335,9 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			// https://github.com/sandermvdb/chess22k
 			if (CompileTimeConstants.ENABLE_STATIC_NULL_MOVE_PRUNING && depth < STATIC_NULLMOVE_MARGIN.length) {
 				if (eval - STATIC_NULLMOVE_MARGIN[depth] >= beta) {
+					if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+						searchResult.incrementStaticNullMovePruningCount();
+					}
 					return beta;
 				}
 			}
@@ -337,7 +361,14 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 					board.undoNullMove();
 					
 					if (tempValue >= beta) {
+						if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+							searchResult.incrementNullMoveHitCount();
+						}
 						return beta;
+					}
+					
+					if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+						searchResult.incrementNullMoveMissCount();
 					}
 				}
 				//=>> NullMove End
@@ -356,6 +387,9 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 				board.undoMove(ttBestMove);
 				tt.recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA, isTimeout);
 				addKiller(ttBestMove, distance);
+				if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+					searchResult.incrementBetaCutoffCount();
+				}
 				return beta;
 			}
 			
@@ -399,6 +433,9 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 				tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, isTimeout);
 				addKiller(move, distance);
 				moveGeneration.endPly();
+				if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+					searchResult.incrementBetaCutoffCount();
+				}
 				return beta;
 			}
 			
@@ -415,9 +452,14 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		
 		if (!existsLegalMove) {
 			if (isKingInCheck) {
-//			if (legality.isKingInCheck(board.getBitboard(), board.getSide())) {
+				if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+					searchResult.incrementCheckMateCount();
+				}
 				return MINUS_INFINITY + distance;
 			} else {
+				if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+					searchResult.incrementStaleMateCount();
+				}
 				return 0;
 			}
 		}
@@ -427,7 +469,12 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	}
 	
 	private int quiescentSearch(IBoard board, int alpha, int beta){
-		int standPatScore =  EngineConstants.SIDE_COLOR[board.getSide()] * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable);
+		
+		if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+			searchResult.incrementQuiescenceNodeCount();
+		}
+		
+		int standPatScore =  EngineConstants.SIDE_COLOR[board.getSide()] * EvaluationAdvancedV4.evaluate(board.getBitboard(), board.getCastlingRights(), board.getSide(), board.getPawnZobristKey(), pawnHashTable, searchResult);
 		
 		if(standPatScore >= beta){
 			return beta;
@@ -438,8 +485,6 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		}
 		
 		boolean foundPv = false;
-
-		
 		
 		moveGeneration.startPly();
 		moveGeneration.generateAttacks(board);
@@ -484,6 +529,9 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			if(tempValue >= beta){
 				board.undoMoveWithoutZobrist(move);
 				moveGeneration.endPly();
+				if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+					searchResult.incrementBetaCutoffCount();
+				}
 				return beta;
 			}
 			if(tempValue > alpha){

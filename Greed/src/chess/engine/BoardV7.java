@@ -922,9 +922,12 @@ public class BoardV7 implements IBoard, EngineConstants {
 		return nullMoveCounter;
 	}
 	
-	public boolean hasRepeated(long zobristKey) {
+	public boolean hasRepeated(long zobristKey, SearchResult searchResult) {
 		// TODO Check (as well as fiftyMoveCounter > 99) whether the king is in check or not because of the FIDE rules.
 		if (fiftyMoveCounter > 99) {
+			if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+				searchResult.incrementRepetitionCount();
+			}
 			return true;
 		}
 		
@@ -937,6 +940,9 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		for (int i = moveIndex - 4; i >= lowerBound; i = i - 2) {
 			if (zobristKeys[i] == zobristKey) {
+				if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+					searchResult.incrementRepetitionCount();
+				}
 				return true;
 			}
 		}

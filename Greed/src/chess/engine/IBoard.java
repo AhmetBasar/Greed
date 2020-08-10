@@ -34,7 +34,7 @@ public interface IBoard {
 	
 	int getNullMoveCounter();
 	
-	boolean hasRepeated(long zobristKey);
+	boolean hasRepeated(long zobristKey, SearchResult searchResult);
 	
 	int getSide();
 	

@@ -17,17 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with Greed.  If not, see <https://www.gnu.org/licenses/>.
  **********************************************/
-package chess.engine;
+package chess.util;
 
-public interface CompileTimeConstants {
+public class Defaults {
 	
-	// Debug
-	public static final boolean ENABLE_ASSERTION = true;
-	public static final boolean DETAILED_SEARCH_RESULT = true;
-	
-	// Search Algorithm
-	public static final boolean ENABLE_NULL_MOVE_PRUNING = true;
-	public static final boolean ENABLE_STATIC_NULL_MOVE_PRUNING = true;
-	public static final boolean ENABLE_QUIESCENCE_FUTILITY_PRUNING = true;
+	private static boolean BOOLEAN;
+	private static byte BYTE;
+	private static short SHORT;
+	private static int INT;
+	private static long LONG;
+	private static float FLOAT;
+	private static double DOUBLE;
 
+	public static Object getDefaultValue(Class<?> klass) {
+		if (klass.equals(boolean.class)) {
+			return BOOLEAN;
+		} else if (klass.equals(byte.class)) {
+			return BYTE;
+		} else if (klass.equals(short.class)) {
+			return SHORT;
+		} else if (klass.equals(int.class)) {
+			return INT;
+		} else if (klass.equals(long.class)) {
+			return LONG;
+		} else if (klass.equals(float.class)) {
+			return FLOAT;
+		} else if (klass.equals(double.class)) {
+			return DOUBLE;
+		} else {
+			throw new RuntimeException("Invalid klass.");
+		}
+	}
 }

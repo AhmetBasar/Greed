@@ -132,13 +132,13 @@ Chess Bot Programming.
   - R=3; if sideto move has 2 or more pieces, and depth > 7 then R = 4
   - Implement verified Null Move Pruning.
   - Implement History Heuristic.
-  - When the king is in check. than generate only check evasions. (this might be blowing.)
+  [OKEY] - When the king is in check. than generate only check evasions. (this might be blowing.)
   - Watchout, there is a topic in the wiki as Square attacked By...
-  - Do not recalculate occupancy bitboard every cycle, use incrementaly updated bitboard instead.
+  [OKEY] - Do not recalculate occupancy bitboard every cycle, use incrementaly updated bitboard instead.
   - Implement IID!
   - Implement lazy evaluation.
  [OKEY] - Implement pawn hash table.
-  - Embedded database might be useful for opening book.
+ [OKEY] - Embedded database might be useful for opening book.
  [OKEY] - Implement Passed Pawn Evaluation.
   - We calculate isolated paws as if we use quare centric board representation. But we can calculate all pawns with one run, thanks to bitboards.
   - Implement candidate pawn evaluation.
@@ -146,7 +146,6 @@ Chess Bot Programming.
   - Rewrite the evaluation function based on set-wise. Not Square centric.
   - Remove King value evalution from the evaluation function.
  [OKEY] - Implement Passed Pawn Evaluation.
-  - In queen move generation there is one redundant & operator!!
  [OKEY] - Implement Magic Bitboards.
   - Implement double hashing to resolve collision.
   - Implement Eval Hash.
@@ -162,33 +161,32 @@ Chess Bot Programming.
   - Asymmetric Evaluation
   - Odd-Even Effect
   - Implement fractional plies!
-  - Compare performances of &= x - 1 and &= ~(1 << x)
+ [OKEY] - Compare performances of &= x - 1 and &= ~(1 << x)
   - If we use C++ then there is a method called__builtin_ctzll . It does (1L << i) for you for free.
  [OKEY] - optimize Transformer methods.
  [OKEY] - Write unit test for Transformer class.
  [OKEY] - write pawn attack lookup. Especially for Legality class.
   - Use Java's fantastic Assertion.
-  	=> in doMove function, the captured piece cannot be KING.
-  	=> in doMove function, the captured piece cannot be friendly Piece.
-  	=> in doMove function, calculate cached datas and compare them with cache. They have to be equal.
-  	=> For testing purpose, write move validator for TT Best move.
+ [OKEY]  => in doMove function, the captured piece cannot be KING.
+ [OKEY]  => in doMove function, the captured piece cannot be friendly Piece.
+ [OKEY]  => in doMove function, calculate cached datas and compare them with cache. They have to be equal.
   - Implement game phasing.
   - Implement pure switch case methods. Instead of calculations.
-  - Implement Incrementaly updated friendly, occupied and enemy pieces. do not calculate on each iteration.
-  - Implement pinned and discovered pieces.
+ [OKEY] - Implement Incrementaly updated friendly, occupied and enemy pieces. do not calculate on each iteration.
+ [OKEY] - Implement pinned and discovered pieces.
   - Write move validator! for killer moves, do not generate them, simply validate them.
   - Write class that holds detailed data about search result called Statistics. pawnHashHitCount vs.vs. NullMoveHits, NullMoveMiss etc. tthit, ttmiss,
   - while probing scores from TT, correct scores if MATE_BOUND exceeds. Regarding distance + MATE_SCORE.
-  - TRY to generate white and black pawn moves in a seperate manner.
+ [OKEY] - TRY to generate white and black pawn moves in a seperate manner.
   - implement immutable classes for possible MultiThreading issues.
   - Review all code. (bot and ui included.) (Need some caching. especially in UI side.)
  [OKEY] - Cache UI icons. (Cell.java) (new File)
   - Cache Timer objects. (PieceEffects.java) (new Timer)
-  - maintain a material key for draw by material detection! this is very very important issue!!!
+ [OKEY] - maintain a material key for draw by material detection! this is very very important issue!!!
   - implement uci protocol to play tournaments with popular engines.
   - implement castling rights as byte or int instead of byte array. (For speed up.)
  [OKEY] - Remove King material evaluation cause there is always 1 king per side.
-  - There is difference between FEN standart and POLYGLOT standart about enpassant capturing. What is correct way? What are other engines do?
+ [OKEY] - There is difference between FEN standart and POLYGLOT standart about enpassant capturing. What is correct way? What are other engines do?
   - There may be easy way to calculate enpassant target. Like PreCalculated table.
  [OKEY] - Correct zobrist hashing when double push occurs if ((EngineConstants.PAWN_ATTACK_LOOKUP[side][epTarget] & bitboard[opSide | EngineConstants.PAWN]) != 0)
  [OKEY] - Avoid class variables. use method variables amap. (e.g. in Legality.java class there are redundant class variables called rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup)
@@ -289,5 +287,6 @@ Chess Bot Programming.
   - Heap memory is growing up consistently when tournament is running(when 15.000 games are played, then 2 g heap is used). Use profiler to detect possible memory leaks.
   - Replace ~EngineConstants.FILE_A with EngineConstants.NOT_FILE_A
   - Replace ~EngineConstants.FILE_H with EngineConstants.NOT_FILE_H
-   
+  - Implement Cloneable interface on Board object.
+  - Implement reflectionBased comparison in SearchResult class.
   

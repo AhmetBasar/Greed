@@ -22,6 +22,7 @@ package chess.engine.test;
 import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
 import chess.engine.PawnHashTable;
+import chess.engine.SearchResult;
 import chess.engine.Transformer;
 import chess.engine.TranspositionTable;
 import chess.evaluation.EvaluationAdvancedV4;
@@ -53,12 +54,12 @@ public class EvaluationTest {
 
 			long pawnZobristKey = TranspositionTable.getPawnZobristKey(bitboard);
 			
-			int whiteScore = EvaluationAdvancedV4.evaluate(bitboard, castlingRights, EngineConstants.WHITE, pawnZobristKey, new PawnHashTable());
+			int whiteScore = EvaluationAdvancedV4.evaluate(bitboard, castlingRights, EngineConstants.WHITE, pawnZobristKey, new PawnHashTable(), new SearchResult());
 
 			pawnZobristKey = TranspositionTable.getPawnZobristKey(bitReversedBitboard);
-			int bitReversedBlackScore = EvaluationAdvancedV4.evaluate(bitReversedBitboard, reversedCastlinRights, EngineConstants.BLACK, pawnZobristKey, new PawnHashTable());
+			int bitReversedBlackScore = EvaluationAdvancedV4.evaluate(bitReversedBitboard, reversedCastlinRights, EngineConstants.BLACK, pawnZobristKey, new PawnHashTable(), new SearchResult());
 			pawnZobristKey = TranspositionTable.getPawnZobristKey(byteReversedBitboard);
-			int byteReversedBlackScore = EvaluationAdvancedV4.evaluate(byteReversedBitboard, reversedCastlinRights, EngineConstants.BLACK, pawnZobristKey, new PawnHashTable());
+			int byteReversedBlackScore = EvaluationAdvancedV4.evaluate(byteReversedBitboard, reversedCastlinRights, EngineConstants.BLACK, pawnZobristKey, new PawnHashTable(), new SearchResult());
 
 			if (whiteScore + bitReversedBlackScore != 0) {
 				System.out.println("Failed");
