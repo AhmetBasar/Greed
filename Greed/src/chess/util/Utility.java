@@ -178,4 +178,8 @@ public class Utility {
 		SecureRandom r = new SecureRandom();
 		return r.nextInt(end - begin) + begin;
 	}
+	
+	public static boolean containsRegex(String str, String regex) {
+		return str.length() != str.replaceAll(regex, "").length();
+	}
 }

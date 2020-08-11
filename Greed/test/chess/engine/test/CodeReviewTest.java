@@ -5,17 +5,114 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import chess.util.Utility;
+
 public class CodeReviewTest {
+	
+	private static final String SIGNED_RIGHT_SHIFT_REGEX = ".*[^>]>>[^>].*";
+	private static final Map<String, List<String>> signedRightShiftOperatorWhiteList = new HashMap<String, List<String>>();
+	
+	static {
+		List<String> signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("int r1 = (rgb1 >> 16) & 0xff;");
+		signedRightShiftOperatorWhiteListLines.add("int g1 = (rgb1 >> 8) & 0xff;");
+		signedRightShiftOperatorWhiteListLines.add("int r2 = (rgb2 >> 16) & 0xff;");
+		signedRightShiftOperatorWhiteListLines.add("int g2 = (rgb2 >> 8) & 0xff;");
+		signedRightShiftOperatorWhiteList.put("src\\bot\\chess\\bot\\Utility.java", signedRightShiftOperatorWhiteListLines);
+		
+		signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("private Map<Integer, Map<Integer, Integer>> blackListMap = new HashMap<>();");
+		signedRightShiftOperatorWhiteListLines.add("Map<Integer, Set<Integer>> map = premoveMap.get(firstMove);");
+		signedRightShiftOperatorWhiteListLines.add("map = new HashMap<Integer, Set<Integer>>();");
+		signedRightShiftOperatorWhiteListLines.add("Map<Integer, Set<Integer>> map = premoveMap.get(move);");
+		signedRightShiftOperatorWhiteList.put("src\\chess\\fhv2\\SearchEngineFifty_PREMOVEFINDER.java", signedRightShiftOperatorWhiteListLines);
+		
+		signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("List<List<Integer>> splittedMoveLists = splitList(moves, splittedMoveListSize);");
+		signedRightShiftOperatorWhiteListLines.add("private static List<List<Integer>> splitList(List<Integer> list, final int length) {");
+		signedRightShiftOperatorWhiteListLines.add("List<List<Integer>> subLists = new ArrayList<List<Integer>>();");
+		signedRightShiftOperatorWhiteList.put("src\\chess\\perft\\PerformanceTestingMultiThreaded.java", signedRightShiftOperatorWhiteListLines);
+		
+		signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("public static List<List<String>> splitList(List<String> list, final int maxLength) {");
+		signedRightShiftOperatorWhiteListLines.add("List<List<String>> parts = new ArrayList<List<String>>();");
+		signedRightShiftOperatorWhiteList.put("src\\chess\\util\\Utility.java", signedRightShiftOperatorWhiteListLines);
+		
+		signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("Map<String, List<String>> operations = new LinkedHashMap<String, List<String>>();");
+		signedRightShiftOperatorWhiteListLines.add("public Map<String, List<String>> getOperations() {");
+		signedRightShiftOperatorWhiteList.put("test\\chess\\engine\\test\\suites\\EpdOperations.java", signedRightShiftOperatorWhiteListLines);
+		
+		signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("Map<String, List<String>> fromAmbiguities = ambiguities.get(to);");
+		signedRightShiftOperatorWhiteList.put("test\\chess\\engine\\test\\suites\\SanGenerator.java", signedRightShiftOperatorWhiteListLines);
+		
+		signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("List<List<String>> splitted = Utility.splitList(listAll, listAll.size() / ThreadPool.POOL_SIZE);");
+		signedRightShiftOperatorWhiteList.put("test\\chess\\engine\\test\\TestSuitesTest.java", signedRightShiftOperatorWhiteListLines);
+		
+		signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("List<Callable<Object>> callables = convertToCallable(runnables);");
+		signedRightShiftOperatorWhiteListLines.add("private List<Callable<Object>> convertToCallable(List<Runnable> runnables) {");
+		signedRightShiftOperatorWhiteListLines.add("List<Callable<Object>> callables = new ArrayList<Callable<Object>>();");
+		signedRightShiftOperatorWhiteList.put("test\\chess\\engine\\test\\ThreadPool.java", signedRightShiftOperatorWhiteListLines);
+		
+		signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("List<Callable<Object>> callables = convertToCallable(runnables);");
+		signedRightShiftOperatorWhiteListLines.add("private List<Callable<Object>> convertToCallable(List<Runnable> runnables) {");
+		signedRightShiftOperatorWhiteListLines.add("List<Callable<Object>> callables = new ArrayList<Callable<Object>>();");
+		signedRightShiftOperatorWhiteList.put("test\\chess\\engine\\test\\ThreadPool4Workers.java", signedRightShiftOperatorWhiteListLines);
+		
+		signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
+		signedRightShiftOperatorWhiteListLines.add("List<List<String>> chopped = Utility.splitList(mainList, 3);");
+		signedRightShiftOperatorWhiteList.put("test\\chess\\engine\\test\\UtilityTest.java", signedRightShiftOperatorWhiteListLines);
+	}
+	
 	
 	public static void main(String[] args) {
 		testAll();
 	}
 	
 	public static void testAll() {
+		testSharedDatas();
+		
+		testMisusedOperators();
+	}
+	
+	public static void testMisusedOperators() {
+		URL a = CodeReviewTest.class.getClassLoader().getResource(".");
+		File binaryFile = new File(a.getPath());
+		File projectFile = binaryFile.getParentFile();
+		List<File> javaFiles = new ArrayList<File>();
+		retrieveJavaFiles(projectFile, javaFiles);
+		
+		for (File javaFile : javaFiles) {
+			if (javaFile.getName().equals("CodeReviewTest.java")) {
+				continue;
+			}
+			String javaFilePath = javaFile.getAbsolutePath();
+			String javaFileContent = Utility.readFile(javaFilePath);
+			
+			String javaFilePathPartial = javaFilePath.substring(javaFilePath.indexOf("Greed") + 12);
+			if (signedRightShiftOperatorWhiteList.containsKey(javaFilePathPartial)) {
+				List<String> whiteListLines = signedRightShiftOperatorWhiteList.get(javaFilePathPartial);
+				for (String str : whiteListLines) {
+					javaFileContent = javaFileContent.replace(str, "");
+				}
+			}
+			if (Utility.containsRegex(javaFileContent, SIGNED_RIGHT_SHIFT_REGEX)) {
+				throw new RuntimeException("Failed. " + javaFile + " contains possible misused >> operator.");
+			}
+		}
+	}
+	
+	public static void testSharedDatas() {
 		URL a = CodeReviewTest.class.getClassLoader().getResource(".");
 		File binaryFile = new File(a.getPath());
 		File projectFile = binaryFile.getParentFile();

@@ -352,7 +352,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 //			}
 			
 			if (CompileTimeConstants.ENABLE_NULL_MOVE_PRUNING) {
-				//=>> NullMove Begin
+				//=> NullMove Begin
 				if (allowNullMove && eval >= beta && Material.hasMajorPiece(board.getMaterialKey(), board.getSide())) {
 					
 					board.doNullMove();
@@ -371,7 +371,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 						searchResult.incrementNullMoveMissCount();
 					}
 				}
-				//=>> NullMove End
+				//=> NullMove End
 			}
 		}
 		
