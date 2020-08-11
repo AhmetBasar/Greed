@@ -38,7 +38,6 @@ public class GamePlayMove {
 	private int castlingRookFrom;
 	private int castlingRookTo;
 	private BaseGui base;
-	private int[] pushDiffs = { 8, 64 - 8 };
 	private int side;
 	private int toBeImplementedEpTarget = 64;
 	private int currentEpTarget;
@@ -59,7 +58,6 @@ public class GamePlayMove {
 		side            		= base.getGamePlay().getSide();
 		currentCastlingRights	= DebugUtility.deepCloneMultiDimensionalArray(base.getGamePlay().getCastlingRights()); // safe deep copy.
 		
-		int diff = pushDiffs[side];
 		to = (move & 0x0000ff00) >>> 8;
 		from = move & 0x000000ff;
 		
@@ -68,7 +66,7 @@ public class GamePlayMove {
 		if(isSimpleMove()){
 			capturedPiece = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getChessBoardPanel().getBoard()))[to];
 		} else if (isDoublePush()) {
-			toBeImplementedEpTarget = Long.numberOfTrailingZeros(((1L << to) >>> diff) | ((1L << to) << (64 - diff)));
+			toBeImplementedEpTarget = EngineConstants.EPT_LOOKUP[side][to];
 			toBeImplementedEpSquare = to;
 		} else if(isEnPassantCapture()){
 			capturedPiece = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getChessBoardPanel().getBoard()))[currentEpSquare];

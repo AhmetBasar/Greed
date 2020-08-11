@@ -36,7 +36,6 @@ public class ChessMove {
 	private int to;
 	private int castlingRookFrom;
 	private int castlingRookTo;
-	private int[] pushDiffs = { 8, 64 - 8 };
 	private int side;
 	private int toBeImplementedEpTarget = 64;
 	private int toBeImplementedEpSquare;
@@ -61,7 +60,6 @@ public class ChessMove {
 		
 		currentPawnZobristKey = base.getGamePlay().getPawnZobristKey();
 		
-		int diff = pushDiffs[side];
 		to = (move & 0x0000ff00) >>> 8;
 		from = move & 0x000000ff;
 		fromPiece = base.getPieces()[from];
@@ -69,7 +67,7 @@ public class ChessMove {
 		if(isSimpleMove()){
 			capturedPiece = base.getPieces()[to];
 		} else if (isDoublePush()) {
-			toBeImplementedEpTarget = Long.numberOfTrailingZeros(((1L << to) >>> diff) | ((1L << to) << (64 - diff)));
+			toBeImplementedEpTarget = EngineConstants.EPT_LOOKUP[side][to];
 			toBeImplementedEpSquare = to;
 		} else if(isEnPassantCapture()){
 			capturedPiece = base.getPieces()[currentEpSquare];
