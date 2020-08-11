@@ -15,10 +15,14 @@ import chess.util.Utility;
 
 public class CodeReviewTest {
 	
-	private static final String SIGNED_RIGHT_SHIFT_REGEX = ".*[^>]>>[^>].*";
-	private static final Map<String, List<String>> signedRightShiftOperatorWhiteList = new HashMap<String, List<String>>();
+	private static final String SIGNED_RIGHT_SHIFT_REGEX = "[^>]>>[^>]";
+	private static final String GREATER_THAN_REGEX = ">(\\s)*0";
+	private static final Map<String, Map<String, List<String>>> misusedOperatorsWhiteList = new HashMap<String, Map<String, List<String>>>();
 	
 	static {
+		Map<String, List<String>> signedRightShiftOperatorWhiteList = new HashMap<String, List<String>>();
+		misusedOperatorsWhiteList.put(SIGNED_RIGHT_SHIFT_REGEX, signedRightShiftOperatorWhiteList);
+		
 		List<String> signedRightShiftOperatorWhiteListLines = new ArrayList<String>();
 		signedRightShiftOperatorWhiteListLines.add("int r1 = (rgb1 >> 16) & 0xff;");
 		signedRightShiftOperatorWhiteListLines.add("int g1 = (rgb1 >> 8) & 0xff;");
@@ -74,6 +78,62 @@ public class CodeReviewTest {
 		signedRightShiftOperatorWhiteList.put("test\\chess\\engine\\test\\UtilityTest.java", signedRightShiftOperatorWhiteListLines);
 	}
 	
+	static {
+		Map<String, List<String>> greaterThanOperatorWhiteList = new HashMap<String, List<String>>();
+		misusedOperatorsWhiteList.put(GREATER_THAN_REGEX, greaterThanOperatorWhiteList);
+		
+		List<String> greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("fiftyMoveCounter > 0");
+		greaterThanOperatorWhiteListLines.add("moveHistory.size() > 0");
+		greaterThanOperatorWhiteList.put("src\\bot\\chess\\bot\\BotGamePlay.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("capturedPiece > 0");
+		greaterThanOperatorWhiteList.put("src\\bot\\chess\\bot\\BotGamePlayMove.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("getCapturedPiece() > 0");
+		greaterThanOperatorWhiteList.put("src\\bot\\chess\\bot\\EngineController.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("capturedPiece > 0");
+		greaterThanOperatorWhiteList.put("src\\chess\\engine\\BoardV7.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("capturedPiece > 0");
+		greaterThanOperatorWhiteList.put("src\\chess\\perft\\PerformanceTestingMultiThreaded.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("capturedPiece > 0");
+		greaterThanOperatorWhiteList.put("src\\chess\\perft\\PerformanceTestingSingleThreaded.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("fiftyMoveCounter > 0");
+		greaterThanOperatorWhiteListLines.add("moveHistory.size() > 0");
+		greaterThanOperatorWhiteList.put("src\\ui\\chess\\game\\GamePlay.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("capturedPiece > 0");
+		greaterThanOperatorWhiteList.put("src\\ui\\chess\\game\\GamePlayMove.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add(".size() > 0");
+		greaterThanOperatorWhiteList.put("src\\ui\\chess\\gui\\PieceEffects.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("emptySquareCount > 0");
+		greaterThanOperatorWhiteList.put("test\\chess\\engine\\test\\suites\\FenGenerator.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("fiftyMoveCounter > 0");
+		greaterThanOperatorWhiteListLines.add("moveHistory.size() > 0");
+		greaterThanOperatorWhiteList.put("test\\chess\\engine\\test\\tournament\\ChessBoard.java", greaterThanOperatorWhiteListLines);
+		
+		greaterThanOperatorWhiteListLines = new ArrayList<String>();
+		greaterThanOperatorWhiteListLines.add("capturedPiece > 0");
+		greaterThanOperatorWhiteList.put("test\\chess\\engine\\test\\tournament\\ChessMove.java", greaterThanOperatorWhiteListLines);
+	}
+	
 	
 	public static void main(String[] args) {
 		testAll();
@@ -100,15 +160,22 @@ public class CodeReviewTest {
 			String javaFileContent = Utility.readFile(javaFilePath);
 			
 			String javaFilePathPartial = javaFilePath.substring(javaFilePath.indexOf("Greed") + 12);
-			if (signedRightShiftOperatorWhiteList.containsKey(javaFilePathPartial)) {
-				List<String> whiteListLines = signedRightShiftOperatorWhiteList.get(javaFilePathPartial);
-				for (String str : whiteListLines) {
-					javaFileContent = javaFileContent.replace(str, "");
+			
+			for (Map.Entry<String, Map<String, List<String>>> entry : misusedOperatorsWhiteList.entrySet()) {
+				String regex = entry.getKey();
+				Map<String, List<String>> whiteList = entry.getValue();
+				if (whiteList.containsKey(javaFilePathPartial)) {
+					List<String> whiteListLines = whiteList.get(javaFilePathPartial);
+					for (String str : whiteListLines) {
+						javaFileContent = javaFileContent.replace(str, "");
+					}
+				}
+				
+				if (Utility.containsRegex(javaFileContent, regex)) {
+					throw new RuntimeException("Failed. " + javaFile + " contains possible misused " + regex + " operator.");
 				}
 			}
-			if (Utility.containsRegex(javaFileContent, SIGNED_RIGHT_SHIFT_REGEX)) {
-				throw new RuntimeException("Failed. " + javaFile + " contains possible misused >> operator.");
-			}
+
 		}
 	}
 	
