@@ -237,7 +237,7 @@ public class Bitboard {
 	}
 	
 	public static void main(String[] args) {
-		generatePreCalculatedPawnAttacks();
+		generatePreCalculatedEnpassantTargets();
 	}
 	
 	public static void generatePreCalculatedPawnAttacks() {
@@ -319,6 +319,34 @@ public class Bitboard {
 		}
 		System.out.println("};");
 
+	}
+	
+	public static void generatePreCalculatedEnpassantTargets() {
+		System.out.println("public static final int[][] EPT_LOOKUP = {");
+		for (int side = 0 ; side < 2 ; side ++) {
+			for (int to = 0 ; to < 64 ; to++) {
+				int[] pushDiffs = { 8, 64 - 8 };
+				int diff = pushDiffs[side];
+				int epT = Long.numberOfTrailingZeros(((1L << to) >>> diff) | ((1L << to) << (64 - diff)));
+				if (to == 0) {
+					System.out.print("{");
+				}
+				System.out.print(epT);
+				if (to != 63) {
+					System.out.print(", ");
+				}
+				if (to % 8 == 7) {
+					System.out.println();
+				}
+				if (to == 63) {
+					System.out.print("}");
+					if (side == 0) {
+						System.out.println(",");	
+					}
+				}
+			}
+		}
+		System.out.println("};");
 	}
 	
 }
