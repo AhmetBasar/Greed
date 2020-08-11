@@ -42,7 +42,7 @@ public class Material implements EngineConstants {
 	}
 	
 	public static int getPieceCount(int materialKey, int piece) {
-		return (materialKey & PIECE_MASKS[piece]) >> PIECE_SHIFTS[piece];
+		return (materialKey & PIECE_MASKS[piece]) >>> PIECE_SHIFTS[piece];
 	}
 	
 	public static boolean hasSlidingPiece(int materialKey, int side) {
