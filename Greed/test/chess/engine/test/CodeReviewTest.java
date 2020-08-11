@@ -17,6 +17,7 @@ public class CodeReviewTest {
 	
 	private static final String SIGNED_RIGHT_SHIFT_REGEX = "[^>]>>[^>]";
 	private static final String GREATER_THAN_REGEX = ">(\\s)*0";
+	private static final String LONG_SIGN = "1 <<";
 	private static final Map<String, Map<String, List<String>>> misusedOperatorsWhiteList = new HashMap<String, Map<String, List<String>>>();
 	
 	static {
@@ -134,6 +135,14 @@ public class CodeReviewTest {
 		greaterThanOperatorWhiteList.put("test\\chess\\engine\\test\\tournament\\ChessMove.java", greaterThanOperatorWhiteListLines);
 	}
 	
+	static {
+		Map<String, List<String>> longSignWhiteList = new HashMap<String, List<String>>();
+		misusedOperatorsWhiteList.put(LONG_SIGN, longSignWhiteList);
+		
+		List<String> longSignWhiteListLines = new ArrayList<String>();
+		longSignWhiteListLines.add("public static final int[] PIECE_VALUES = {0, 0, 1 << 0, 1 << 4, 1 << 8, 1 << 11, 1 << 14, 1 << 17, 1 << 20, 1 << 23, 1 << 26, 1 << 29 };");
+		longSignWhiteList.put("src\\chess\\engine\\Material.java", longSignWhiteListLines);
+	}
 	
 	public static void main(String[] args) {
 		testAll();
