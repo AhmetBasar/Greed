@@ -32,7 +32,6 @@ public class BoardV7 implements IBoard, EngineConstants {
 	private byte[] pieces;
 //	private long zobristKey;
 	
-	private int[] pushDiffs = { 8, 64 - 8 };
 	private int[][] castlingRookSources = { { 0, 7 }, { 56, 63 } };
 	private int[][] castlingRookTargets = { { 3, 5 }, { 59, 61 } };
 	private byte[] kingPositions = { 4, 60 };
@@ -258,8 +257,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 			break;
 		case EngineConstants.DOUBLE_PUSH_SHIFTED:
 			capturedPiece = 0;
-			int diff = pushDiffs[side];
-			epT = Long.numberOfTrailingZeros(((1L << to) >>> diff) | ((1L << to) << (64 - diff)));
+			epT = EngineConstants.EPT_LOOKUP[side][to];
 			
 			//Transposition Table//
 			if ((EngineConstants.PAWN_ATTACK_LOOKUP[side][epT] & bitboard[(side ^ 1) | EngineConstants.PAWN]) != 0) {
@@ -633,8 +631,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 			break;
 		case EngineConstants.DOUBLE_PUSH_SHIFTED:
 			capturedPiece = 0;
-			int diff = pushDiffs[side];
-			epT = Long.numberOfTrailingZeros(((1L << to) >>> diff) | ((1L << to) << (64 - diff)));
+			epT = EngineConstants.EPT_LOOKUP[side][to];
 			
 			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][from];
 			pawnZobristKey = pawnZobristKey ^ TranspositionTable.zobristPositionArray[fromPiece][to];
