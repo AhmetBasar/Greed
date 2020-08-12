@@ -17,29 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Greed.  If not, see <https://www.gnu.org/licenses/>.
  **********************************************/
-Chess Bot Programming.
- - in BoardScanner Class, 
-  When detecting changes, don't parse all, board on each iteration. Try to compare whole board image without parsing, to cells instead.
- - previously matched image ordering must be done with piece type, it must not be related with highlighted or selected vs.vs.	 
-  - Known problem = We always expect 3 change in board when premove succeded. but in reality there is posibility for 5 changes or even 7 changes. 7 changes = 4 castling + 3 premove operation.
-  but for now we ignore this. Maybe if we decrease scanning board time, then we almost never face with this cruel issue.
-  Certainly there is a solution to this problem. but it may be implemented in future releases.
- * It is both problem to see the premove too early and too late.
- if it is too early, there is posibility to see uncompleted premove.
- if it is too late, there is posibility to see completed premove + normal move. say it is 3 moves...
-  * In Premove detection,
-// OMH, What if same type of piece recaptures?? Than prevToItem equals to currToItem???
- - Implement promotions on online chess bot.
- [OKEY] - Implement draw and mate detection correctly.
   - Add King Checks to quiescent search. because they are not quiet, maybe there is a forced mate line. you may also add thread moves? so what is threating moves?
-  - in chess bot, should we clear TT in every suggest? or only reset bot? 
-  	/**
-	 * PERFORMANCE IMPROVEMENTS 1 - When detecting changes, don't parse all
-	 * board on each iteration. Try to compare whole board image without parsing
-	 * to cells instead.
-	 */
- Reminder
-  - Change Random Number Generator from HardCodedSecureRandom to SecureRandom Again.  
   Engine improvements.
  - Add checks to quiescent search.
  - implement parallel search.
@@ -50,34 +28,23 @@ Chess Bot Programming.
  [FAILED] - do real move ordering, remove ttbestmove if block, try ttbestmove first instead FAILED because we should do incremental move generation. first validate ttmove than generate validate killer moves than generate capture moves etc. 
  [OKEY] - Remove castling moves from move generationCaptures class.
   - Use tagging.
-  - There should be More smart way to DECIDE premove. (cause it slows down the core engine :()
-  - Move Reordering. But you should not simple exchange indexes of the ttbestmove and zerothindex. You should be shifting whole array. Because MVV LVA algorithm is so important.
-  	   		// Move Ordering
-			if (ttBestMove != 0) {
-				int bestMoveIndex  = Arrays.binarySearch(moveList, ttBestMove);
-				System.arraycopy(moveList, bestMoveIndex + 1 , moveList, bestMoveIndex, EngineConstants.MOVE_LIST_SIZE_MINUS_ONE - bestMoveIndex);
-				moveList[EngineConstants.MOVE_LIST_SIZE_MINUS_ONE] = ttBestMove;
-			}
   - there should be more elegant Quiescence search algorithm that prune bad captures.
   - isKingInCheck method is too slow for serious engine. It must be faster. For example incremental attackBitboard implementation should be used.
-  - In Move Generation you must generate pseudolegalmoves. You should not invoke isKingInCheck method in castling move generation!!!
+ [OKEY] - In Move Generation you must generate pseudolegalmoves. You should not invoke isKingInCheck method in castling move generation!!!
   - Evaluation function must be improved.. Maybe mobility implementations.
-  - In Board.java combine byte history arrays into one or more long array for reduce fetch time.
  [OKEY] - In Board.java use an array for keep calculated zobrist values.
-  - Check Legality before move generation...
   - bestMove is not correctly implemented. because of uncompleted nodes do not prove best move..
-  - Implement more elegant way to handle board object. This is very inefficient.
-  - when fail high best move?? current move or zero.
+ [OKEY] - Implement more elegant way to handle board object. This is very inefficient.
  [OKEY] - In the Fail Soft transposition table implementation, if bestMove!=0 than record tt. Why not always??? (aka, regardless of bestMove!=0)
   - IN PVS search with fail hard framework. is it a<score<b or a<score ???[OKEY]
   - In null move pruning, one should also check the current node is PV or not.. and game phase should no be pawn ending because of zugzwang issues. 
-  - In null move pruning R (Reduction factor) must be variable.
-  - In null move pruning there is a big cost about of isKingInCheck method invocation.
-  - Check extensions..
+ [OKEY] - In null move pruning R (Reduction factor) must be variable.
+ [OKEY] - In null move pruning there is a big cost about of isKingInCheck method invocation.
+ [OKEY] - Check extensions..
   - Implement Verified Null Move Pruning.
-  - Implement Static Null Move Pruning.
+ [OKEY] - Implement Static Null Move Pruning.
   - Omit Null Move on PV Nodes.  
-  - In null move pruning it is unnecessary to undoNullMove because zobrist key is always used from depthPlusOne.
+ [OKEY] - In null move pruning it is unnecessary to undoNullMove because zobrist key is always used from depthPlusOne.
   - Pondering implementation!!
   - Null Move pruning condition must be beta - alpha <=1 !!!
   - Implement killer move verification. Instead of generate all moves. this saves a huge amount of time :D
@@ -85,9 +52,7 @@ Chess Bot Programming.
   - Store only quiet moves in the killer move array. quiet move means no captures, no promotions. and maybe no checks.
   - Search captures with see first. Then killer and history moves.
  [OKEY] - Implement pawn hash table!
-  - There is a bug in pre move :) Vezirle almasý mecburi deðildi. piyonla alsa bizim pre move boþa çýkacak.
-  - Implement mate and draw score in quiescence search
-  - Implement generateCheckEvasions Method!
+ [OKEY] - Implement generateCheckEvasions Method!
   - Write a comprehensive Unit Test for evaluation Function!!
  [OKEY] - Implement Mate scoring which is related with depth parameter. in order to find fastest mate.
   - Evaluation: Add bonus for tempo. Whose turn?
@@ -102,7 +67,7 @@ Chess Bot Programming.
   - Review existing code. for example there should be more condition in nullmove pruning. like in pvs do not do null move pruning.
   - Implement SSE.
  [OKEY] - Implement magic bitboard.
-  - Implement automated-Testing Framework that is capable of running thousands of games concurrently.
+ [OKEY] - Implement automated-Testing Framework that is capable of running thousands of games concurrently.
   - Implement aspirationWindows
  [OKEY] - Implement basic opening book or maybe advanced.
   - Implement Mobility Evaluation!
@@ -124,11 +89,11 @@ Chess Bot Programming.
   [OKEY] - Implement nullMoveCounter in the draw detection.
   [OKEY] - Implement draw detection for PREMOVEFINDER.
   - In draw detection, reordering 50moverule detection and 3fold rep detection. because 3rep has much more probability to return early without branching for 50moverule check.
-  - In draw detection, Merge game history and search history. or at least, merge functions, if counter < 4 than do not try game history at all.
-  - Try more agressive Null Move Pruning i.e. adaptive R. if depth > 6 than R = 3 else 2.
+  [OKEY] - In draw detection, Merge game history and search history. or at least, merge functions, if counter < 4 than do not try game history at all.
+  [OKEY] - Try more agressive Null Move Pruning i.e. adaptive R. if depth > 6 than R = 3 else 2.
   - Search what lazyEval is.
   - Increase TT size. (very important.)
-  - Increasing R with Depth
+  [OKEY] - Increasing R with Depth
   - R=3; if sideto move has 2 or more pieces, and depth > 7 then R = 4
   - Implement verified Null Move Pruning.
   - Implement History Heuristic.

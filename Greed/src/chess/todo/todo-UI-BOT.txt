@@ -1,0 +1,43 @@
+/**********************************************
+ * Greed, a chess engine written in java.
+ * Copyright (C) 2019 Ahmet Baþar
+ * 
+ * This file is part of Greed.
+ * 
+ * Greed is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * Greed is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with Greed.  If not, see <https://www.gnu.org/licenses/>.
+ **********************************************/
+Chess Bot Programming.
+ - in BoardScanner Class, 
+  When detecting changes, don't parse all, board on each iteration. Try to compare whole board image without parsing, to cells instead.
+ - previously matched image ordering must be done with piece type, it must not be related with highlighted or selected vs.vs.	 
+  - Known problem = We always expect 3 change in board when premove succeded. but in reality there is posibility for 5 changes or even 7 changes. 7 changes = 4 castling + 3 premove operation.
+  but for now we ignore this. Maybe if we decrease scanning board time, then we almost never face with this cruel issue.
+  Certainly there is a solution to this problem. but it may be implemented in future releases.
+ * It is both problem to see the premove too early and too late.
+ if it is too early, there is posibility to see uncompleted premove.
+ if it is too late, there is posibility to see completed premove + normal move. say it is 3 moves...
+  * In Premove detection,
+// OMH, What if same type of piece recaptures?? Than prevToItem equals to currToItem???
+ - Implement promotions on online chess bot.
+ [OKEY] - Implement draw and mate detection correctly.
+   - in chess bot, should we clear TT in every suggest? or only reset bot? 
+  	/**
+	 * PERFORMANCE IMPROVEMENTS 1 - When detecting changes, don't parse all
+	 * board on each iteration. Try to compare whole board image without parsing
+	 * to cells instead.
+	 */
+	 Reminder
+  - Change Random Number Generator from HardCodedSecureRandom to SecureRandom Again.
+  - There should be More smart way to DECIDE premove. (cause it slows down the core engine :()
+  - There is a bug in pre move :) Vezirle almasý mecburi deðildi. piyonla alsa bizim pre move boþa çýkacak.
