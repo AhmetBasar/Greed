@@ -60,7 +60,6 @@ public class BoardV7 implements IBoard, EngineConstants {
 	public long pawnZobristKey;
 	public int fiftyMoveCounter;
 	public int nullMoveCounter;
-	public int[] moveList;
 	
 	public int moveIndex = 0;
 	private int side;
@@ -78,10 +77,6 @@ public class BoardV7 implements IBoard, EngineConstants {
 	
 	public int getEpTarget() {
 		return epT;
-	}
-	
-	public int[] getMoveList() {
-		throw new RuntimeException("Not Yet Implemented");
 	}
 	
 	public BoardV7(long[] bitboard, byte[] pieces, int epT, byte[][] castlingRights, int fiftyMoveCounter, List<Long> zobristKeyHistory, int side) {

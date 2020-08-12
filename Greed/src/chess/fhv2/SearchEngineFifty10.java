@@ -51,9 +51,6 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 	
 	SearchResult searchResult = new SearchResult();
 	
-	// This should be variable.
-	private static final int R = 2;
-	
 	private static SearchEngineFifty10 instance;
 	private static SearchEngineFifty10[] newInstances = new SearchEngineFifty10[16];
 	

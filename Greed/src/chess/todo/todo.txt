@@ -187,12 +187,11 @@ Chess Bot Programming.
   - implement castling rights as byte or int instead of byte array. (For speed up.)
  [OKEY] - Remove King material evaluation cause there is always 1 king per side.
  [OKEY] - There is difference between FEN standart and POLYGLOT standart about enpassant capturing. What is correct way? What are other engines do?
-  - There may be easy way to calculate enpassant target. Like PreCalculated table.
+ [OKEY] - There may be easy way to calculate enpassant target. Like PreCalculated table.
  [OKEY] - Correct zobrist hashing when double push occurs if ((EngineConstants.PAWN_ATTACK_LOOKUP[side][epTarget] & bitboard[opSide | EngineConstants.PAWN]) != 0)
  [OKEY] - Avoid class variables. use method variables amap. (e.g. in Legality.java class there are redundant class variables called rightMoves, leftMoves, upMoves, downMoves, moves_45, moves_135, moves_225, moves_315, lookup)
  [OKEY] - remove unnecessary method parameters in negamax framework. like previousmove, firstmove.
   - Rewrite opening book utility with Binary Search algorithm. It will be much faster IMHO.
-  - Rewrite openingbook with Random insteadof SecureRandom.
   - Prepare large opening book. (ENORMOUS)
   - increase max heap size. and compare performances. (-Xms512m -Xmx4g)
   - Increase TT size.
@@ -202,12 +201,12 @@ Chess Bot Programming.
   - implement contempt factor for DRAW scoring.
  [OKEY] - Assert there always exists one King per side.
   - Do not use interface because of performance overhead. but it may be negligible as compared to clean code.
-  - Code review for using >>> instead of >> (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)  regex1 = (?<!>)>>(?!>)  regex2 = [^>]>>[^>]
-  - Code review for using != 0 instead of > 0 (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)
+ [OKEY] - Code review for using >>> instead of >> (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)  regex1 = (?<!>)>>(?!>)  regex2 = [^>]>>[^>]
+ [OKEY] - Code review for using != 0 instead of > 0 (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)
   - return too high values from evaluation function then run tournamet to find subtle bugs.
-  - Code review for not use 1. use 1L instead. This may lead subtle bugs. (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)
+ [OKEY] - Code review for not use 1. use 1L instead. This may lead subtle bugs. (SEARCH WITH REGEX PATTERN TO DO IT EASYLY)
   - Implement all pawn evaluations. such as weak and backward pawns.
-  - Use precalculated singlebit lookup for all 1 << n operations.
+  - Use precalculated singlebit lookup for all 1L << n operations.
   - Java performance optimizations. (such as static final methods.)
  [OKEY] - do not use shared objects. Review code. do not use static variables. but static method is permitted.
   - if there is no castling rights, call move generator that doesn't search castling moves.
@@ -218,13 +217,12 @@ Chess Bot Programming.
   - write pawn shield evaluation in a more smarter way. (i.e. faster)
   - change isEndGame evaluation. (must be independent from side to move)
   - in all run methods, use try catch block and invoke printStackTrace and System.exit(1); methods from catch block. Search that "void run"
-  - Write a test method that scans source code and detects static variables, signed right shift operators etc. etc.
-  - Write a smart assertion mechanishm that has no effect on performance.
-  - write incremental occupied bitboard calculation. it may be far better in best case thanks to good move ordering.
+ [OKEY] - Write a test method that scans source code and detects static variables, signed right shift operators etc. etc.
+ [OKEY] - Write a smart assertion mechanishm that has no effect on performance.
+ [OKEY] - write incremental occupied bitboard calculation. it may be far better in best case thanks to good move ordering.
   - custom thread pool does not use 100 percent cpu, but util concurrent does. why?
   - Do not use singleton pattern!
   - Use TimerPool for PieceEffects class.
-  - use static methods instead of instance methods.
   - prefer eager initialization instead of lazy one.
   - do Exclusive Or operation for incremental update of BitBoards. it will be much more efficient.
   - rewrite resetTT method with smarter way, maybe Arrays.fill
@@ -257,8 +255,8 @@ Chess Bot Programming.
   - Test iterative deepening speed. try directly maxdepth. and try iterative deepening and compare times consumed.
   - remove nullmovecounter in threefoldrepetition and compare results.
   - do not do any operations in for-while loop's conditional statement.
-  [OKEY]- change isLeadsToDraw method. Do not use HashMap history. Initialize board object by copying UiZobristKey history to board ZobristKey history instead.
-  - Change calculating epTarget algorithm. It seems very inefficient.
+  [OKEY] - change isLeadsToDraw method. Do not use HashMap history. Initialize board object by copying UiZobristKey history to board ZobristKey history instead.
+  [OKEY] - Change calculating epTarget algorithm. It seems very inefficient.
   - Change jvm heap size parameters and compare performances. -Xms -Xmx
   - Large arrays are too slow. Maybe there is some hotspot GC parameters to increase performance.
   - Write lots of assertions.
@@ -280,13 +278,13 @@ Chess Bot Programming.
   - DO NOT USE BYTE. because integer casting is too expensive :( use integer as much as possible.
   - change move structure.
   - change castling right structure.
-  - delete moveLists field from IBoard.
-  - Do not use Legality in engine class anymore.
-  - do we really need to check whether the king is in check when trying ttBestMove???
+ [OKEY] - delete moveLists field from IBoard.
+ [OKEY] - Do not use Legality in engine class anymore.
+ [OKEY] - do we really need to check whether the king is in check when trying ttBestMove???
   - Use material score cache in evaluation.
   - Heap memory is growing up consistently when tournament is running(when 15.000 games are played, then 2 g heap is used). Use profiler to detect possible memory leaks.
   - Replace ~EngineConstants.FILE_A with EngineConstants.NOT_FILE_A
   - Replace ~EngineConstants.FILE_H with EngineConstants.NOT_FILE_H
   - Implement Cloneable interface on Board object.
-  - Implement reflectionBased comparison in SearchResult class.
+ [OKEY] - Implement reflectionBased comparison in SearchResult class.
   
