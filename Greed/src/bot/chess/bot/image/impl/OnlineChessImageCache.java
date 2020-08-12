@@ -170,7 +170,8 @@ public class OnlineChessImageCache extends AbstractImageCache {
 
 	@Override
 	protected int getXGap() {
-		return 7;
+//		return 6; // for engine vs human
+		return 7; // for human vs human
 	}
 
 	@Override
