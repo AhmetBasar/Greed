@@ -40,7 +40,8 @@ import chess.movegen.MoveGeneration;
 
 //http://web.archive.org/web/20070707012511/http://www.brucemo.com/compchess/programming/index.htm
 public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
-	MoveGeneration moveGeneration = new MoveGeneration(false);
+	private MoveGeneration moveGeneration = new MoveGeneration(false);
+	private OpeningBook openingBook = OpeningBook.getNewInstance();
 	
 	private final int MINUS_INFINITY = -99999;
 	private final int PLUS_INFINITY = 99999;
@@ -150,7 +151,7 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 			
 			if (i == 1 && searchParameters.getBookName() != null) {
 //				long s = System.currentTimeMillis();
-				int bookMove = OpeningBook.getInstance().findBookMove(board, i + 1, searchParameters.getSide(), searchParameters.getSide() ^ 1, searchParameters.getBookName());
+				int bookMove = openingBook.findBookMove(board, i + 1, searchParameters.getSide(), searchParameters.getSide() ^ 1, searchParameters.getBookName());
 //				long e = System.currentTimeMillis();
 //				System.out.println("Opening Book Time Consumed = " + (e - s));
 				if (bookMove != 0) {

@@ -28,20 +28,29 @@ import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
+import chess.movegen.MoveGeneration;
 import chess.util.Utility;
 
 public class OpeningBook {
 	
-	private MoveGenerationOnlyQueenPromotions moveGeneration = new MoveGenerationOnlyQueenPromotions();
-	private LegalityV4 legality = new LegalityV4();
-	private static OpeningBook instance = new OpeningBook();
+	private MoveGeneration moveGeneration = new MoveGeneration(false);
+	private static OpeningBook[] newInstances = new OpeningBook[16];
+	
 	private static final SecureRandom rgn = new SecureRandom();
 
 	private OpeningBook() {
 	}
 
-	public static OpeningBook getInstance() {
-		return instance;
+	public static synchronized OpeningBook getNewInstance() {
+		for (int i = 0; i < newInstances.length; i++) {
+			if (newInstances[i] == null) {
+				newInstances[i] = new OpeningBook();
+				return newInstances[i];
+			}
+		}
+		System.out.println("Max instance count exceeded.");
+		System.exit(-1);
+		throw new RuntimeException();
 	}
 
 	public int findBookMove(IBoard board, int depth, int side, int opSide, String bookName) {
@@ -116,36 +125,23 @@ public class OpeningBook {
 		int from = 8 * fromRow + fromFile;
 		int to = 8 * toRow + toFile;
 
-		return getValidMove(from, to, board, depth, side, opSide);
+		return getValidMove(from, to, board);
 	}
 
-	public int getValidMove(int source, int target, IBoard board, int depth, int side, int opSide) {
-		ArrayList<Integer> validMoveList = new ArrayList<Integer>();
-		int validMove = 0;
+	public int getValidMove(int source, int target, IBoard board) {
 		int move = source | (target << 8);
-		int[] validMoves = moveGeneration.generateMoves(board.getBitboard(), side, board.getEpTarget(),
-				board.getCastlingRights());
-		for (int i = 0; i < EngineConstants.MOVE_LIST_SIZE; i++) {
-			if (move == (validMoves[i] & 0x0000FFFF)) {
-				validMoveList.add(validMoves[i]);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
+		while (moveGeneration.hasNext()) {
+			int nextMove = moveGeneration.next();
+			
+			if (move == (nextMove & 0x0000FFFF) && board.isLegal(nextMove)) {
+				moveGeneration.endPly();
+				return nextMove;
 			}
 		}
-		// check King Safety
-		int validMoveListSize = validMoveList.size();
-		for (int i = 0; i < validMoveListSize; i++) {
-			validMove = validMoveList.get(i);
-			board.doMove(validMove);
-			if (legality.isKingInCheck(board.getBitboard(), side)) {
-				return 0;
-			}
-			board.undoMove(validMove);
-		}
-
-		// choose item to be promoted
-		if (validMoveListSize > 1) {
-			throw new RuntimeException("Not Yet Implemented!!!");
-		}
-
-		return validMove;
+		moveGeneration.endPly();
+		return 0;
 	}
 }
