@@ -27,12 +27,14 @@ import java.util.Map;
 
 import chess.bot.interpreting.BotMove;
 import chess.debug.DebugUtility;
+import chess.engine.BoardFactory;
 import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
-import chess.engine.MoveGenerationOnlyQueenPromotions;
+import chess.engine.IBoard;
 import chess.engine.Transformer;
 import chess.engine.TranspositionTable;
 import chess.gui.GuiConstants;
+import chess.movegen.MoveGeneration;
 
 public class BotGamePlay implements IGameController {
 	private int side;
@@ -41,7 +43,8 @@ public class BotGamePlay implements IGameController {
 	private byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 	private byte[] kingPositions = { 4, 60 };
 	private byte[][] rookPositions = { { 0, 7 }, { 56, 63 } };
-	private MoveGenerationOnlyQueenPromotions moveGeneration = new MoveGenerationOnlyQueenPromotions();
+	private MoveGeneration moveGeneration = new MoveGeneration(false);
+
 	private int perspective;
 	private long zobristKey;
 	private long pawnZobristKey;
@@ -367,32 +370,23 @@ public class BotGamePlay implements IGameController {
 	}
 	
 	public int getValidMove(int source, int target) {
-		ArrayList<Integer> validMoveList = new ArrayList<Integer>();
-		int validMove = 0;
+		IBoard board = BoardFactory.getInstance2(getBitboard(), getPieces(), epTarget, castlingRights, getFiftyMoveCounter(), getZobristKeyHistory(), side);
 		int move = source | (target << 8);
-		int[] validMoves = moveGeneration.generateMoves(getBitboard(), side, epTarget, castlingRights);
-		for (int i = 0; i < EngineConstants.MOVE_LIST_SIZE; i++) {
-			if (move == (validMoves[i] & 0x0000FFFF)) {
-				validMoveList.add(validMoves[i]);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
+		while (moveGeneration.hasNext()) {
+			int nextMove = moveGeneration.next();
+			
+			if (move == (nextMove & 0x0000FFFF) && board.isLegal(nextMove)) {
+				moveGeneration.endPly();
+				return nextMove;
 			}
 		}
-		// check King Safety
-		int validMoveListSize = validMoveList.size();
-		for (int i = 0; i < validMoveListSize; i++) {
-			validMove = validMoveList.get(i);
-			BotGamePlayMove gamePlayMove = new BotGamePlayMove(validMove, this);
-			if (gamePlayMove.isKingInCheck()) {
-				return 0;
-			}
-		}
-		// choose item to be promoted
-		if (validMoveListSize > 1) {
-			throw new RuntimeException("Not Yet Implemented!!!");
-		}
-		
-		return validMove;
+		moveGeneration.endPly();
+		return 0;
 	}
-
+	
 	@Override
 	public byte[][] getBoard() {
 		return Transformer.getTwoDimByteArrayStyl(getBitboard());

@@ -25,12 +25,14 @@ import java.util.List;
 import java.util.Map;
 
 import chess.debug.DebugUtility;
+import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
+import chess.engine.IBoard;
 import chess.engine.LegalityV4;
-import chess.engine.MoveGenerationOnlyQueenPromotions;
 import chess.engine.Transformer;
 import chess.engine.TranspositionTable;
 import chess.gui.GuiConstants;
+import chess.movegen.MoveGeneration;
 
 public class ChessBoard {
 	private int side;
@@ -39,7 +41,7 @@ public class ChessBoard {
 	private byte[][] castlingRights = { { 1, 1 }, { 1, 1 } };
 	private byte[] kingPositions = { 4, 60 };
 	private byte[][] rookPositions = { { 0, 7 }, { 56, 63 } };
-	private MoveGenerationOnlyQueenPromotions moveGeneration = new MoveGenerationOnlyQueenPromotions();
+	private MoveGeneration moveGeneration = new MoveGeneration(false);
 	private long zobristKey;
 	private long pawnZobristKey;
 	private int fiftyMoveCounter = 0;
@@ -260,30 +262,21 @@ public class ChessBoard {
 	}
 	
 	public int getValidMove(int source, int target) {
-		ArrayList<Integer> validMoveList = new ArrayList<Integer>();
-		int validMove = 0;
+		IBoard board = BoardFactory.getInstance2(getBitboard(), getPieces(), epTarget, castlingRights, getFiftyMoveCounter(), getZobristKeyHistory(), side);
 		int move = source | (target << 8);
-		int[] validMoves = moveGeneration.generateMoves(getBitboard(), side, epTarget, castlingRights);
-		for (int i = 0; i < EngineConstants.MOVE_LIST_SIZE; i++) {
-			if (move == (validMoves[i] & 0x0000FFFF)) {
-				validMoveList.add(validMoves[i]);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
+		while (moveGeneration.hasNext()) {
+			int nextMove = moveGeneration.next();
+			
+			if (move == (nextMove & 0x0000FFFF) && board.isLegal(nextMove)) {
+				moveGeneration.endPly();
+				return nextMove;
 			}
 		}
-		// check King Safety
-		int validMoveListSize = validMoveList.size();
-		for (int i = 0; i < validMoveListSize; i++) {
-			validMove = validMoveList.get(i);
-			ChessMove gamePlayMove = new ChessMove(validMove, this);
-			if (gamePlayMove.isKingInCheck()) {
-				return 0;
-			}
-		}
-		// choose item to be promoted
-		if (validMoveListSize > 1) {
-			throw new RuntimeException("Not Yet Implemented!!!");
-		}
-		
-		return validMove;
+		moveGeneration.endPly();
+		return 0;
 	}
 
 	public byte[][] getBoard() {
@@ -349,35 +342,20 @@ public class ChessBoard {
 	}
 	
 	public boolean existsValidMove() {
-		ArrayList<Integer> pseudoLegalMoveList = new ArrayList<Integer>();
-		int[] pseudoLegalMoves = moveGeneration.generateMoves(bitboard, side, epTarget,
-				castlingRights);
-		for (int i = 0; i < EngineConstants.MOVE_LIST_SIZE; i++) {
-			if (pseudoLegalMoves[i] != 0) {
-				pseudoLegalMoveList.add(pseudoLegalMoves[i]);
-			} else {
-				break;
+		IBoard board = BoardFactory.getInstance2(bitboard, getPieces(), epTarget, castlingRights, getFiftyMoveCounter(), getZobristKeyHistory(), side);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
+		while (moveGeneration.hasNext()) {
+			int nextMove = moveGeneration.next();
+			
+			if (board.isLegal(nextMove)) {
+				moveGeneration.endPly();
+				return true;
 			}
 		}
-		
-		int plMoveSize = pseudoLegalMoveList.size();
-		if (plMoveSize == 0) {
-			return false;
-		}
-		
-		boolean isKingInSafe = false;
-		
-		// check King Safety
-		for (int i = 0; i < plMoveSize; i++) {
-			int validMove = pseudoLegalMoveList.get(i);
-			ChessMove gamePlayMove = new ChessMove(validMove, this);
-			if (!gamePlayMove.isKingInCheck()) {
-				isKingInSafe = true;
-				break;
-			}
-		}
-		
-		return isKingInSafe;
+		moveGeneration.endPly();
+		return false;
 	}
 
 	public long getPawnZobristKey() {
