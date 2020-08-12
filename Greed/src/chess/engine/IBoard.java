@@ -4,8 +4,6 @@ public interface IBoard {
 	
 	int getEpTarget();
 	
-	int[] getMoveList();
-	
 	void doNullMove();
 	
 	void undoNullMove();
