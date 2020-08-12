@@ -69,7 +69,7 @@ public class BoardCell extends Cell {
 	}
 
 	private int getValidMove() {
-		return base.getGamePlay().getValidMove(base.getBoard(), base.getSelectedCell().getNumericName(),
+		return base.getGamePlay().getValidMove(base.getSelectedCell().getNumericName(),
 				getNumericName());
 	}
 

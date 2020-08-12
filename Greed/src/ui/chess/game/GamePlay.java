@@ -30,9 +30,10 @@ import chess.bot.KeyListenerGeneric;
 import chess.bot.Utility;
 import chess.database.Storage;
 import chess.debug.DebugUtility;
+import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
+import chess.engine.IBoard;
 import chess.engine.LegalityV4;
-import chess.engine.MoveGeneration;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.engine.Transformer;
@@ -40,6 +41,7 @@ import chess.engine.TranspositionTable;
 import chess.gui.BaseGui;
 import chess.gui.GuiConstants;
 import chess.gui.PieceEffects;
+import chess.movegen.MoveGeneration;
 
 public class GamePlay {
 	private int side;
@@ -57,7 +59,7 @@ public class GamePlay {
 	private HashMap<String, String> preferences = new HashMap<String, String>();
 	private LegalityV4 legality = new LegalityV4();
 	
-	private MoveGeneration moveGeneration = new MoveGeneration();
+	private MoveGeneration moveGeneration = new MoveGeneration(true);
 	
 	private Map<Long, Integer> boardStateHistory = new HashMap<Long, Integer>();
 	private List<Long> zobristKeyHistory = new ArrayList<Long>();
@@ -87,71 +89,62 @@ public class GamePlay {
 		resetGameFlags();
 	}
 
-	public int getValidMove(byte[][] board, int source, int target) {
+	public int getValidMove(int source, int target) {
 		ArrayList<Integer> validMoveList = new ArrayList<Integer>();
-		int validMove = 0;
+		
+		long[] bitboard = Transformer.getBitboardStyl(base.getBoard());
+		byte[] pieces = Transformer.getByteArrayStyl(bitboard);
+		IBoard board = BoardFactory.getInstance2(bitboard, pieces, epTarget, castlingRights, getFiftyMoveCounter(), getZobristKeyHistory(), side);
 		int move = source | (target << 8);
-		int[] validMoves = moveGeneration.generateMoves(Transformer.getBitboardStyl(board), side, epTarget,
-				castlingRights);
-		for (int i = 0; i < EngineConstants.MOVE_LIST_SIZE; i++) {
-			if (move == (validMoves[i] & 0x0000FFFF)) {
-				validMoveList.add(validMoves[i]);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
+		while (moveGeneration.hasNext()) {
+			int nextMove = moveGeneration.next();
+			if (move == (nextMove & 0x0000FFFF) && board.isLegal(nextMove)) {
+				validMoveList.add(nextMove);
 			}
 		}
-		// check King Safety
+		moveGeneration.endPly();
+		
 		int validMoveListSize = validMoveList.size();
-		for (int i = 0; i < validMoveListSize; i++) {
-			validMove = validMoveList.get(i);
-			GamePlayMove gamePlayMove = new GamePlayMove(base, validMove);
-			if (gamePlayMove.isKingInCheck()) {
-				return 0;
-			}
+		
+		if (validMoveListSize == 0) {
+			return 0;
 		}
+		
 		// choose item to be promoted
 		if (validMoveListSize > 1) {
 			base.runPopupPromotionFrame(side);
 			byte toBePromotedItem = base.getPromotionPanel().getLastChoosenPromotionItem();
 			for (int i = 0; i < validMoveListSize; i++) {
-				validMove = validMoveList.get(i);
-				if (((validMove & 0xF00000) >>> 20) == (int) toBePromotedItem) {
-					break;
+				int promotionMove = validMoveList.get(i);
+				if (((promotionMove & 0xF00000) >>> 20) == (int) toBePromotedItem) {
+					return promotionMove;
 				}
 			}
 		}
-
-		return validMove;
+		
+		return validMoveList.get(0);
 	}
 	
-	public boolean existsValidMove(byte[][] board) {
-		ArrayList<Integer> pseudoLegalMoveList = new ArrayList<Integer>();
-		int[] pseudoLegalMoves = moveGeneration.generateMoves(Transformer.getBitboardStyl(board), side, epTarget,
-				castlingRights);
-		for (int i = 0; i < EngineConstants.MOVE_LIST_SIZE; i++) {
-			if (pseudoLegalMoves[i] != 0) {
-				pseudoLegalMoveList.add(pseudoLegalMoves[i]);
-			} else {
-				break;
+	public boolean existsValidMove() {
+		long[] bitboard = Transformer.getBitboardStyl(base.getBoard());
+		byte[] pieces = Transformer.getByteArrayStyl(bitboard);
+		IBoard board = BoardFactory.getInstance2(bitboard, pieces, epTarget, castlingRights, getFiftyMoveCounter(), getZobristKeyHistory(), side);
+		moveGeneration.startPly();
+		moveGeneration.generateAttacks(board);
+		moveGeneration.generateMoves(board);
+		while (moveGeneration.hasNext()) {
+			int nextMove = moveGeneration.next();
+			
+			if (board.isLegal(nextMove)) {
+				moveGeneration.endPly();
+				return true;
 			}
 		}
-		
-		int plMoveSize = pseudoLegalMoveList.size();
-		if (plMoveSize == 0) {
-			return false;
-		}
-		
-		boolean isKingInSafe = false;
-		
-		// check King Safety
-		for (int i = 0; i < plMoveSize; i++) {
-			int validMove = pseudoLegalMoveList.get(i);
-			GamePlayMove gamePlayMove = new GamePlayMove(base, validMove);
-			if (!gamePlayMove.isKingInCheck()) {
-				isKingInSafe = true;
-				break;
-			}
-		}
-		
-		return isKingInSafe;
+		moveGeneration.endPly();
+		return false;
 	}
 
 	public void doMove(int move) {
@@ -255,7 +248,7 @@ public class GamePlay {
 		boolean isCheckMate = false;
 		boolean isDraw = false;
 		
-		if (!existsValidMove(base.getBoard())) {
+		if (!existsValidMove()) {
 			if (legality.isKingInCheck(Transformer.getBitboardStyl(base.getChessBoardPanel().getBoard()), side)) {
 				System.out.println("CHECKMATE : " + (side == EngineConstants.WHITE ? " Black won" : "White Won"));
 				isCheckMate = true;
