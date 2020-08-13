@@ -168,6 +168,11 @@ public class CodeReviewTest {
 			String javaFilePath = javaFile.getAbsolutePath();
 			String javaFileContent = Utility.readFile(javaFilePath);
 			
+			if (!javaFileContent.contains("GNU General Public License")) {
+				System.err.println(javaFile.getName() + " has no licence header.");
+				throw new RuntimeException("Failed.");
+			}
+			
 			String javaFilePathPartial = javaFilePath.substring(javaFilePath.indexOf("Greed") + 12);
 			
 			for (Map.Entry<String, Map<String, List<String>>> entry : misusedOperatorsWhiteList.entrySet()) {
@@ -330,6 +335,7 @@ public class CodeReviewTest {
 		whiteListFields.add("chess.engine.test.ThreadPool.instance");
 		whiteListFields.add("chess.engine.test.ThreadPool4Workers.instance");
 		whiteListFields.add("chess.engine.OpeningBook.instance");
+		whiteListFields.add("chess.engine.OpeningBook.newInstances");
 		whiteListFields.add("chess.engine.OpeningBook.rgn");
 		
 		whiteListFields.add("chess.engine.test.equality.EngineEqualityComparator.positionCountDraw");
