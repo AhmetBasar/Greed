@@ -514,6 +514,10 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 				continue;
 			}
 			
+//			if (!board.isDiscoveredMove(Move.getFrom(move)) && StaticExchangeEvaluation.getSeeCaptureScore(move, board, board.getSide()) <= 0) {
+//				continue;
+//			}
+			
 			board.doMoveWithoutZobrist(move);
 			if (foundPv) {
 				tempValue = -quiescentSearch(board, -alpha - 1, -alpha);

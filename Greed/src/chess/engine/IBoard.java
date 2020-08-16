@@ -75,4 +75,6 @@ public interface IBoard {
 	
 	boolean isLegal(int move);
 
+	boolean isDiscoveredMove(int from);
+	
 }

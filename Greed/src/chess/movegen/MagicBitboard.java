@@ -248,6 +248,10 @@ public class MagicBitboard {
 		return rookMoves[from][0];
 	}
 	
+	public static long getQueenMovesWithoutBlocker(int from) {
+		return getRookMovesWithoutBlocker(from) | getBishopMovesWithoutBlocker(from);
+	}
+	
 	public static void initialize() {
 		
 	}

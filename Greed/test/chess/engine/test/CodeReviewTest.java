@@ -19,6 +19,25 @@ public class CodeReviewTest {
 	private static final String GREATER_THAN_REGEX = ">(\\s)*0";
 	private static final String LONG_SIGN = "1 <<";
 	private static final Map<String, Map<String, List<String>>> misusedOperatorsWhiteList = new HashMap<String, Map<String, List<String>>>();
+	private static final String LICENCE_HEADER = "/**********************************************\r\n" + 
+			" * Greed, a chess engine written in java.\r\n" + 
+			" * Copyright (C) 2019 Ahmet Baþar\r\n" + 
+			" * \r\n" + 
+			" * This file is part of Greed.\r\n" + 
+			" * \r\n" + 
+			" * Greed is free software: you can redistribute it and/or modify\r\n" + 
+			" * it under the terms of the GNU General Public License as published by\r\n" + 
+			" * the Free Software Foundation, either version 3 of the License, or\r\n" + 
+			" * (at your option) any later version.\r\n" + 
+			" * \r\n" + 
+			" * Greed is distributed in the hope that it will be useful,\r\n" + 
+			" * but WITHOUT ANY WARRANTY; without even the implied warranty of\r\n" + 
+			" * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\r\n" + 
+			" * GNU General Public License for more details.\r\n" + 
+			" * \r\n" + 
+			" * You should have received a copy of the GNU General Public License\r\n" + 
+			" * along with Greed.  If not, see <https://www.gnu.org/licenses/>.\r\n" + 
+			" **********************************************/";
 	
 	static {
 		Map<String, List<String>> signedRightShiftOperatorWhiteList = new HashMap<String, List<String>>();
@@ -168,7 +187,8 @@ public class CodeReviewTest {
 			String javaFilePath = javaFile.getAbsolutePath();
 			String javaFileContent = Utility.readFile(javaFilePath);
 			
-			if (!javaFileContent.contains("GNU General Public License")) {
+			
+			if (!javaFileContent.contains(LICENCE_HEADER)) {
 				System.err.println(javaFile.getName() + " has no licence header.");
 				throw new RuntimeException("Failed.");
 			}

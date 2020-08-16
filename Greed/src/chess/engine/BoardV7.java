@@ -1106,5 +1106,12 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		return !isInCheck;
 	}
+	
+	public boolean isDiscoveredMove(int from) {
+		if (discoveredPieces == 0) {
+			return false;
+		}
+		return (discoveredPieces & (1L << from)) != 0;
+	}
 
 }
