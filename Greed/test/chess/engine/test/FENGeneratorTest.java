@@ -19,11 +19,7 @@
  **********************************************/
 package chess.engine.test;
 
-import java.util.ArrayList;
-
-import chess.engine.BoardFactory;
 import chess.engine.IBoard;
-import chess.engine.Transformer;
 import chess.engine.test.suites.FenGenerator;
 import chess.gui.FenOperations;
 
@@ -39,11 +35,7 @@ public class FENGeneratorTest {
 			String fenData = datazz[i];
 			FenOperations fenOperations = new FenOperations();
 			fenOperations.setFenString(fenData);
-
-			IBoard board = BoardFactory.getInstance2(Transformer.getBitboardStyl(fenOperations.getBoard()),
-					Transformer.getByteArrayStyl(Transformer.getBitboardStyl(fenOperations.getBoard())),
-					fenOperations.getEpTarget(), fenOperations.getCastlingRights(), 0, new ArrayList<Long>(),
-					fenOperations.getSide());
+			IBoard board = fenOperations.getIBoard();
 
 			String fenStr = FenGenerator.getFenString(board);
 			if (!fenStr.equals(fenData)) {

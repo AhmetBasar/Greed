@@ -32,7 +32,19 @@ public class Material implements EngineConstants {
 	
 	public static final int[] MAJOR_PIECE_MASKS = {PIECE_MASKS[WHITE_BISHOP] | PIECE_MASKS[WHITE_ROOK] | PIECE_MASKS[WHITE_QUEEN] | PIECE_MASKS[WHITE_KNIGHT] , 
 			PIECE_MASKS[BLACK_BISHOP] | PIECE_MASKS[BLACK_ROOK] | PIECE_MASKS[BLACK_QUEEN] | PIECE_MASKS[BLACK_KNIGHT]};
-
+	
+	public static final int KK = 0;
+	public static final int KNK = 256;
+	public static final int KKN = 2048;
+	public static final int KNNK = 512;
+	public static final int KKNN = 4096;
+	public static final int KNKN = 2304;
+	public static final int KBK = 16384;
+	public static final int KKB = 131072;
+	public static final int KNKB = 131328;
+	public static final int KBKN = 18432;
+	public static final int KBKB = 147456;
+	
 	public static int getMaterialKey(long[] bb) {
 		int materialKey = 0;
 		for (int j = EngineConstants.WHITE_PAWN ; j <= EngineConstants.BLACK_QUEEN ; j++) {
@@ -51,6 +63,25 @@ public class Material implements EngineConstants {
 	
 	public static boolean hasMajorPiece(int materialKey, int side) {
 		return (materialKey & MAJOR_PIECE_MASKS[side]) != 0;
+	}
+	
+	public static boolean isInsufficientMaterial(int materialKey) {
+		switch (materialKey) {
+		case KK:
+		case KNK:
+		case KNNK:
+		case KBK:
+		case KKN:
+		case KNKN:
+		case KNKB:
+		case KKNN:
+		case KKB:
+		case KBKN:
+		case KBKB:
+			return true;
+			// TODO handle KPK, KBPK, KBPKP
+		}
+		return false;
 	}
 	
 }

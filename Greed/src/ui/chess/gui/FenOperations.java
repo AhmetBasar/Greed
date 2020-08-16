@@ -19,8 +19,12 @@
  **********************************************/
 package chess.gui;
 
+import java.util.ArrayList;
+
 import chess.debug.DebugUtility;
+import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
+import chess.engine.IBoard;
 import chess.engine.Transformer;
 import chess.engine.TranspositionTable;
 
@@ -271,6 +275,13 @@ public class FenOperations {
 
 	public long getPawnZobristKey() {
 		return pawnZobristKey;
+	}
+	
+	public IBoard getIBoard() {
+		return BoardFactory.getInstance2(Transformer.getBitboardStyl(getBoard()),
+				Transformer.getByteArrayStyl(Transformer.getBitboardStyl(getBoard())),
+				getEpTarget(), getCastlingRights(), 0, new ArrayList<Long>(),
+				getSide());
 	}
 
 }

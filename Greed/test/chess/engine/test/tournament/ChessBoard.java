@@ -29,6 +29,7 @@ import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.LegalityV4;
+import chess.engine.Material;
 import chess.engine.Transformer;
 import chess.engine.TranspositionTable;
 import chess.gui.GuiConstants;
@@ -325,7 +326,11 @@ public class ChessBoard {
 				gameState = GameState.DRAW;
 			}
 		} else {
-			if (getFiftyMoveCounter() > 99) {
+			int materialKey = Material.getMaterialKey(bitboard);
+			if (Material.isInsufficientMaterial(materialKey)) {
+				System.out.println("DRAW : Insufficient Material.");
+				gameState = GameState.DRAW;
+			} else if (getFiftyMoveCounter() > 99) {
 				System.out.println("DRAW : fifty move exceeded.");
 				gameState = GameState.DRAW;
 			} else {
@@ -335,7 +340,6 @@ public class ChessBoard {
 					gameState = GameState.DRAW;
 				}
 			}
-			// TODO : Insufficient material.
 		}
 		
 		return gameState;
