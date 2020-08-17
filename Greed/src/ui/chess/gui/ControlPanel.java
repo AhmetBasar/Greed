@@ -306,76 +306,88 @@ class SuggestMoveActionListener implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
-		
-//		if (true) {
-//			System.out.println("sa");
-//			int[] moveArr = new int[gamePlay.getMoveHistory().size()];
-//			for (int i = 0; i < gamePlay.getMoveHistory().size(); i++) {
-//				GamePlayMove m = gamePlay.getMoveHistory().get(i);
-//				moveArr[i] = m.getMove();
-//			}
-//			
-//			System.out.println(Arrays.toString(moveArr));
-//			
-//			return;
-//		}
-		
-		gamePlay.recalculateZobristKey();
-		
-		if(PieceEffects.existsActiveTimer()){
-			return;
-		}
-		try{
-			Class<?> cls = Class.forName(jtClassName.getText());
-//				Object obj = cls.newInstance();
-			
-			Method m1= cls.getDeclaredMethod("getInstance",new Class[] {});
-			Object obj = m1.invoke(null);
-			
-			//
-				Method m3 = cls.getDeclaredMethod("resetTT", new Class[] {});
-				m3.invoke(obj);
-			//
-			
-			long ilk = System.currentTimeMillis();
-			
-			SearchResult searchResult = null;
-			boolean isV2 = (obj instanceof ISearchableV2);
-			if (isV2) {
-				Method method = cls.getDeclaredMethod("search", engineParametersV2);
-				
-				SearchParameters params = new SearchParameters();
-				params.setDepth(debugPanel.getSearchDepth());
-				params.setEpT(gamePlay.getEpTarget());
-				params.setEpS(gamePlay.getEpSquare());
-				params.setBitboard(Transformer.getBitboardStyl(base.getBoard()));
-				params.setPieces(Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())));
-				params.setCastlingRights(gamePlay.getCastlingRights());
-				params.setSide(gamePlay.getSide());
-				params.setUiZobristKey(gamePlay.getZobristKey());
-				params.setUiPawnZobristKey(gamePlay.getPawnZobristKey());
-				params.setTimeLimit(1L);
-				params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
-				params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
-				params.setBookName(null);
-				params.setZobristKeyHistory(gamePlay.getZobristKeyHistory());
-				
-				searchResult = (SearchResult) method.invoke(obj, params);
-			} else {
-				
-				Method method = cls.getDeclaredMethod("search", engineParameters);
-				searchResult = (SearchResult) method.invoke(obj, debugPanel.getSearchDepth(), 
-						gamePlay.getEpTarget(), gamePlay.getEpSquare(), Transformer.getBitboardStyl(base.getBoard()),
-						Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())),
-						gamePlay.getCastlingRights(), gamePlay.getSide(), gamePlay.getZobristKey(), 1, gamePlay.getFiftyMoveCounter());
-			}
-			
-			System.out.println("time consumed =  "+ (System.currentTimeMillis() - ilk));
-			gamePlay.doMove(searchResult.getBestMove());
-				
-		} catch(Exception ex) {
-			ex.printStackTrace();
-		}
+		suggestMoveHandler.execute();
 	}
+	
+	private BackgroundJobHandler suggestMoveHandler = new BackgroundJobHandler() {
+		@Override
+		public void doInBackground() throws Exception {
+
+//			if (true) {
+//				System.out.println("sa");
+//				int[] moveArr = new int[gamePlay.getMoveHistory().size()];
+//				for (int i = 0; i < gamePlay.getMoveHistory().size(); i++) {
+//					GamePlayMove m = gamePlay.getMoveHistory().get(i);
+//					moveArr[i] = m.getMove();
+//				}
+//				
+//				System.out.println(Arrays.toString(moveArr));
+//				
+//				return;
+//			}
+			
+			gamePlay.recalculateZobristKey();
+			
+			if(PieceEffects.existsActiveTimer()){
+				return;
+			}
+			try{
+				Class<?> cls = Class.forName(jtClassName.getText());
+//					Object obj = cls.newInstance();
+				
+				Method m1= cls.getDeclaredMethod("getInstance",new Class[] {});
+				Object obj = m1.invoke(null);
+				
+				//
+					Method m3 = cls.getDeclaredMethod("resetTT", new Class[] {});
+					m3.invoke(obj);
+				//
+				
+				long ilk = System.currentTimeMillis();
+				
+				SearchResult searchResult = null;
+				boolean isV2 = (obj instanceof ISearchableV2);
+				if (isV2) {
+					Method method = cls.getDeclaredMethod("search", engineParametersV2);
+					
+					SearchParameters params = new SearchParameters();
+					params.setDepth(debugPanel.getSearchDepth());
+					params.setEpT(gamePlay.getEpTarget());
+					params.setEpS(gamePlay.getEpSquare());
+					params.setBitboard(Transformer.getBitboardStyl(base.getBoard()));
+					params.setPieces(Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())));
+					params.setCastlingRights(gamePlay.getCastlingRights());
+					params.setSide(gamePlay.getSide());
+					params.setUiZobristKey(gamePlay.getZobristKey());
+					params.setUiPawnZobristKey(gamePlay.getPawnZobristKey());
+					params.setTimeLimit(1L);
+					params.setFiftyMoveCounter(gamePlay.getFiftyMoveCounter());
+					params.setEngineMode(EngineConstants.EngineMode.FIXED_DEPTH);
+					params.setBookName(null);
+					params.setZobristKeyHistory(gamePlay.getZobristKeyHistory());
+					
+					searchResult = (SearchResult) method.invoke(obj, params);
+				} else {
+					
+					Method method = cls.getDeclaredMethod("search", engineParameters);
+					searchResult = (SearchResult) method.invoke(obj, debugPanel.getSearchDepth(), 
+							gamePlay.getEpTarget(), gamePlay.getEpSquare(), Transformer.getBitboardStyl(base.getBoard()),
+							Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getBoard())),
+							gamePlay.getCastlingRights(), gamePlay.getSide(), gamePlay.getZobristKey(), 1, gamePlay.getFiftyMoveCounter());
+				}
+				
+				System.out.println("time consumed =  "+ (System.currentTimeMillis() - ilk));
+				gamePlay.doMove(searchResult.getBestMove());
+					
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		@Override
+		public GlassPane getGlassPane() {
+			return base.getGlassPane();
+		}
+	};
 	
 }

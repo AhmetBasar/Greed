@@ -56,6 +56,8 @@ public class BaseGui {
 	private JMenuItem preferencesItem;
 	private JDialog preferencesFrame;
 	private PreferencesPanel preferencesPanel;
+	
+	private GlassPane glassPane = new GlassPane();
 
 	public BaseGui(GamePlay gamePlay) {
 		this.gamePlay = gamePlay;
@@ -71,7 +73,8 @@ public class BaseGui {
 		mainOuterFrame.setLayout(null);
 		mainOuterFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainOuterFrame.setResizable(false);
-		mainOuterFrame.setAlwaysOnTop(true);
+//		mainOuterFrame.setAlwaysOnTop(true);
+		mainOuterFrame.setGlassPane(glassPane);
 		mainOuterFrame.setSize(730, 490);
 		int xLoc = 700;
 		int yLoc = 300;
@@ -337,5 +340,9 @@ public class BaseGui {
 		}
 		return className;
 	}
-	
+
+	public GlassPane getGlassPane() {
+		return glassPane;
+	}
+
 }
