@@ -88,7 +88,13 @@ public class MoveGeneration implements MoveGenerationConstants {
 	
 	public void setMvvLvaScores() {
 		for (int i = nextToMove[currentPly]; i < nextToGenerate[currentPly]; i++) {
-			moveScores[i] = moves[i];
+			int move = moves[i];
+			int fromPiece = Move.getFromPiece(move);
+			int capturedPiece = Move.getCapturedPiece(move);
+			moveScores[i] = capturedPiece * 6 - fromPiece;
+			if (Move.getMoveType(move) == EngineConstants.PROMOTION_SHIFTED) {
+				moveScores[i] += EngineConstants.QUEEN * 6;
+			}
 		}
 	}
 	
