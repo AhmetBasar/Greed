@@ -420,6 +420,14 @@ public class BoardV7 implements IBoard, EngineConstants {
 			//
 		}
 		
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			int fPiece = Move.getFromPiece(move) | side;
+			int cPiece = Move.getCapturedPiece(move);
+			cPiece = cPiece == 0 ? cPiece : cPiece | opSide;
+			Assertion.assertTrue(fPiece == fromPiece);
+			Assertion.assertTrue(cPiece == capturedPiece);
+		}
+		
 		if (capturedPiece != 0 || fromPiece == (side | EngineConstants.PAWN)) {
 			fiftyMoveCounter = 0;
 		} else {
@@ -558,6 +566,14 @@ public class BoardV7 implements IBoard, EngineConstants {
 			occupiedSquaresBySide[side] &= ~(1L << castlingRookTo);
 			//
 			break;
+		}
+		
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			int fPiece = Move.getFromPiece(move) | side;
+			int cPiece = Move.getCapturedPiece(move);
+			cPiece = cPiece == 0 ? cPiece : cPiece | opSide;
+			Assertion.assertTrue(fPiece == fromPiece);
+			Assertion.assertTrue(cPiece == capturedPiece);
 		}
 		
 		fetchPreviousValues();
