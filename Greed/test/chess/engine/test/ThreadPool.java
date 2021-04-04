@@ -29,7 +29,9 @@ import java.util.concurrent.Executors;
 public class ThreadPool {
 
 	private static volatile ThreadPool instance;
-	public static final int POOL_SIZE = (Runtime.getRuntime().availableProcessors() / 2);
+//	public static final int POOL_SIZE = (Runtime.getRuntime().availableProcessors() / 2);
+//	public static final int POOL_SIZE = (Runtime.getRuntime().availableProcessors() / 4);
+	public static final int POOL_SIZE = 1;
 	private ExecutorService executorService = Executors.newFixedThreadPool(POOL_SIZE);
 
 	public static ThreadPool getInstance() {

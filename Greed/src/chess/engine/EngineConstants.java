@@ -46,6 +46,9 @@ public interface EngineConstants {
 	public static final int[] PIECE_VALUES_POSITIVE = {0, 0, WHITE_PAWN_V, WHITE_PAWN_V, WHITE_KNIGHT_V, WHITE_KNIGHT_V, WHITE_BISHOP_V, WHITE_BISHOP_V, 
             WHITE_ROOK_V, WHITE_ROOK_V, WHITE_QUEEN_V, WHITE_QUEEN_V, WHITE_KING_V, WHITE_KING_V};
 	
+	public static final int[] PIECE_WITHOUT_SIDE = {0, 0, PAWN, PAWN, KNIGHT, KNIGHT, BISHOP, BISHOP, 
+			ROOK, ROOK, QUEEN, QUEEN, KING, KING};
+	
 //	public static final int[] PIECE_VALUES_MVVLVA = {0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6};
 	public static final int[] PIECE_VALUES_MVVLVA = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13};
 //	public static final int PAWN_MVVLVA = 1, KNIGHT_MVVLVA = 2, BISHOP_MVVLVA = 3, ROOK_MVVLVA = 4, QUEEN_MVVLVA = 5, KING_MVVLVA = 6;

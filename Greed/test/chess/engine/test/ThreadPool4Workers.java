@@ -30,7 +30,8 @@ public class ThreadPool4Workers {
 
 	private static volatile ThreadPool4Workers instance;
 //	public static final int POOL_SIZE = (Runtime.getRuntime().availableProcessors() / 2);
-	public static final int POOL_SIZE = (Runtime.getRuntime().availableProcessors() / 4);
+//	public static final int POOL_SIZE = (Runtime.getRuntime().availableProcessors() / 4);
+	public static final int POOL_SIZE = 1;
 	private ExecutorService executorService = Executors.newFixedThreadPool(POOL_SIZE);
 
 	public static ThreadPool4Workers getInstance() {
