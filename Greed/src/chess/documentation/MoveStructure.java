@@ -48,24 +48,15 @@ public class MoveStructure {
 	 * .... .... (promotionType)(promotionType)(promotionType)(promotionType) .(moveType)(moveType)(moveType) / ..(to)(to) (to)(to)(to)(to) ..(from)(from) (from)(from)(from)(from)
 	 * 
 	 * 
-	 * fromPieceValue = range 1 to 6, in binary representation , 001 to 110
-	 * fromPieceValue is shifted transparently by 24 bits.
-	 * .... .(fromPieceValue)(fromPieceValue)(fromPieceValue) (promotionType)(promotionType)(promotionType)(promotionType) .(moveType)(moveType)(moveType) / ..(to)(to) (to)(to)(to)(to) ..(from)(from) (from)(from)(from)(from)
+	 * fromPiece = range 2 to 12, in binary representation , 0010 to 1100
+	 * fromPiece is shifted 24 bits.
+	 * .... (fromPiece)(fromPiece)(fromPiece)(fromPiece) (promotionType)(promotionType)(promotionType)(promotionType) .(moveType)(moveType)(moveType) / ..(to)(to) (to)(to)(to)(to) ..(from)(from) (from)(from)(from)(from)
 	 * 
 	 * 
-	 * captured piece = range 0 to 13 in binary representation 0000 to 1101
+	 * captured piece = range 0 to 10 in binary representation 0000 to 1010
 	 * captured piece is shifted 27 bits. why not shift by 28 bit. maybe two's complements can cause negative numbers. and prevent ordering moves?
-	 * .(capt)(capt)(capt) (capt)(fromPieceValue)(fromPieceValue)(fromPieceValue) (promotionType)(promotionType)(promotionType)(promotionType) .(moveType)(moveType)(moveType) / ..(to)(to) (to)(to)(to)(to) ..(from)(from) (from)(from)(from)(from)
-	 * 
-	 * 
-	 * In the MVV LVA implementation. it is important to know from piece value. pawn capture queen must be evaluated first.
-	 * Magic Number For 
-	 * Pawn Moves   = 100663296    0000 0110 0000 0000 / 0000 0000 0000 0000
-	 * Knight Moves =  83886080    0000 0101 0000 0000 / 0000 0000 0000 0000
-	 * Bishop Atck  =  67108864    0000 0100 0000 0000 / 0000 0000 0000 0000
-	 * Rook Moves   =  50331648    0000 0011 0000 0000 / 0000 0000 0000 0000
-	 * Queen Attack =  33554432    0000 0010 0000 0000 / 0000 0000 0000 0000
-	 * King Attack  =  16777216    0000 0001 0000 0000 / 0000 0000 0000 0000
+	 * when retrieving captured piece mask move with 0x7000_0000 then shift right to 27 bits.
+	 * .(capt)(capt)(capt) (fromPiece)(fromPiece)(fromPiece)(fromPiece) (promotionType)(promotionType)(promotionType)(promotionType) .(moveType)(moveType)(moveType) / ..(to)(to) (to)(to)(to)(to) ..(from)(from) (from)(from)(from)(from)
 	 * 
 	 * */
 
