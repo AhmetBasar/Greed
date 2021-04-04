@@ -35,6 +35,14 @@ public class Move {
 		return (byte)((move & 0x00f00000) >>> 20);		
 	}
 	
+	public static byte getFromPiece(int move) {
+		return (byte)((move & 0x0F000000) >>> 24);		
+	}
+	
+	public static byte getCapturedPiece(int move) {
+		return (byte)((move & 0x70000000) >>> 27);		
+	}
+	
 	public static boolean isPromotion(int move) {
 		return (move & 0x00070000) == EngineConstants.PROMOTION_SHIFTED;
 	}
@@ -55,20 +63,12 @@ public class Move {
 		return (move & 0x00010000) >>> 16;
 	}
 	
-	public static int encodeMove(int from, int to) {
-		return from | (to << 8);
-	}
-	
 	public static int encodeMove(int from, int to, int fromPiece) {
 		return from | (to << 8) | (fromPiece << 24);
 	}
 	
 	public static int encodeAttackMove(int from, int to, int capturedPiece, int fromPiece) {
 		return from | (to << 8) | (fromPiece << 24) | (capturedPiece << 27);
-	}
-	
-	public static int encodeSpecialMove(int from, int to, int moveType) {
-		return from | (to << 8) | (moveType << 16);
 	}
 	
 	public static int encodeSpecialMove(int from, int to, int moveType, int fromPiece) {
@@ -79,16 +79,12 @@ public class Move {
 		return from | (to << 8) | (moveType << 16) | (fromPiece << 24) | (capturedPiece << 27);
 	}
 	
-//	public static int encodePromotionMove(int from, int to, int moveType, int promotedPiece) {
-//		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20) | (EngineConstants.PAWN_MVVLVA << 24);
-//	}
-	
 	public static int encodePromotionMove(int from, int to, int moveType, int promotedPiece) {
-		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20);
+		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20) | (EngineConstants.PAWN << 24);
 	}
 	
 	public static int encodePromotionAttackMove(int from, int to, int moveType, int promotedPiece, int capturedPiece) {
-		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20) | (EngineConstants.PAWN_MVVLVA << 24) | (capturedPiece << 27);
+		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20) | (EngineConstants.PAWN << 24) | (capturedPiece << 27);
 	}
 	
 }
