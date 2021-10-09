@@ -19,9 +19,9 @@
  **********************************************/
 package chess.movegen;
 
+import chess.engine.Check;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
-import chess.engine.LegalityV4;
 import chess.engine.Move;
 import chess.engine.MoveGenerationConstants;
 import chess.util.Utility;
@@ -36,8 +36,6 @@ public class MoveGeneration implements MoveGenerationConstants {
 	
 	private int currentPly;
 	private boolean allowUnderPromotion = false;
-	
-	private LegalityV4 legality = new LegalityV4();
 	
 	public MoveGeneration(boolean allowUnderPromotion) {
 		this.allowUnderPromotion = allowUnderPromotion;
@@ -174,50 +172,24 @@ public class MoveGeneration implements MoveGenerationConstants {
 			toBitboard &= (toBitboard - 1);
 		}
 		
-		int to;
 		int side = board.getSide();
+		int opSide = board.getOpSide();
 		long[] bitboard = board.getBitboard();
-		long fromBitboard;
-		long emptySquares = board.getEmptySquares();
 		byte[][] castlingRights = board.getCastlingRights();
+		long occ = board.getOccupiedSquares();
 		
 		// Castling Queen Side
 		if (board.getCheckers() == 0) {
-			fromBitboard = bitboard[side | EngineConstants.KING];
-			if ((from = Long.numberOfTrailingZeros(fromBitboard)) != 64) {
-				toBitboard = (castlingRights[side][0] & (emptySquares >>> castlingShift[side][0][0]) 
-						& (emptySquares >>> castlingShift[side][0][1])
-						& (emptySquares >>> castlingShift[side][0][2])) << castlingTarget[side][0];
-				if ((to = Long.numberOfTrailingZeros(toBitboard)) != 64) {
-					byte sideToKing = (byte)(side| EngineConstants.KING);
-					int kingOriginalPos = kingPositions[side];
-					int squareBetweenKingAndRook = betweenKingAndRook[side][0];
-					bitboard[sideToKing] &= ~(1L << kingOriginalPos);
-					bitboard[sideToKing] |= (1L << squareBetweenKingAndRook);
-					if(!legality.isKingInCheck(bitboard, side)){
-						addMove(Move.encodeSpecialMove(from, to, EngineConstants.QUEEN_SIDE_CASTLING, EngineConstants.KING));
-					}
-					bitboard[sideToKing] &= ~(1L << squareBetweenKingAndRook);
-					bitboard[sideToKing] |= (1L << kingOriginalPos);
+			if (castlingRights[side][0] == 1 && (EngineConstants.CASTLING_EMPTY_SQUARES[side][0] & occ) == 0) {
+				if (!Check.isKingIncheckIncludingKing(betweenKingAndRook[side][0], bitboard, opSide, side, occ)) {
+					addMove(Move.encodeSpecialMove(from, castlingTarget[side][0], EngineConstants.QUEEN_SIDE_CASTLING, EngineConstants.KING));
 				}
 			}
 			
 			// Castling King Side 
-			fromBitboard = bitboard[side | EngineConstants.KING];
-			if ((from = Long.numberOfTrailingZeros(fromBitboard)) != 64) {
-				toBitboard = (castlingRights[side][1] & (emptySquares >>> castlingShift[side][1][0]) 
-						& (emptySquares >>> castlingShift[side][1][1])) << castlingTarget[side][1];
-				if ((to = Long.numberOfTrailingZeros(toBitboard)) != 64) {
-					byte sideToKing = (byte)(side| EngineConstants.KING);
-					int kingOriginalPos = kingPositions[side];
-					int squareBetweenKingAndRook = betweenKingAndRook[side][1];
-					bitboard[sideToKing] &= ~(1L << kingOriginalPos);
-					bitboard[sideToKing] |= (1L << squareBetweenKingAndRook);
-					if(!legality.isKingInCheck(bitboard, side)){
-						addMove(Move.encodeSpecialMove(from, to, EngineConstants.KING_SIDE_CASTLING, EngineConstants.KING));
-					}
-					bitboard[sideToKing] &= ~(1L << squareBetweenKingAndRook);
-					bitboard[sideToKing] |= (1L << kingOriginalPos);
+			if (castlingRights[side][1] == 1 && (EngineConstants.CASTLING_EMPTY_SQUARES[side][1] & occ) == 0) {
+				if (!Check.isKingIncheckIncludingKing(betweenKingAndRook[side][1], bitboard, opSide, side, occ)) {
+					addMove(Move.encodeSpecialMove(from, castlingTarget[side][1], EngineConstants.KING_SIDE_CASTLING, EngineConstants.KING));
 				}
 			}
 		}

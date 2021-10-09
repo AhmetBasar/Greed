@@ -1130,4 +1130,91 @@ public class BoardV7 implements IBoard, EngineConstants {
 		return (discoveredPieces & (1L << from)) != 0;
 	}
 
+	@Override
+	public boolean isValid(int move) {
+		int to = (move & 0x0000ff00) >>> 8;
+		int from = move & 0x000000ff;
+		int moveType = Move.getMoveType(move);
+		
+		byte moveFromPieceWC = Move.getFromPiece(move);
+		byte moveFromPiece = (byte)(moveFromPieceWC | side);
+		byte moveCapturedPieceWc = Move.getCapturedPiece(move);
+		// TODO: Test it.
+//		byte capturedPiece = capturedPieceWc == 0 ? capturedPieceWc : (byte)(capturedPieceWc | opSide);
+		byte moveCapturedPiece = (byte)(moveCapturedPieceWc | opSide);
+				
+		if (moveFromPiece != pieces[from]) {
+			return false;
+		}
+		
+		if (moveCapturedPiece != pieces[to] && moveType != EngineConstants.EP_CAPTURE_SHIFTED) {
+			return false;
+		}
+		
+		switch (moveFromPieceWC) {
+		case EngineConstants.PAWN:
+			if (moveType == EngineConstants.EP_CAPTURE_SHIFTED) {
+				if (epT != to) {
+					return false;
+				}
+				return isLegalEpCapture(to, from);
+			} else {
+				switch(side) {
+				case EngineConstants.WHITE: {
+					if (from > to) {
+						return false;
+					}
+					if (to - from == 16 && (occupiedSquares & Utility.SINGLE_BIT[from + 8]) != 0L) {
+						return false;
+					}
+					break;
+				}
+				case EngineConstants.BLACK: {
+					if (to > from) {
+						return false;
+					}
+					if (from - to == 16 && (occupiedSquares & Utility.SINGLE_BIT[from - 8]) != 0L) {
+						return false;
+					}
+					break;
+				}
+				}
+			}
+		case EngineConstants.KNIGHT:
+			// No obstacle for knight moves.
+			break;
+		case EngineConstants.BISHOP:
+		case EngineConstants.ROOK:
+		case EngineConstants.QUEEN:
+			if ((Utility.LINE[from][to] & occupiedSquares) != 0) {
+				return false;
+			}
+			break;
+		case EngineConstants.KING:
+			if (Move.isCastling(move)) {
+//				isValidCastlingMove(move, moveType);
+			}
+			return !Check.isKingIncheckIncludingKing(Material.hasMajorPiece(materialKey, opSide), to, bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from]);
+		}
+		
+		return true;
+	}
+	
+//	private boolean isValidCastlingMove(int move, int moveType) {
+//		if (checkers != 0) {
+//			return false;	
+//		}
+//
+//		switch (moveType) {
+//		case EngineConstants.QUEEN_SIDE_CASTLING:
+//			break;
+//		case EngineConstants.KING_SIDE_CASTLING:
+//			break;
+//		}
+//		
+//		
+//		chec
+//		return false;
+//	}
+
 }

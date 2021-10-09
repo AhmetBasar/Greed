@@ -50,6 +50,14 @@ public class Check {
 			  | bitboard[opSide | EngineConstants.KING] & EngineConstants.KING_LOOKUP[kingSquare]) != 0;
 	}
 	
+	public static boolean isKingIncheckIncludingKing(int kingSquare, long[] bitboard, int opSide, int side, long occupiedSquares) {
+		return (bitboard[opSide | EngineConstants.KNIGHT] & EngineConstants.KNIGHT_LOOKUP[kingSquare]
+			  | (bitboard[opSide | EngineConstants.ROOK] | bitboard[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateRookMoves(kingSquare, occupiedSquares)
+			  | (bitboard[opSide | EngineConstants.BISHOP] | bitboard[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateBishopMoves(kingSquare, occupiedSquares)
+		      | bitboard[opSide | EngineConstants.PAWN] & EngineConstants.PAWN_ATTACK_LOOKUP[side][kingSquare]
+			  | bitboard[opSide | EngineConstants.KING] & EngineConstants.KING_LOOKUP[kingSquare]) != 0;
+	}
+	
 	public static boolean isKingIncheck(int kingSquare, long[] bitboard, int opSide, int side, long occupiedSquares) {
 		return (bitboard[opSide | EngineConstants.KNIGHT] & EngineConstants.KNIGHT_LOOKUP[kingSquare]
 			  | (bitboard[opSide | EngineConstants.ROOK] | bitboard[opSide | EngineConstants.QUEEN]) & MagicBitboard.generateRookMoves(kingSquare, occupiedSquares)

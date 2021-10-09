@@ -47,6 +47,10 @@ public class Move {
 		return (move & 0x00070000) == EngineConstants.PROMOTION_SHIFTED;
 	}
 	
+	public static boolean isCastling(int move) {
+		return (move & 0x00040000) == EngineConstants.CASTLING_SHIFTED;
+	}
+	
 	public static int getTo(int move) {
 		return (move & 0x0000ff00) >>> 8;
 	}

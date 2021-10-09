@@ -77,4 +77,6 @@ public interface IBoard {
 
 	boolean isDiscoveredMove(int from);
 	
+	boolean isValid(int move);
+	
 }

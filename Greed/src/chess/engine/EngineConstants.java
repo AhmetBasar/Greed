@@ -63,9 +63,12 @@ public interface EngineConstants {
 	public static final int KING_SIDE_CASTLING		= 0b00000101;
 	public static final int CASTLING				= 0b00000100;
 	
-	public static final int DOUBLE_PUSH_SHIFTED		= DOUBLE_PUSH << 16;
-	public static final int EP_CAPTURE_SHIFTED		= EP_CAPTURE << 16;
-	public static final int PROMOTION_SHIFTED		= PROMOTION << 16;
+	public static final int DOUBLE_PUSH_SHIFTED			= DOUBLE_PUSH << 16;
+	public static final int EP_CAPTURE_SHIFTED			= EP_CAPTURE << 16;
+	public static final int PROMOTION_SHIFTED			= PROMOTION << 16;
+	public static final int QUEEN_SIDE_CASTLING_SHIFTED	= QUEEN_SIDE_CASTLING << 16;
+	public static final int KING_SIDE_CASTLING_SHIFTED	= KING_SIDE_CASTLING << 16;
+	public static final int CASTLING_SHIFTED			= CASTLING << 16;
 	
 	public static final int HASH_EXACT = 1;
 	public static final int HASH_ALPHA = 2;
@@ -1350,4 +1353,22 @@ public interface EngineConstants {
 		public static final int F8 = 61;
 		public static final int G8 = 62;
 		public static final int H8 = 63;
+		
+		public static final long b1 = 1L << B1;
+		public static final long c1 = 1L << C1;
+		public static final long d1 = 1L << D1;
+		public static final long f1 = 1L << F1;
+		public static final long g1 = 1L << G1;
+		
+		public static final long b8 = 1L << B8;
+		public static final long c8 = 1L << C8;
+		public static final long d8 = 1L << D8;
+		public static final long f8 = 1L << F8;
+		public static final long g8 = 1L << G8;
+		
+		public static final long b1_c1_d1 = b1 | c1 | d1;
+		public static final long f1_g1 = f1 | g1;
+		public static final long b8_c8_d8 = b8 | c8 | d8;
+		public static final long f8_g8 = f8 | g8;
+		public static final long[][] CASTLING_EMPTY_SQUARES = new long[][] {{b1_c1_d1, f1_g1}, {b8_c8_d8, f8_g8}};
 }
