@@ -1141,9 +1141,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		byte moveFromPieceWC = Move.getFromPiece(move);
 		byte moveFromPiece = (byte)(moveFromPieceWC | side);
 		byte moveCapturedPieceWc = Move.getCapturedPiece(move);
-		// TODO: Test it.
-//		byte capturedPiece = capturedPieceWc == 0 ? capturedPieceWc : (byte)(capturedPieceWc | opSide);
-		byte moveCapturedPiece = (byte)(moveCapturedPieceWc | opSide);
+		byte moveCapturedPiece = moveCapturedPieceWc == 0 ? moveCapturedPieceWc : (byte)(moveCapturedPieceWc | opSide);
 				
 		if (moveFromPiece != pieces[from]) {
 			return false;
@@ -1205,15 +1203,12 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		if (checkers != 0) {
 			if (moveCapturedPiece > 0) {
-				if (Long.bitCount(checkers) == 0) {
+				if (Long.bitCount(checkers) == 2) {
 					return false;
-				} else {
-					return !Check.isKingIncheck(kingSquares[side], bitboard, opSide, side, occupiedSquares ^ fromBb ^ toBb);
 				}
+				return (toBb & checkers) != 0;
 			} else {
-				if ((toBb & checkers) == 0) {
-					return false;
-				}
+				return !Check.isKingIncheck(kingSquares[side], bitboard, opSide, side, occupiedSquares ^ fromBb ^ toBb);
 			}
 		}
 		
@@ -1226,13 +1221,13 @@ public class BoardV7 implements IBoard, EngineConstants {
 		}
 
 		switch (moveType) {
-		case EngineConstants.QUEEN_SIDE_CASTLING:
+		case EngineConstants.QUEEN_SIDE_CASTLING_SHIFTED:
 			if (castlingRights[side][0] == 1 && (EngineConstants.CASTLING_EMPTY_SQUARES[side][0] & occupiedSquares) == 0
 			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.betweenKingAndRook[side][0], bitboard, opSide, side, occupiedSquares)) {
 				return true;
 			}
 			return false;
-		case EngineConstants.KING_SIDE_CASTLING:
+		case EngineConstants.KING_SIDE_CASTLING_SHIFTED:
 			if (castlingRights[side][1] == 1 && (EngineConstants.CASTLING_EMPTY_SQUARES[side][1] & occupiedSquares) == 0
 			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.betweenKingAndRook[side][1], bitboard, opSide, side, occupiedSquares)) {
 				return true;
