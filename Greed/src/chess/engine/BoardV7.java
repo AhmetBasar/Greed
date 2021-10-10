@@ -1133,7 +1133,9 @@ public class BoardV7 implements IBoard, EngineConstants {
 	@Override
 	public boolean isValid(int move) {
 		int to = (move & 0x0000ff00) >>> 8;
+		long toBb = Utility.SINGLE_BIT[to];
 		int from = move & 0x000000ff;
+		long fromBb = Utility.SINGLE_BIT[from];
 		int moveType = Move.getMoveType(move);
 		
 		byte moveFromPieceWC = Move.getFromPiece(move);
@@ -1192,29 +1194,53 @@ public class BoardV7 implements IBoard, EngineConstants {
 			break;
 		case EngineConstants.KING:
 			if (Move.isCastling(move)) {
-//				isValidCastlingMove(move, moveType);
+				isValidCastlingMove(move, moveType);
 			}
-			return !Check.isKingIncheckIncludingKing(Material.hasMajorPiece(materialKey, opSide), to, bitboard, opSide, side, occupiedSquares ^ Utility.SINGLE_BIT[from]);
+			return !Check.isKingIncheckIncludingKing(Material.hasMajorPiece(materialKey, opSide), to, bitboard, opSide, side, occupiedSquares ^ fromBb);
+		}
+		
+		if ((fromBb & pinnedPieces) != 0 && (Utility.PINNED_MOVEMENT[from][kingSquares[side]] & toBb) == 0) {
+			return false;
+		}
+		
+		if (checkers != 0) {
+			if (moveCapturedPiece > 0) {
+				if (Long.bitCount(checkers) == 0) {
+					return false;
+				} else {
+					return !Check.isKingIncheck(kingSquares[side], bitboard, opSide, side, occupiedSquares ^ fromBb ^ toBb);
+				}
+			} else {
+				if ((toBb & checkers) == 0) {
+					return false;
+				}
+			}
 		}
 		
 		return true;
 	}
 	
-//	private boolean isValidCastlingMove(int move, int moveType) {
-//		if (checkers != 0) {
-//			return false;	
-//		}
-//
-//		switch (moveType) {
-//		case EngineConstants.QUEEN_SIDE_CASTLING:
-//			break;
-//		case EngineConstants.KING_SIDE_CASTLING:
-//			break;
-//		}
-//		
-//		
-//		chec
-//		return false;
-//	}
+	private boolean isValidCastlingMove(int move, int moveType) {
+		if (checkers != 0) {
+			return false;	
+		}
+
+		switch (moveType) {
+		case EngineConstants.QUEEN_SIDE_CASTLING:
+			if (castlingRights[side][0] == 1 && (EngineConstants.CASTLING_EMPTY_SQUARES[side][0] & occupiedSquares) == 0
+			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.betweenKingAndRook[side][0], bitboard, opSide, side, occupiedSquares)) {
+				return true;
+			}
+			return false;
+		case EngineConstants.KING_SIDE_CASTLING:
+			if (castlingRights[side][1] == 1 && (EngineConstants.CASTLING_EMPTY_SQUARES[side][1] & occupiedSquares) == 0
+			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.betweenKingAndRook[side][1], bitboard, opSide, side, occupiedSquares)) {
+				return true;
+			}
+			return false;
+		default:
+			throw new RuntimeException("Internal Error");
+		}
+	}
 
 }
