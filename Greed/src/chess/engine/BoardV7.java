@@ -1192,7 +1192,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 			break;
 		case EngineConstants.KING:
 			if (Move.isCastling(move)) {
-				isValidCastlingMove(move, moveType);
+				return isValidCastlingMove(move, moveType);
 			}
 			return !Check.isKingIncheckIncludingKing(Material.hasMajorPiece(materialKey, opSide), to, bitboard, opSide, side, occupiedSquares ^ fromBb);
 		}

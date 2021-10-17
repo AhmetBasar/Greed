@@ -91,4 +91,8 @@ public class Move {
 		return from | (to << 8) | (moveType << 16) | (promotedPiece << 20) | (EngineConstants.PAWN << 24) | (capturedPiece << 27);
 	}
 	
+	public static void print(int move) {
+		System.out.println("From = " + getFrom(move) + " To = " + getTo(move));
+	}
+	
 }

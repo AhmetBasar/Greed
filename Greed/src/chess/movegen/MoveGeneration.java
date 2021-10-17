@@ -19,6 +19,9 @@
  **********************************************/
 package chess.movegen;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import chess.engine.Check;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
@@ -78,6 +81,16 @@ public class MoveGeneration implements MoveGenerationConstants {
 			moveScores[j + 1] = score;
 			moves[j + 1] = move;
 		}
+	}
+	
+	public Set<Integer> getMoveSet(){
+		Set<Integer> moveSet = new HashSet<Integer>();
+		int left = nextToMove[currentPly];
+		for (int i = left; i < nextToGenerate[currentPly]; ++i) {
+			int move = moves[i];
+			moveSet.add(move);
+		}
+		return moveSet;
 	}
 	
 	public void addMove(int move){
