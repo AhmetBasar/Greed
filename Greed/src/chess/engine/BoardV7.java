@@ -1132,9 +1132,9 @@ public class BoardV7 implements IBoard, EngineConstants {
 
 	@Override
 	public boolean isValid(int move) {
-		int to = (move & 0x0000ff00) >>> 8;
+		int to = Move.getTo(move);
 		long toBb = Utility.SINGLE_BIT[to];
-		int from = move & 0x000000ff;
+		int from = Move.getFrom(move);
 		long fromBb = Utility.SINGLE_BIT[from];
 		int moveType = Move.getMoveType(move);
 		
