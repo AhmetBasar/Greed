@@ -20,6 +20,7 @@
 package chess.fhv2;
 
 import java.util.Arrays;
+import java.util.Set;
 
 import chess.engine.BoardFactory;
 import chess.engine.CompileTimeConstants;
@@ -35,6 +36,7 @@ import chess.engine.SearchResult;
 import chess.engine.TT;
 import chess.engine.TranspositionElement;
 import chess.engine.TranspositionTable;
+import chess.engine.test.suites.FenGenerator;
 import chess.evaluation.EvaluationAdvancedV4;
 import chess.movegen.MoveGeneration;
 
@@ -405,6 +407,31 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		moveGeneration.generateMoves(board);
 		moveGeneration.setMvvLvaScores();
 		moveGeneration.sort();
+		
+		if (CompileTimeConstants.ENABLE_ASSERTION) {
+			Set<Integer> moveSet = moveGeneration.getMoveSet();
+			
+			int primaryKiller = primaryKillerss[distance];
+			int secondaryKiller = secondaryKillerss[distance];
+			
+			boolean isValidPrimaryKiller = primaryKiller != 0 && board.isValid(primaryKiller);
+			boolean isValidSecondaryKiller = secondaryKiller != 0 && board.isValid(secondaryKiller);
+			
+			boolean existsAndLegalPrimaryKiller = moveSet.contains(primaryKiller) && board.isLegal(primaryKiller);
+			boolean existsAndLegalSecondaryKiller = moveSet.contains(secondaryKiller) && board.isLegal(secondaryKiller);
+			
+			if (isValidPrimaryKiller != existsAndLegalPrimaryKiller) {
+				System.out.println("primaryKiller = " + primaryKiller);
+				System.out.println("FEN = " + FenGenerator.getFenString(board));
+				throw new RuntimeException("NO existsAndLegalPrimaryKiller");
+			}
+			
+			if (isValidSecondaryKiller != existsAndLegalSecondaryKiller) {
+				System.out.println("secondaryKiller = " + secondaryKiller);
+				System.out.println("FEN = " + FenGenerator.getFenString(board));
+				throw new RuntimeException("NO existsAndLegalSecondaryKiller");
+			}
+		}
 		
 		int move;
 		while (moveGeneration.hasNext()) {

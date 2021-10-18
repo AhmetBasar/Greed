@@ -1223,13 +1223,17 @@ public class BoardV7 implements IBoard, EngineConstants {
 		switch (moveType) {
 		case EngineConstants.QUEEN_SIDE_CASTLING_SHIFTED:
 			if (castlingRights[side][0] == 1 && (EngineConstants.CASTLING_EMPTY_SQUARES[side][0] & occupiedSquares) == 0
-			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.betweenKingAndRook[side][0], bitboard, opSide, side, occupiedSquares)) {
+			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.betweenKingAndRook[side][0], bitboard, opSide, side, occupiedSquares)
+			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.castlingTarget[side][0], bitboard, opSide, side, occupiedSquares)
+					) {
 				return true;
 			}
 			return false;
 		case EngineConstants.KING_SIDE_CASTLING_SHIFTED:
 			if (castlingRights[side][1] == 1 && (EngineConstants.CASTLING_EMPTY_SQUARES[side][1] & occupiedSquares) == 0
-			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.betweenKingAndRook[side][1], bitboard, opSide, side, occupiedSquares)) {
+			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.betweenKingAndRook[side][1], bitboard, opSide, side, occupiedSquares)
+			&& !Check.isKingIncheckIncludingKing(MoveGenerationConstants.castlingTarget[side][1], bitboard, opSide, side, occupiedSquares)
+					) {
 				return true;
 			}
 			return false;
