@@ -20,7 +20,6 @@
 package chess.fhv2;
 
 import java.util.Arrays;
-import java.util.Set;
 
 import chess.engine.BoardFactory;
 import chess.engine.CompileTimeConstants;
@@ -36,7 +35,6 @@ import chess.engine.SearchResult;
 import chess.engine.TT;
 import chess.engine.TranspositionElement;
 import chess.engine.TranspositionTable;
-import chess.engine.test.suites.FenGenerator;
 import chess.evaluation.EvaluationAdvancedV4;
 import chess.movegen.MoveGeneration;
 
@@ -55,6 +53,13 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 	
 	private static SearchEngineMordering instance;
 	private static SearchEngineMordering[] newInstances = new SearchEngineMordering[16];
+	
+	private static final int MOVE_ORDERING_TT = 0;
+	private static final int MOVE_ORDERING_ATTACKING = 1;
+//	private static final int MOVE_ORDERING_KILLER1 = 2;
+//	private static final int MOVE_ORDERING_KILLER2 = 3;
+	private static final int MOVE_ORDERING_QUIET = 2;
+	private static final int MOVE_ORDERING_UPPER_BOUND = 3;
 	
 	private SearchEngineMordering(){
 		TranspositionTable.fillZobristArrays();
@@ -375,103 +380,96 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 			}
 		}
 		
-		
-		//
-		if(ttBestMove != 0){
-			board.doMove(ttBestMove);
-			
-			existsLegalMove = true;
-			tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-			
-			if (tempValue >= beta) {
-				board.undoMove(ttBestMove);
-				tt.recordTranspositionTable(zobristKey, beta, ttBestMove, depth, HASH_BETA, isTimeout);
-				addKiller(ttBestMove, distance);
-				if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
-					searchResult.incrementBetaCutoffCount();
-				}
-				return beta;
-			}
-			
-			if (tempValue > alpha) {
-				alpha = tempValue;
-				bestMove = ttBestMove;
-				hashType = HASH_EXACT;
-				foundPv = true;
-			}
-			board.undoMove(ttBestMove);
-		}
-		
+		//***
 		moveGeneration.startPly();
-		moveGeneration.generateAttacks(board);
-		moveGeneration.generateMoves(board);
-		moveGeneration.setMvvLvaScores();
-		moveGeneration.sort();
+		int order = MOVE_ORDERING_TT;
 		
-		if (CompileTimeConstants.ENABLE_ASSERTION) {
-			Set<Integer> moveSet = moveGeneration.getMoveSet();
+		while (order < MOVE_ORDERING_UPPER_BOUND) {
 			
-			int primaryKiller = primaryKillerss[distance];
-			int secondaryKiller = secondaryKillerss[distance];
-			
-			boolean isValidPrimaryKiller = primaryKiller != 0 && board.isValid(primaryKiller);
-			boolean isValidSecondaryKiller = secondaryKiller != 0 && board.isValid(secondaryKiller);
-			
-			boolean existsAndLegalPrimaryKiller = moveSet.contains(primaryKiller) && board.isLegal(primaryKiller);
-			boolean existsAndLegalSecondaryKiller = moveSet.contains(secondaryKiller) && board.isLegal(secondaryKiller);
-			
-			if (isValidPrimaryKiller != existsAndLegalPrimaryKiller) {
-				System.out.println("primaryKiller = " + primaryKiller);
-				System.out.println("FEN = " + FenGenerator.getFenString(board));
-				throw new RuntimeException("NO existsAndLegalPrimaryKiller");
+			switch (order) {
+			case MOVE_ORDERING_TT:
+				if (ttBestMove != 0) {
+					if (!board.isValid(ttBestMove)) {
+						throw new RuntimeException("YOK ARTIK.");
+					} else {
+						moveGeneration.addMove(ttBestMove);
+					}
+				}
+				break;
+			case MOVE_ORDERING_ATTACKING:
+				moveGeneration.generateAttacks(board);
+				moveGeneration.setMvvLvaScores();
+				moveGeneration.sort();
+				break;
+//			case MOVE_ORDERING_KILLER1:
+//				break;
+//			case MOVE_ORDERING_KILLER2:
+//				break;
+			case MOVE_ORDERING_QUIET:
+				moveGeneration.generateMoves(board);
+				// TODO Comment out here...
+				// TODO Comment out here...
+				// TODO Comment out here...
+				// TODO Comment out here...
+				// TODO Comment out here...
+				// TODO Comment out here...
+				moveGeneration.setMvvLvaScores();
+				moveGeneration.sort();
+				// TODO Comment out here...
+				// TODO Comment out here...
+				// TODO Comment out here...
+				// TODO Comment out here...
+				// TODO Comment out here...
+				// TODO Comment out here...
+				break;
 			}
 			
-			if (isValidSecondaryKiller != existsAndLegalSecondaryKiller) {
-				System.out.println("secondaryKiller = " + secondaryKiller);
-				System.out.println("FEN = " + FenGenerator.getFenString(board));
-				throw new RuntimeException("NO existsAndLegalSecondaryKiller");
-			}
-		}
-		
-		int move;
-		while (moveGeneration.hasNext()) {
-			move = moveGeneration.next();
-			
-			if (!board.isLegal(move)) {
-				continue;
-			}
-			
-			board.doMove(move);
-			
-			existsLegalMove = true;
-			if (foundPv) {
-				tempValue = -negamax(depth - 1, board, -alpha - 1, -alpha, true, distance + 1);
-				if (tempValue > alpha) {
+			int move;
+			while (moveGeneration.hasNext()) {
+				move = moveGeneration.next();
+				
+				if (order == MOVE_ORDERING_ATTACKING || order == MOVE_ORDERING_QUIET) {
+					if (move == ttBestMove || !board.isLegal(move)) {
+						continue;	
+					}
+				}
+				
+				board.doMove(move);
+				
+				existsLegalMove = true;
+				if (foundPv) {
+					tempValue = -negamax(depth - 1, board, -alpha - 1, -alpha, true, distance + 1);
+					if (tempValue > alpha) {
+						tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
+					}
+				} else {
 					tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
 				}
-			} else {
-				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-			}
-			
-			if (tempValue >= beta) {
-				board.undoMove(move);
-				tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, isTimeout);
-				addKiller(move, distance);
-				moveGeneration.endPly();
-				if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
-					searchResult.incrementBetaCutoffCount();
+				
+				if (tempValue >= beta) {
+					board.undoMove(move);
+					tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, isTimeout);
+					addKiller(move, distance);
+					moveGeneration.endPly();
+					if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
+						searchResult.incrementBetaCutoffCount();
+					}
+					return beta;
 				}
-				return beta;
+				
+				if (tempValue > alpha) {
+					alpha = tempValue;
+					bestMove = move;
+					hashType = HASH_EXACT;
+					foundPv = true;
+				}
+				board.undoMove(move);
 			}
 			
-			if(tempValue > alpha){
-				alpha = tempValue;
-				bestMove = move;
-				hashType = HASH_EXACT;
-				foundPv = true;
-			}
-			board.undoMove(move);
+			order++;
 		}
+		
+		//***
 		
 		moveGeneration.endPly();
 		

@@ -437,6 +437,10 @@ public class SearchEngineFifty10 implements ISearchableV2, EngineConstants {
 		while (moveGeneration.hasNext()) {
 			move = moveGeneration.next();
 			
+			if (move == ttBestMove) {
+				continue;
+			}
+			
 			if (!board.isLegal(move)) {
 				continue;
 			}
