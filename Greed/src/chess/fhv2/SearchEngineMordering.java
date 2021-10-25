@@ -389,11 +389,7 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 			switch (order) {
 			case MOVE_ORDERING_TT:
 				if (ttBestMove != 0) {
-					if (!board.isValid(ttBestMove)) {
-						throw new RuntimeException("YOK ARTIK.");
-					} else {
-						moveGeneration.addMove(ttBestMove);
-					}
+					moveGeneration.addMove(ttBestMove);
 				}
 				break;
 			case MOVE_ORDERING_ATTACKING:
