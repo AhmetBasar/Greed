@@ -456,7 +456,9 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 				if (tempValue >= beta) {
 					board.undoMove(move);
 					tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, isTimeout);
-					addKiller(move, distance);
+					if (Move.getCapturedPiece(move) == 0 && !Move.isPromotion(move)) {
+						addKiller(move, distance);
+					}
 					moveGeneration.endPly();
 					if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
 						searchResult.incrementBetaCutoffCount();
