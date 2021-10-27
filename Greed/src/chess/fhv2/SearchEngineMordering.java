@@ -56,10 +56,10 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 	
 	private static final int MOVE_ORDERING_TT = 0;
 	private static final int MOVE_ORDERING_ATTACKING = 1;
-//	private static final int MOVE_ORDERING_KILLER1 = 2;
-//	private static final int MOVE_ORDERING_KILLER2 = 3;
-	private static final int MOVE_ORDERING_QUIET = 2;
-	private static final int MOVE_ORDERING_UPPER_BOUND = 3;
+	private static final int MOVE_ORDERING_KILLER1 = 2;
+	private static final int MOVE_ORDERING_KILLER2 = 3;
+	private static final int MOVE_ORDERING_QUIET = 4;
+	private static final int MOVE_ORDERING_UPPER_BOUND = 5;
 	
 	private SearchEngineMordering(){
 		TranspositionTable.fillZobristArrays();
@@ -383,6 +383,8 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 		//***
 		moveGeneration.startPly();
 		int order = MOVE_ORDERING_TT;
+		int primaryKiller = 0;
+		int secondaryKiller = 0;
 		
 		while (order < MOVE_ORDERING_UPPER_BOUND) {
 			
@@ -397,26 +399,24 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 				moveGeneration.setMvvLvaScores();
 				moveGeneration.sort();
 				break;
-//			case MOVE_ORDERING_KILLER1:
-//				break;
-//			case MOVE_ORDERING_KILLER2:
-//				break;
+			case MOVE_ORDERING_KILLER1:
+				primaryKiller = primaryKillerss[distance];
+				if (primaryKiller != 0 && ttBestMove != primaryKiller && board.isValid(primaryKiller))  {
+					moveGeneration.addMove(primaryKiller);
+					break;
+				}
+				order++;
+			case MOVE_ORDERING_KILLER2:
+				secondaryKiller = secondaryKillerss[distance];
+				if (secondaryKiller != 0 && ttBestMove != secondaryKiller && board.isValid(secondaryKiller))  {
+					moveGeneration.addMove(secondaryKiller);
+					break;
+				}
+				order++;
 			case MOVE_ORDERING_QUIET:
 				moveGeneration.generateMoves(board);
-				// TODO Comment out here...
-				// TODO Comment out here...
-				// TODO Comment out here...
-				// TODO Comment out here...
-				// TODO Comment out here...
-				// TODO Comment out here...
 				moveGeneration.setMvvLvaScores();
 				moveGeneration.sort();
-				// TODO Comment out here...
-				// TODO Comment out here...
-				// TODO Comment out here...
-				// TODO Comment out here...
-				// TODO Comment out here...
-				// TODO Comment out here...
 				break;
 			}
 			
@@ -424,7 +424,11 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 			while (moveGeneration.hasNext()) {
 				move = moveGeneration.next();
 				
-				if (order == MOVE_ORDERING_ATTACKING || order == MOVE_ORDERING_QUIET) {
+				if (order == MOVE_ORDERING_QUIET) {
+					if (move == ttBestMove || move == primaryKiller || move == secondaryKiller || !board.isLegal(move)) {
+						continue;	
+					}
+				} else if (order == MOVE_ORDERING_ATTACKING) {
 					if (move == ttBestMove || !board.isLegal(move)) {
 						continue;	
 					}
