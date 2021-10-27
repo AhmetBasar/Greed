@@ -35,6 +35,7 @@ import chess.engine.SearchResult;
 import chess.engine.TT;
 import chess.engine.TranspositionElement;
 import chess.engine.TranspositionTable;
+import chess.engine.test.Assertion;
 import chess.evaluation.EvaluationAdvancedV4;
 import chess.movegen.MoveGeneration;
 
@@ -402,6 +403,9 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 			case MOVE_ORDERING_KILLER1:
 				primaryKiller = primaryKillerss[distance];
 				if (primaryKiller != 0 && ttBestMove != primaryKiller && board.isValid(primaryKiller))  {
+					if (CompileTimeConstants.ENABLE_ASSERTION) {
+						Assertion.assertTrue(board.isLegal(primaryKiller));
+					}
 					moveGeneration.addMove(primaryKiller);
 					break;
 				}
@@ -409,6 +413,9 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 			case MOVE_ORDERING_KILLER2:
 				secondaryKiller = secondaryKillerss[distance];
 				if (secondaryKiller != 0 && ttBestMove != secondaryKiller && board.isValid(secondaryKiller))  {
+					if (CompileTimeConstants.ENABLE_ASSERTION) {
+						Assertion.assertTrue(board.isLegal(secondaryKiller));
+					}
 					moveGeneration.addMove(secondaryKiller);
 					break;
 				}
