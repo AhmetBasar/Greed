@@ -26,12 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
 import chess.engine.ISearchableV2;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.engine.TranspositionTable;
 import chess.engine.ZobristHashingPolyGlot;
+import chess.engine.test.Assertion;
 import chess.engine.test.ThreadPool;
 import chess.engine.test.tournament.ChessBoard;
 import chess.engine.test.tournament.ChessBoard.GameState;
@@ -174,6 +176,10 @@ public class EngineEqualityComparator implements Runnable {
 	private static final long startTime = System.currentTimeMillis();
 	
 	public static void main(String[] args) {
+
+		Assertion.assertTrue(CompileTimeConstants.ENABLE_ASSERTION);
+		Assertion.assertTrue(CompileTimeConstants.DETAILED_SEARCH_RESULT);
+		
 		initializeClasses();
 		
 		List<Runnable> runnables = new ArrayList<>();
