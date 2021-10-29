@@ -25,7 +25,7 @@
  [OKEY] - in the MoveGenerationCaptured class, castling moves are also generating. I think it is unnecessary. Remove it.
  [OKEY] - In quiescence search, we do not need to calculate zobrist key. So implement a method in Board class, named doMoveWithoutZobrist .
  [OKEY] - Transposition table structure must be reviewed. especially ttBestMove = ttElement.bestMove; code block is outside depth if block.
- [FAILED] - do real move ordering, remove ttbestmove if block, try ttbestmove first instead FAILED because we should do incremental move generation. first validate ttmove than generate validate killer moves than generate capture moves etc. 
+ [OKEY] - do real move ordering, remove ttbestmove if block, try ttbestmove first instead FAILED because we should do incremental move generation. first validate ttmove than generate validate killer moves than generate capture moves etc. 
  [OKEY] - Remove castling moves from move generationCaptures class.
   - Use tagging.
   - there should be more elegant Quiescence search algorithm that prune bad captures.
@@ -76,7 +76,7 @@
   - Implement History Heuristic.
   - Implement PV Extraction.
  [OKEY] - Implement threefold repetition for Search tree. Independent of game history!!! we already implemented for game history. but it does not work flawlessly
-  - Do not try ttBest move again!
+ [OKEY] - Do not try ttBest move again!
   - NULL MOVE PRUNING on pv nodes?
   - Implement insufficient material draw score... Very Important for draw blunders. Engine must be undrawable.
   - Give a penalty if fiftymovecounter > 90 or 80 in order not to go draw surprisingly.
@@ -175,7 +175,7 @@
   - Java performance optimizations. (such as static final methods.)
  [OKEY] - do not use shared objects. Review code. do not use static variables. but static method is permitted.
   - if there is no castling rights, call move generator that doesn't search castling moves.
-  - ttBestMove is tried first. but then, all possible moves are tried. do we need to try ttBestMove again?
+ [OKEY] - ttBestMove is tried first. but then, all possible moves are tried. do we need to try ttBestMove again?
   - capture moves should be handled by see, not killer heuristic.
   - return contempt factor.
   - do not use while loop to iterate kings. As there is always one king per side on the board..
@@ -252,4 +252,21 @@
   - Replace ~EngineConstants.FILE_H with EngineConstants.NOT_FILE_H
   - Implement Cloneable interface on Board object.
  [OKEY] - Implement reflectionBased comparison in SearchResult class.
-  
+  - review isLegal method in Board class.
+  - write test class for Static Exchange Evaluation class.
+  - Enable Static Exchange Evaluation in quiescence search.
+  - isInsufficientMaterial method implementation : handle KPK, KBPK, KBPKP
+  - implement XOR instead of &= ~(1L << to). Much more efficient. e.g. ^= to
+ [OKEY] - in MoveGeneration, at generateKingQuietMoves, there exist always a king for each side, so it is unnecessary to check if ((from = Long.numberOfTrailingZeros(fromBitboard)) != 64) {
+  - Do not use LegalityV4 class anoymore.  Too expensive.
+  - Is it necessary to check epT == 0 at isLegalEPCaptureMove method? chess22k does!
+  - Write test method for IBoard.isValid(int move) method.
+    - Write test method for IBoard.isValid(int move) method.
+      - Write test method for IBoard.isValid(int move) method.
+        - Write test method for IBoard.isValid(int move) method.
+          - Write test method for IBoard.isValid(int move) method.
+            - Write test method for IBoard.isValid(int move) method.
+ - Implement History Move values
+ - Implement Counter Move Heuristic.
+ - experiment whether add killer incheck or not.
+ - check insufficient material in negamax algorithm.

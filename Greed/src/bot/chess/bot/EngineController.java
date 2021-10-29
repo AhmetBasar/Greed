@@ -25,7 +25,7 @@ import chess.engine.EngineConstants;
 import chess.engine.ISearchableV2;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
-import chess.fhv2.SearchEngineFifty10;
+import chess.fhv2.SearchEngineMordering;
 
 public class EngineController implements Runnable {
 
@@ -40,7 +40,7 @@ public class EngineController implements Runnable {
 
 	public EngineController(IGameController gameController) {
 		this.gameController = gameController;
-		engine = SearchEngineFifty10.getInstance();
+		engine = SearchEngineMordering.getInstance();
 	}
 
 	public void setCallback(ICallBack callback) {

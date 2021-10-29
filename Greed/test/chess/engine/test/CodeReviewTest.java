@@ -117,6 +117,7 @@ public class CodeReviewTest {
 		
 		greaterThanOperatorWhiteListLines = new ArrayList<String>();
 		greaterThanOperatorWhiteListLines.add("capturedPiece > 0");
+		greaterThanOperatorWhiteListLines.add("moveCapturedPiece > 0");
 		greaterThanOperatorWhiteList.put("src\\chess\\engine\\BoardV7.java", greaterThanOperatorWhiteListLines);
 		
 		greaterThanOperatorWhiteListLines = new ArrayList<String>();
@@ -376,6 +377,10 @@ public class CodeReviewTest {
 
 		whiteListFields.add("chess.fhv2.SearchEngineFifty11.instance");
 		whiteListFields.add("chess.fhv2.SearchEngineFifty11.newInstances");
+		
+		whiteListFields.add("chess.fhv2.SearchEngineMordering.instance");
+		whiteListFields.add("chess.fhv2.SearchEngineMordering.newInstances");
+		whiteListFields.add("chess.fhv2.SearchEngineMordering.STATIC_NULLMOVE_MARGIN");
 		
 		whiteListFields.add("chess.movegen.MagicBitboard.rookMasks");
 		whiteListFields.add("chess.movegen.MagicBitboard.bishopMasks");
