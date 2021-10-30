@@ -247,9 +247,9 @@ public class TestingPanel extends JPanel{
 		jbChangeEngine2.addActionListener((new java.awt.event.ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				jtEngineClass1.setText("SearchEngineNegaMaxAlphaBetaBoard");
-				jtEngineClass2.setText("SearchEngineNegaMaxAlphaBeta");
-				jtEnginePackage.setText("chess.engine");
+				jtEngineClass1.setText("SearchEngineMordering");
+				jtEngineClass2.setText("SearchEngineFifty10");
+				jtEnginePackage.setText("chess.fhv2");
 			}
 		}));
 		
