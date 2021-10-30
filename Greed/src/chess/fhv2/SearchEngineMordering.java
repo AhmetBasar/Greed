@@ -49,7 +49,7 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 	
 	private int[] primaryKillerss = new int[128]; // The index corresponds to the ply the killer move is located in
 	private int[] secondaryKillerss = new int[128];
-	private int[][] counterMoves = new int[14][64];
+	private int[][][] counterMoves = new int[2][14][64];
 	
 	SearchResult searchResult = new SearchResult();
 	
@@ -192,8 +192,10 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 		tt.resetTT();
 		pawnHashTable.resetTT();
 
-		for (int i = 0; i < 14; i++) {
-			Arrays.fill(counterMoves[i], 0);
+		for (int j = 0; j < 2; j++) {
+			for (int i = 0; i < 14; i++) {
+				Arrays.fill(counterMoves[j][i], 0);
+			}
 		}
 		
 		Arrays.fill(primaryKillerss, 0);
@@ -284,12 +286,12 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 		}
 	}
 	
-	private void addCounterMove(int parentMove, int counterMove) {
-		counterMoves[Move.getFromPiece(parentMove)][Move.getTo(parentMove)] = counterMove;
+	private void addCounterMove(int side, int parentMove, int counterMove) {
+		counterMoves[side][Move.getFromPiece(parentMove)][Move.getTo(parentMove)] = counterMove;
 	}
 	
-	private int getCounterMove(int parentMove) {
-		return counterMoves[Move.getFromPiece(parentMove)][Move.getTo(parentMove)];
+	private int getCounterMove(int side, int parentMove) {
+		return counterMoves[side][Move.getFromPiece(parentMove)][Move.getTo(parentMove)];
 	}
 	
 	public int negamax(int depth, IBoard board, int alpha, int beta, boolean allowNullMove, int distance){
@@ -447,7 +449,7 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 				}
 				order++;
 			case MOVE_ORDERING_COUNTER:
-				counterMove = getCounterMove(parentMove);
+				counterMove = getCounterMove(board.getSide(), parentMove);
 				if (counterMove != 0 && ttBestMove != counterMove && counterMove != primaryKiller && counterMove != secondaryKiller && board.isValid(counterMove)) {
 					if (CompileTimeConstants.ENABLE_ASSERTION) {
 						Assertion.assertTrue(board.isLegal(counterMove));
@@ -494,7 +496,7 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 					tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, isTimeout);
 					if (Move.getCapturedPiece(move) == 0 && !Move.isPromotion(move) && board.getCheckers() == 0) {
 						addKiller(move, distance);
-						addCounterMove(parentMove, move);
+						addCounterMove(board.getSide(), parentMove, move);
 					}
 					moveGeneration.endPly();
 					if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
