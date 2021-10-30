@@ -49,6 +49,7 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 	
 	private int[] primaryKillerss = new int[128]; // The index corresponds to the ply the killer move is located in
 	private int[] secondaryKillerss = new int[128];
+	private int[][] counterMoves = new int[14][64];
 	
 	SearchResult searchResult = new SearchResult();
 	
@@ -59,8 +60,9 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 	private static final int MOVE_ORDERING_ATTACKING = 1;
 	private static final int MOVE_ORDERING_KILLER1 = 2;
 	private static final int MOVE_ORDERING_KILLER2 = 3;
-	private static final int MOVE_ORDERING_QUIET = 4;
-	private static final int MOVE_ORDERING_UPPER_BOUND = 5;
+	private static final int MOVE_ORDERING_COUNTER = 4;
+	private static final int MOVE_ORDERING_QUIET = 5;
+	private static final int MOVE_ORDERING_UPPER_BOUND = 6;
 	
 	private SearchEngineMordering(){
 		TranspositionTable.fillZobristArrays();
@@ -189,6 +191,13 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 	public void resetTT() {
 		tt.resetTT();
 		pawnHashTable.resetTT();
+
+		for (int i = 0; i < 14; i++) {
+			Arrays.fill(counterMoves[i], 0);
+		}
+		
+		Arrays.fill(primaryKillerss, 0);
+		Arrays.fill(secondaryKillerss, 0);
 	}
 	
 	public int getBestMovee(int depth, IBoard board, int distance){
@@ -218,43 +227,49 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 			}
 		}
 		
-		if(ttBestMove != 0){
-			board.doMove(ttBestMove);
-			
-			tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-			
-			if(tempValue > alpha){
-				hashType = HASH_EXACT;
-				alpha = tempValue;
-				bestMove = ttBestMove;
-			}
-			
-			board.undoMove(ttBestMove);
-		}
-		
+		//
 		moveGeneration.startPly();
-		moveGeneration.generateAttacks(board);
-		moveGeneration.generateMoves(board);
-		moveGeneration.setMvvLvaScores();
-		moveGeneration.sort();
+		int order = MOVE_ORDERING_TT;
 		
-		int move;
-		while (moveGeneration.hasNext()) {
-			move = moveGeneration.next();
+		while (order < MOVE_ORDERING_UPPER_BOUND) {
 			
-			if (!board.isLegal(move)) {
-				continue;
+			switch (order) {
+			case MOVE_ORDERING_TT:
+				if (ttBestMove != 0) {
+					moveGeneration.addMove(ttBestMove);
+				}
+				break;
+			case MOVE_ORDERING_ATTACKING:
+				moveGeneration.generateAttacks(board);
+				moveGeneration.generateMoves(board);
+				moveGeneration.setMvvLvaScores();
+				moveGeneration.sort();
+				break;
 			}
 			
-			board.doMove(move);
-			tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
-			if(tempValue > alpha){
-				hashType = HASH_EXACT;
-				alpha = tempValue;
-				bestMove = move;
+			int move;
+			while (moveGeneration.hasNext()) {
+				move = moveGeneration.next();
+				
+				if (order == MOVE_ORDERING_ATTACKING) {
+					if (move == ttBestMove || !board.isLegal(move)) {
+						continue;	
+					}
+				}
+				
+				board.doMove(move);
+				tempValue = -negamax(depth - 1, board, -beta, -alpha, true, distance + 1);
+				if(tempValue > alpha){
+					hashType = HASH_EXACT;
+					alpha = tempValue;
+					bestMove = move;
+				}
+				board.undoMove(move);
 			}
-			board.undoMove(move);
+			
+			order++;
 		}
+		//
 		
 		moveGeneration.endPly();
 		
@@ -267,6 +282,14 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 			secondaryKillerss[depth] = primaryKillerss[depth];
 			primaryKillerss[depth] = move;				
 		}
+	}
+	
+	private void addCounterMove(int parentMove, int counterMove) {
+		counterMoves[Move.getFromPiece(parentMove)][Move.getTo(parentMove)] = counterMove;
+	}
+	
+	private int getCounterMove(int parentMove) {
+		return counterMoves[Move.getFromPiece(parentMove)][Move.getTo(parentMove)];
 	}
 	
 	public int negamax(int depth, IBoard board, int alpha, int beta, boolean allowNullMove, int distance){
@@ -382,10 +405,13 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 		}
 		
 		//***
+		int parentMove = moveGeneration.previous();
+		
 		moveGeneration.startPly();
 		int order = MOVE_ORDERING_TT;
 		int primaryKiller = 0;
 		int secondaryKiller = 0;
+		int counterMove = 0;
 		
 		while (order < MOVE_ORDERING_UPPER_BOUND) {
 			
@@ -420,6 +446,16 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 					break;
 				}
 				order++;
+			case MOVE_ORDERING_COUNTER:
+				counterMove = getCounterMove(parentMove);
+				if (counterMove != 0 && ttBestMove != counterMove && counterMove != primaryKiller && counterMove != secondaryKiller && board.isValid(counterMove)) {
+					if (CompileTimeConstants.ENABLE_ASSERTION) {
+						Assertion.assertTrue(board.isLegal(counterMove));
+					}
+					moveGeneration.addMove(counterMove);
+					break;
+				}
+				order++;
 			case MOVE_ORDERING_QUIET:
 				moveGeneration.generateMoves(board);
 				moveGeneration.setMvvLvaScores();
@@ -432,7 +468,7 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 				move = moveGeneration.next();
 				
 				if (order == MOVE_ORDERING_QUIET) {
-					if (move == ttBestMove || move == primaryKiller || move == secondaryKiller || !board.isLegal(move)) {
+					if (move == ttBestMove || move == primaryKiller || move == secondaryKiller || move == counterMove || !board.isLegal(move)) {
 						continue;	
 					}
 				} else if (order == MOVE_ORDERING_ATTACKING) {
@@ -458,6 +494,7 @@ public class SearchEngineMordering implements ISearchableV2, EngineConstants {
 					tt.recordTranspositionTable(zobristKey, beta, move, depth, HASH_BETA, isTimeout);
 					if (Move.getCapturedPiece(move) == 0 && !Move.isPromotion(move) && board.getCheckers() == 0) {
 						addKiller(move, distance);
+						addCounterMove(parentMove, move);
 					}
 					moveGeneration.endPly();
 					if (CompileTimeConstants.DETAILED_SEARCH_RESULT) {
