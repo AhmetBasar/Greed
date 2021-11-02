@@ -60,7 +60,7 @@ public class GamePlayMove {
 		currentCastlingRights	= DebugUtility.deepCloneMultiDimensionalArray(base.getGamePlay().getCastlingRights()); // safe deep copy.
 		
 		to = Move.getTo(move);
-		from = move & 0x000000ff;
+		from = Move.getFrom(move);
 		
 		fromPiece = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getChessBoardPanel().getBoard()))[from];
 		

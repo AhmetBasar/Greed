@@ -190,7 +190,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		int moveType = Move.getMoveType(move);
 		int to = Move.getTo(move);
-		int from = move & 0x000000ff;
+		int from = Move.getFrom(move);
 		byte fromPiece = pieces[from];
 		
 		boolean isRookOrKingMove = (fromPiece == (side | EngineConstants.KING) || (fromPiece == (side | EngineConstants.ROOK))) 
@@ -456,7 +456,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		int moveType = Move.getMoveType(move);
 		int to = Move.getTo(move);
-		int from = move & 0x000000ff;
+		int from = Move.getFrom(move);
 		byte fromPiece = pieces[to];
 		
 		switch (moveType) {
@@ -592,7 +592,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		int moveType = Move.getMoveType(move);
 		int to = Move.getTo(move);
-		int from = move & 0x000000ff;
+		int from = Move.getFrom(move);
 		byte fromPiece = pieces[from];
 		
 		boolean isRookOrKingMove = (fromPiece == (side | EngineConstants.KING) || (fromPiece == (side | EngineConstants.ROOK))) 
@@ -776,7 +776,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		int moveType = Move.getMoveType(move);
 		int to = Move.getTo(move);
-		int from = move & 0x000000ff;
+		int from = Move.getFrom(move);
 		byte fromPiece = pieces[to];
 		
 		switch (moveType) {

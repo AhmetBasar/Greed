@@ -34,7 +34,7 @@ public class BotMove {
 	
 	public BotMove(int engineMove) {
 		this.engineMove = engineMove;
-		this.from = engineMove & 0x000000ff;
+		this.from = Move.getFrom(engineMove);
 		this.to = Move.getTo(engineMove);
 	}
 

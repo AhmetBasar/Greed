@@ -47,7 +47,7 @@ public class SanGenerator {
 		byte promotedPiece = 0;
 		int moveType = Move.getMoveType(move);
 		int to = Move.getTo(move);
-		int from = move & 0x000000ff;
+		int from = Move.getFrom(move);
 		byte fromPiece = pieces[from];
 		byte capturedPiece = 0;
 
@@ -176,7 +176,7 @@ public class SanGenerator {
 			move = moveGeneration.next();
 
 			String to = String.valueOf(Move.getTo(move));
-			int from = move & 0x000000ff;
+			int from = Move.getFrom(move);
 			int moveType = Move.getMoveType(move);
 			String fromPiece = String.valueOf(board.getPieces()[from]);
 
