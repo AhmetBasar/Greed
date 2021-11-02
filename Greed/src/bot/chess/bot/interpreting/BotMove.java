@@ -19,6 +19,8 @@
  **********************************************/
 package chess.bot.interpreting;
 
+import chess.engine.Move;
+
 public class BotMove {
 
 	private int from;
@@ -33,7 +35,7 @@ public class BotMove {
 	public BotMove(int engineMove) {
 		this.engineMove = engineMove;
 		this.from = engineMove & 0x000000ff;
-		this.to = (engineMove & 0x0000ff00) >>> 8;
+		this.to = Move.getTo(engineMove);
 	}
 
 	public int getFrom() {

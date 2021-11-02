@@ -456,7 +456,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 				
 				// For Clarity. Last decision is, if there is an enPassant capture, than enPassant square will added to blacklist.
 				
-				toPrev = (firstMove & 0x0000ff00) >>> 8;
+				toPrev = Move.getTo(firstMove);
 				Map<Integer, Integer> map = blackListMap.get(firstMove);
 				if (map == null) {
 					map = new HashMap<Integer, Integer>();
@@ -466,7 +466,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 				
 				return;
 			} else {
-				toPrev = (previousMove & 0x0000ff00) >>> 8;
+				toPrev = Move.getTo(previousMove);
 			}
 			Map<Integer, Set<Integer>> map = premoveMap.get(firstMove);
 			if (map == null) {
@@ -490,7 +490,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 		
 		if (map != null) {
 			
-			int to = (opponentsBestMove & 0x0000ff00) >>> 8;
+			int to = Move.getTo(opponentsBestMove);
 		
 			if (bList != null && bList.containsKey(to)) {
 				return;
@@ -499,7 +499,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 			Set<Integer> set = map.get(to);
 			if (set != null && set.size() == 1) {
 				int candidatePreMove = set.iterator().next();
-				int movesToSquare = (candidatePreMove & 0x0000ff00) >>> 8;
+				int movesToSquare = Move.getTo(candidatePreMove);
 				if (to == movesToSquare) {
 					searchResult.setPreMove(candidatePreMove);
 				}

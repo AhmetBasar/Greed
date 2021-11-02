@@ -61,7 +61,7 @@ public class ChessMove {
 		
 		currentPawnZobristKey = base.getGamePlay().getPawnZobristKey();
 		
-		to = (move & 0x0000ff00) >>> 8;
+		to = Move.getTo(move);
 		from = move & 0x000000ff;
 		fromPiece = base.getPieces()[from];
 		
