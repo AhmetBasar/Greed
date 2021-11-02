@@ -27,6 +27,7 @@ import java.util.Map;
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
+import chess.engine.Move;
 import chess.movegen.MoveGeneration;
 import chess.util.Utility;
 
@@ -137,7 +138,7 @@ public class SanGenerator {
 			break;
 		case EngineConstants.PROMOTION_SHIFTED:
 			capturedPiece = pieces[to];
-			promotedPiece = (byte) ((move & 0x00f00000) >>> 20);
+			promotedPiece = Move.getPromotedPiece(move);
 			String promotedPieceSymbol = PIECES[promotedPiece];
 			switch (capturedPiece) {
 			case 0:

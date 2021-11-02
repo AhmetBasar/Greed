@@ -22,6 +22,7 @@ package chess.game;
 import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
 import chess.engine.LegalityV4;
+import chess.engine.Move;
 import chess.engine.Transformer;
 import chess.engine.TranspositionTable;
 import chess.gui.BaseGui;
@@ -72,7 +73,7 @@ public class GamePlayMove {
 			capturedPiece = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getChessBoardPanel().getBoard()))[currentEpSquare];
 		} else if(isPromotion()){
 			capturedPiece = Transformer.getByteArrayStyl(Transformer.getBitboardStyl(base.getChessBoardPanel().getBoard()))[to];
-			promotedPiece = (byte)((move & 0x00f00000) >>> 20);
+			promotedPiece = Move.getPromotedPiece(move);
 		} else if(isQueenSideCastling()){
 			castlingRookFrom = castlingRookSources[side][0];
 			castlingRookTo   = castlingRookTargets[side][0];

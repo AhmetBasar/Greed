@@ -22,6 +22,7 @@ package chess.engine.test.tournament;
 import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
 import chess.engine.LegalityV4;
+import chess.engine.Move;
 import chess.engine.TranspositionTable;
 
 public class ChessMove {
@@ -73,7 +74,7 @@ public class ChessMove {
 			capturedPiece = base.getPieces()[currentEpSquare];
 		} else if(isPromotion()){
 			capturedPiece = base.getPieces()[to];
-			promotedPiece = (byte)((move & 0x00f00000) >>> 20);
+			promotedPiece = Move.getPromotedPiece(move);
 		} else if(isQueenSideCastling()){
 			castlingRookFrom = castlingRookSources[side][0];
 			castlingRookTo   = castlingRookTargets[side][0];
