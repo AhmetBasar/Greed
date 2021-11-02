@@ -188,7 +188,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		storeCurrentValues();
 		
-		int moveType = move & 0x00070000;
+		int moveType = Move.getMoveType(move);
 		int to = (move & 0x0000ff00) >>> 8;
 		int from = move & 0x000000ff;
 		byte fromPiece = pieces[from];
@@ -454,7 +454,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		changeSideToMove();
 		
-		int moveType = move & 0x00070000;
+		int moveType = Move.getMoveType(move);
 		int to = (move & 0x0000ff00) >>> 8;
 		int from = move & 0x000000ff;
 		byte fromPiece = pieces[to];
@@ -590,7 +590,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		storeCurrentValues();
 		
-		int moveType = move & 0x00070000;
+		int moveType = Move.getMoveType(move);
 		int to = (move & 0x0000ff00) >>> 8;
 		int from = move & 0x000000ff;
 		byte fromPiece = pieces[from];
@@ -774,7 +774,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		
 		changeSideToMove();
 		
-		int moveType = move & 0x00070000;
+		int moveType = Move.getMoveType(move);
 		int to = (move & 0x0000ff00) >>> 8;
 		int from = move & 0x000000ff;
 		byte fromPiece = pieces[to];

@@ -32,19 +32,19 @@ public class Move {
 	}
 	
 	public static byte getPromotedPiece(int move) {
-		return (byte)((move & 0x00f00000) >>> 20);		
+		return (byte)((move & 0x00f00000) >>> 20);
 	}
 	
 	public static byte getFromPiece(int move) {
-		return (byte)((move & 0x0F000000) >>> 24);		
+		return (byte)((move & 0x0F000000) >>> 24);
 	}
 	
 	public static byte getCapturedPiece(int move) {
-		return (byte)((move & 0x70000000) >>> 27);		
+		return (byte)((move & 0x70000000) >>> 27);
 	}
 	
 	public static boolean isPromotion(int move) {
-		return (move & 0x00070000) == EngineConstants.PROMOTION_SHIFTED;
+		return Move.getMoveType(move) == EngineConstants.PROMOTION_SHIFTED;
 	}
 	
 	public static boolean isCastling(int move) {

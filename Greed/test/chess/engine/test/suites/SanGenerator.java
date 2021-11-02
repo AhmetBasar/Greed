@@ -45,7 +45,7 @@ public class SanGenerator {
 		String sanMove = null;
 
 		byte promotedPiece = 0;
-		int moveType = move & 0x00070000;
+		int moveType = Move.getMoveType(move);
 		int to = (move & 0x0000ff00) >>> 8;
 		int from = move & 0x000000ff;
 		byte fromPiece = pieces[from];
@@ -177,7 +177,7 @@ public class SanGenerator {
 
 			String to = String.valueOf((move & 0x0000ff00) >>> 8);
 			int from = move & 0x000000ff;
-			int moveType = move & 0x00070000;
+			int moveType = Move.getMoveType(move);
 			String fromPiece = String.valueOf(board.getPieces()[from]);
 
 			if (board.isLegal(move)) {

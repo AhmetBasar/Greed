@@ -26,6 +26,7 @@ import chess.debug.DebugUtility;
 import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
+import chess.engine.Move;
 import chess.engine.Transformer;
 import chess.engine.test.ThreadPool4Workers;
 import chess.gui.BaseGui;
@@ -153,7 +154,7 @@ class Worker {
 			existsLegalMove = true;
 			if (depth == 1) {
 				//
-				int moveType = move & 0x00070000;
+				int moveType = Move.getMoveType(move);
 				byte capturedPiece = board.getCapturedPiece();
 				switch (moveType) {
 				case 0:
@@ -216,7 +217,7 @@ class Worker {
 			existsLegalMove = true;
 			if (depth == 1) {
 				//
-				int moveType = move & 0x00070000;
+				int moveType = Move.getMoveType(move);
 				byte capturedPiece = board.getCapturedPiece();
 				switch (moveType) {
 				case 0:

@@ -29,6 +29,7 @@ import chess.bot.interpreting.CellDifference;
 import chess.bot.interpreting.MoveIntepreter;
 import chess.debug.DebugUtility;
 import chess.engine.EngineConstants;
+import chess.engine.Move;
 
 public class ChessBot implements Runnable {
 
@@ -286,7 +287,7 @@ public class ChessBot implements Runnable {
 	}
 	
 	private void waitAlittleTimeIfEnpassantCapture(int engineMove) {
-		int moveType = engineMove & 0x00070000;
+		int moveType = Move.getMoveType(engineMove);
 		if (moveType == EngineConstants.EP_CAPTURE_SHIFTED) {
 			System.out.println("EP capture sugessted. So I'll wait a little bit. Cuzz, ep square pawn does not disappear immediately.");
 			Utility.sleep(500);
