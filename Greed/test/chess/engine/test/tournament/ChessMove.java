@@ -183,7 +183,7 @@ public class ChessMove {
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[base.getPieces()[castlingRookFrom]][castlingRookTo]);
 			//
 			
-			int castlingSide = (move & 0x00010000) >>> 16;
+			int castlingSide = Move.getCastlingSide(move);
 			byte sideToRook = (byte) (side | EngineConstants.ROOK);
 			castlingRookFrom = castlingRookSources[side][castlingSide];
 			castlingRookTo = castlingRookTargets[side][castlingSide];
@@ -340,7 +340,7 @@ public class ChessMove {
 			bitboard[promotedPiece] |= (1L << to);
 			bitboard[toPiece] &= ~(1L << to);
 		} else if (isCastling()) {
-			int castlingSide = (move & 0x00010000) >>> 16;
+			int castlingSide = Move.getCastlingSide(move);
 			byte sideToRook = (byte) (side | EngineConstants.ROOK);
 			castlingRookFrom = castlingRookSources[side][castlingSide];
 			castlingRookTo = castlingRookTargets[side][castlingSide];

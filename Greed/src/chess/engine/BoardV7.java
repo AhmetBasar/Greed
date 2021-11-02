@@ -340,7 +340,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		default:
 			capturedPiece = 0;
 			epT = 64;
-			int castlingSide = (move & 0x00010000) >>> 16;
+			int castlingSide = Move.getCastlingSide(move);
 			byte sideToRook = (byte) (side | EngineConstants.ROOK);
 			
 			int castlingRookFrom = castlingRookSources[side][castlingSide];
@@ -711,7 +711,7 @@ public class BoardV7 implements IBoard, EngineConstants {
 		default:
 			capturedPiece = 0;
 			epT = 64;
-			int castlingSide = (move & 0x00010000) >>> 16;
+			int castlingSide = Move.getCastlingSide(move);
 			byte sideToRook = (byte) (side | EngineConstants.ROOK);
 			
 			int castlingRookFrom = castlingRookSources[side][castlingSide];
