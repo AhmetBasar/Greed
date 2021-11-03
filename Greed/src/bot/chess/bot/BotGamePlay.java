@@ -31,6 +31,7 @@ import chess.engine.BoardFactory;
 import chess.engine.CompileTimeConstants;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
+import chess.engine.Move;
 import chess.engine.Transformer;
 import chess.engine.TranspositionTable;
 import chess.gui.GuiConstants;
@@ -378,7 +379,7 @@ public class BotGamePlay implements IGameController {
 		while (moveGeneration.hasNext()) {
 			int nextMove = moveGeneration.next();
 			
-			if (move == (nextMove & 0x0000FFFF) && board.isLegal(nextMove)) {
+			if (move == (Move.getFromTo(nextMove)) && board.isLegal(nextMove)) {
 				moveGeneration.endPly();
 				return nextMove;
 			}

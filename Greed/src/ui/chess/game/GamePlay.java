@@ -34,6 +34,7 @@ import chess.engine.BoardFactory;
 import chess.engine.EngineConstants;
 import chess.engine.IBoard;
 import chess.engine.LegalityV4;
+import chess.engine.Move;
 import chess.engine.SearchParameters;
 import chess.engine.SearchResult;
 import chess.engine.Transformer;
@@ -101,7 +102,7 @@ public class GamePlay {
 		moveGeneration.generateMoves(board);
 		while (moveGeneration.hasNext()) {
 			int nextMove = moveGeneration.next();
-			if (move == (nextMove & 0x0000FFFF) && board.isLegal(nextMove)) {
+			if (move == (Move.getFromTo(nextMove)) && board.isLegal(nextMove)) {
 				validMoveList.add(nextMove);
 			}
 		}
