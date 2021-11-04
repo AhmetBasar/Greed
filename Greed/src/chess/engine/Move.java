@@ -51,6 +51,26 @@ public class Move {
 		return (move & 0x00040000) == EngineConstants.CASTLING_SHIFTED;
 	}
 	
+	public static boolean isSimpleMove(int move) {
+		return Move.getMoveType(move) == 0;
+	}
+	
+	public static boolean isDoublePush(int move) {
+		return Move.getMoveType(move) == EngineConstants.DOUBLE_PUSH_SHIFTED;
+	}
+	
+	public static boolean isEnPassantCapture(int move) {
+		return Move.getMoveType(move) == EngineConstants.EP_CAPTURE_SHIFTED;
+	}
+	
+	public static boolean isQueenSideCastling(int move){
+		return Move.getMoveType(move) == EngineConstants.QUEEN_SIDE_CASTLING_SHIFTED;
+	}
+	
+	public static boolean isKingSideCastling(int move){
+		return Move.getMoveType(move) == EngineConstants.KING_SIDE_CASTLING_SHIFTED;
+	}
+	
 	public static int getTo(int move) {
 		return (move & 0x0000ff00) >>> 8;
 	}
