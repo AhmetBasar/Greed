@@ -120,7 +120,7 @@ public class GamePlay {
 			byte toBePromotedItem = base.getPromotionPanel().getLastChoosenPromotionItem();
 			for (int i = 0; i < validMoveListSize; i++) {
 				int promotionMove = validMoveList.get(i);
-				if (((promotionMove & 0xF00000) >>> 20) == (int) toBePromotedItem) {
+				if (Move.getPromotedPiece(promotionMove) == (int) toBePromotedItem) {
 					return promotionMove;
 				}
 			}

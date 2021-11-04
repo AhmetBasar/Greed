@@ -150,7 +150,7 @@ public class SanGenerator {
 			}
 			break;
 		default:
-			boolean isQueenSideCastling = (move & 0x00ff0000) == (EngineConstants.QUEEN_SIDE_CASTLING << 16);
+			boolean isQueenSideCastling = Move.isQueenSideCastling(move);
 			sanMove = isQueenSideCastling ? QUEEN_SIDE_CASTLING : KING_SIDE_CASTLING;
 			break;
 		}

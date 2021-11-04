@@ -445,7 +445,7 @@ public class SearchEngineFifty_PREMOVEFINDER implements ISearchableV2, EngineCon
 		 * */
 		//
 		// If it is an attacking move. (it may also be enPassant capture.)
-		if ((previousMove & 0x78000000) != 0) {
+		if (Move.getCapturedPiece(previousMove) != 0) {
 			
 			int moveType = Move.getMoveType(previousMove);
 			int toPrev = -1;
