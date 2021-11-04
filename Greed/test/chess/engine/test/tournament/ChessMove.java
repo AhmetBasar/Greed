@@ -65,20 +65,20 @@ public class ChessMove {
 		from = Move.getFrom(move);
 		fromPiece = base.getPieces()[from];
 		
-		if(isSimpleMove()){
+		if(Move.isSimpleMove(move)){
 			capturedPiece = base.getPieces()[to];
-		} else if (isDoublePush()) {
+		} else if (Move.isDoublePush(move)) {
 			toBeImplementedEpTarget = EngineConstants.EPT_LOOKUP[side][to];
 			toBeImplementedEpSquare = to;
-		} else if(isEnPassantCapture()){
+		} else if(Move.isEnPassantCapture(move)){
 			capturedPiece = base.getPieces()[currentEpSquare];
-		} else if(isPromotion()){
+		} else if(Move.isPromotion(move)){
 			capturedPiece = base.getPieces()[to];
 			promotedPiece = Move.getPromotedPiece(move);
-		} else if(isQueenSideCastling()){
+		} else if(Move.isQueenSideCastling(move)){
 			castlingRookFrom = castlingRookSources[side][0];
 			castlingRookTo   = castlingRookTargets[side][0];
-		} else if(isKingSideCastling()){
+		} else if(Move.isKingSideCastling(move)){
 			castlingRookFrom = castlingRookSources[side][1];
 			castlingRookTo   = castlingRookTargets[side][1];
 		}
@@ -94,7 +94,7 @@ public class ChessMove {
 		//
 		
 		base.getGamePlay().resetEnPassantFlags();
-		if (isSimpleMove()) {
+		if (Move.isSimpleMove(move)) {
 			
 			//Transposition Table//
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
@@ -120,7 +120,7 @@ public class ChessMove {
 			base.getBitboard()[fromPiece] &= ~(1L << from);
 			base.getBitboard()[fromPiece] |= (1L << to);
 			base.getBitboard()[capturedPiece] &= ~(1L << to);
-		} else if (isDoublePush()) {
+		} else if (Move.isDoublePush(move)) {
 			
 			//Transposition Table//
 			if ((EngineConstants.PAWN_ATTACK_LOOKUP[side][toBeImplementedEpTarget] & base.getBitboard()[(side ^ 1) | EngineConstants.PAWN]) != 0) {
@@ -139,7 +139,7 @@ public class ChessMove {
 			base.getPieces()[to] = fromPiece;
 			base.getBitboard()[fromPiece] &= ~(1L << from);
 			base.getBitboard()[fromPiece] |= (1L << to);
-		} else if(isEnPassantCapture()){
+		} else if(Move.isEnPassantCapture(move)){
 			
 			//Transposition Table//
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][currentEpSquare]);
@@ -157,7 +157,7 @@ public class ChessMove {
 			base.getBitboard()[fromPiece] &= ~(1L << from);
 			base.getBitboard()[fromPiece] |= (1L << to);
 			base.getBitboard()[capturedPiece] &= ~(1L << currentEpSquare);
-		} else if(isPromotion()){
+		} else if(Move.isPromotion(move)){
 			
 			//Transposition Table//
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
@@ -174,7 +174,7 @@ public class ChessMove {
 			base.getBitboard()[fromPiece] &= ~(1L << from);
 			base.getBitboard()[promotedPiece] |= (1L << to);
 			base.getBitboard()[capturedPiece] &= ~(1L << to);
-		} else if(isQueenSideCastling() || isKingSideCastling()){
+		} else if(Move.isQueenSideCastling(move) || Move.isKingSideCastling(move)){
 			
     		//Transposition Table//
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
@@ -210,7 +210,7 @@ public class ChessMove {
 		base.getGamePlay().setEpTarget(currentEpTarget);
 		base.getGamePlay().setEpSquare(currentEpSquare);
 		base.getGamePlay().setCastlingRights(DebugUtility.deepCloneMultiDimensionalArray(currentCastlingRights));
-		if (isSimpleMove()) {
+		if (Move.isSimpleMove(move)) {
 			//Transposition Table//
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
@@ -224,7 +224,7 @@ public class ChessMove {
 			base.getBitboard()[fromPiece] &= ~(1L << to);
 			base.getBitboard()[capturedPiece] |= (1L << to); // capturedPiece may be zero here.
 			
-		} else if (isDoublePush()) {
+		} else if (Move.isDoublePush(move)) {
 			//Transposition Table//
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
@@ -235,7 +235,7 @@ public class ChessMove {
 			base.getBitboard()[fromPiece] |= (1L << from);
 			base.getBitboard()[fromPiece] &= ~(1L << to);
 			
-		} else if(isEnPassantCapture()){
+		} else if(Move.isEnPassantCapture(move)){
 			//Transposition Table//
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[capturedPiece][currentEpSquare]);
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
@@ -249,7 +249,7 @@ public class ChessMove {
 			base.getBitboard()[fromPiece] &= ~(1L << to);
 			base.getBitboard()[capturedPiece] |= (1L << currentEpSquare);
 			
-		} else if(isPromotion()){
+		} else if(Move.isPromotion(move)){
 			//Transposition Table//
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[(byte)(EngineConstants.PAWN | side)][from]);
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[promotedPiece][to]);
@@ -264,7 +264,7 @@ public class ChessMove {
 			base.getBitboard()[promotedPiece] &= ~(1L << to);
 			base.getBitboard()[capturedPiece] |= (1L << to); // capturedPiece may be zero here. 
 			
-		} else if(isQueenSideCastling() || isKingSideCastling()){
+		} else if(Move.isQueenSideCastling(move) || Move.isKingSideCastling(move)){
     		//Transposition Table//
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][to]);
 			base.updateZobristKey(TranspositionTable.zobristPositionArray[fromPiece][from]);
@@ -291,55 +291,27 @@ public class ChessMove {
 		
 	}
 
-	private boolean isSimpleMove(){
-		return (move & 0x00ff0000) == 0 ? true : false;
-	}
-
-	private boolean isDoublePush() {
-		return (move & 0x00ff0000) == (EngineConstants.DOUBLE_PUSH << 16) ? true : false;
-	}
-	
-	private boolean isEnPassantCapture() {
-		return (move & 0x00ff0000) == (EngineConstants.EP_CAPTURE << 16) ? true : false;
-	}
-	
-	private boolean isPromotion(){
-		return (move & 0x000f0000) == (EngineConstants.PROMOTION << 16) ? true : false;
-	}
-	
-	private boolean isQueenSideCastling(){
-		return (move & 0x00ff0000) == (EngineConstants.QUEEN_SIDE_CASTLING << 16) ? true : false;
-	}
-	
-	private boolean isKingSideCastling(){
-		return (move & 0x00ff0000) == (EngineConstants.KING_SIDE_CASTLING << 16) ? true : false;
-	}
-	
-	public boolean isCastling(){
-		return isQueenSideCastling() || isKingSideCastling();
-	}
-	
 	public boolean isKingInCheck() {
 		boolean isKingInCheck = false;
 		long[] bitboard = base.getBitboard().clone();
 		byte fromPiece = base.getPieces()[from];
 		byte toPiece = base.getPieces()[to];
-		if (isSimpleMove()) {
+		if (Move.isSimpleMove(move)) {
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[fromPiece] |= (1L << to);
 			bitboard[toPiece] &= ~(1L << to);
-		} else if(isDoublePush()){
+		} else if(Move.isDoublePush(move)){
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[fromPiece] |= (1L << to);
-		} else if(isEnPassantCapture()){
+		} else if(Move.isEnPassantCapture(move)){
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[fromPiece] |= (1L << to);
 			bitboard[capturedPiece] &= ~(1L << currentEpSquare);
-		} else if(isPromotion()){
+		} else if(Move.isPromotion(move)){
 			bitboard[fromPiece] &= ~(1L << from);
 			bitboard[promotedPiece] |= (1L << to);
 			bitboard[toPiece] &= ~(1L << to);
-		} else if (isCastling()) {
+		} else if (Move.isCastling(move)) {
 			int castlingSide = Move.getCastlingSide(move);
 			byte sideToRook = (byte) (side | EngineConstants.ROOK);
 			castlingRookFrom = castlingRookSources[side][castlingSide];
